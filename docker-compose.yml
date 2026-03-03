@@ -1,0 +1,28 @@
+version: '3.8'
+
+x-ros-base: &ros-base
+  build: .
+  image: garmi-sim-model
+  volumes:
+    - ./garmi_description:/ws/src/garmi_description
+    - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    - ${XAUTHORITY:-$HOME/.Xauthority}:/root/.Xauthority:ro
+    - ./rqt_gui.ini:/root/.config/ros.org/rqt_gui.ini:rw
+  environment:
+    - DISPLAY=${DISPLAY}
+    - QT_X11_NO_MITSHM=1
+    - XAUTHORITY=/root/.Xauthority
+    - GZ_SIM_RESOURCE_PATH=/ws/src/
+  # Support hardware acceleration
+  devices:
+    - /dev/dri:/dev/dri
+  network_mode: host
+
+services:
+  rviz:
+    <<: *ros-base
+    command: ros2 launch garmi_description display.launch.py
+
+  gazebo:
+    <<: *ros-base
+    command: ros2 launch garmi_description gazebo.launch.py

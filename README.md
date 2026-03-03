@@ -1,0 +1,66 @@
+![Garmi Model](garmi_description/model.png)
+
+# 🤖 Garmi Description
+
+Welcome to the `garmi_description` repository! 🎉
+
+This repository provides a lightweight, **portable** version of the Garmi robot model. It was carefully extracted from a much more complex full-stack simulation that includes many vendor-specific ROS 2 requirements and integrations.
+
+The goal here is simple: to make it incredibly easy to share the Garmi robot model with partners, researchers, and developers! 🤝
+
+## ✨ What makes this special?
+
+- **Single URDF**: No more hunting through complex `xacro` macros or dealing with missing dependencies! Everything is compiled into a single, straightforward URDF file.
+- **Self-Contained**: All meshes, materials, and textures are conveniently packed into this single package.
+- **Simulation Agnostic**: While we provide basic ROS 2 examples, the model is perfect for experimenting across different simulation environments like **MuJoCo**, **Isaac Sim**, **PyBullet**, or whatever engine you prefer! 🚀
+
+## 🛠️ Illustrative Examples
+
+We've included a pre-configured ROS 2 Jazzy Docker setup so you can instantly see the robot model. 
+
+> **Disclaimer:** The included visualization in RViz and the basic Gazebo simulation are really just for **illustration purposes** to show that the model works out-of-the-box. The real power is taking this URDF and using it in your own projects!
+
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+- X11 Server (for running the GUI examples)
+
+
+### 👁️ View in RViz
+
+Just want to see what Garmi looks like and check the joint limits?
+
+```bash
+docker compose up rviz
+```
+
+### 🎮 Basic Gazebo Simulation
+
+The simulation is an empty world, but we've included GUIs to see all of the robot's Degrees of Freedom (DoF) in motion!
+
+![Gazebo Simulation Preview](garmi_description/preview.gif)
+
+```bash
+docker compose up gazebo
+```
+
+## 📂 Structure Breakdown
+
+- `Dockerfile` & `docker-compose.yml`: Quick-start containerized environment.
+- `garmi_description/`
+  - `urdf/`: The single, self-contained URDF file.
+  - `meshes/`: Visual and collision geometries for the robot.
+  - `launch/` & `config/`: Setup for the illustrative RViz and Gazebo tests.
+
+## ⚠️ Caveats & Known Issues
+
+Since this is a lightweight derivative, please keep the following in mind:
+- **Kinematics Focused**: The model's primary focus right now is accurate kinematics and geometry. Dynamics properties (like precise masses or inertia) may not be fully accurate as system identification is still pending.
+- **No Self-Collision**: Currently, self-collision is disabled/unavailable in the illustrative Gazebo simulation. This is related to an upstream issue ([gazebosim/gz-sim#3261](https://github.com/gazebosim/gz-sim/issues/3261)).
+- **Effort Interfaces Disabled**: In the provided basic Gazebo setup, effort interfaces and gravity compensation for the arms have been deactivated as the controllers display instability in the current simulation engine.
+- **Work in Progress**: A few details may be missing, but we will update this package as needed.
+
+## 📄 License
+
+This package is licensed under the Apache License 2.0. Enjoy experimenting! 🧪
