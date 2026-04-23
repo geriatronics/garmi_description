@@ -1814,6 +1814,7 @@
   <joint name="head_fixed_joint" type="fixed">
     <parent link="lift_0_mount_rotated_link"/>
     <child link="neck_1"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.015"/>
   </joint>
   <joint name="head_pan_joint" type="revolute">
     <origin rpy="0.0 0.0 0.0" xyz="0.0279 0.0 0.0119"/>
