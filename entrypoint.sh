@@ -1,4 +1,6 @@
 #!/bin/bash
+# Copyright 2026 Technical University of Munich
+# SPDX-License-Identifier: Apache-2.0
 set -e
 
 # Setup ROS 2 environment

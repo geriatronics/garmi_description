@@ -26,6 +26,12 @@ We've included a pre-configured ROS 2 Jazzy Docker setup so you can instantly se
 - [Docker Compose](https://docs.docker.com/compose/install/)
 - X11 Server (for running the GUI examples)
 
+### Get the package
+
+```bash
+git clone https://github.com/geriatronics/garmi_description.git
+cd garmi_description
+```
 
 ### 👁️ View in RViz
 
@@ -61,6 +67,22 @@ Since this is a lightweight derivative, please keep the following in mind:
 - **Effort Interfaces Disabled**: In the provided basic Gazebo setup, effort interfaces and gravity compensation for the arms have been deactivated as the controllers display instability in the current simulation engine.
 - **Work in Progress**: A few details may be missing, but we will update this package as needed.
 
+## 🙌 Credits & Acknowledgements
+
+Garmi is developed at the **Technical University of Munich (TUM)**. The robot's
+distinctive design — its head, neck, torso and covers — was created together
+with **[Leap Leap](https://leap-leap.com/)**. A big thank you to them! 🎨
+
 ## 📄 License
 
-This package is licensed under the Apache License 2.0. Enjoy experimenting! 🧪
+This package is released under the **Apache License 2.0** — a permissive license
+chosen specifically so that you can freely use, adapt, and build on Garmi in your
+own research, experiments, and benchmarks. We'd love to see what you create! 🧪
+
+A few of the bundled meshes come from third parties and keep their original
+licenses (Apache-2.0 for Franka, BSD-3-Clause for the Clearpath-derived base).
+Their notices are reproduced in the [`NOTICE`](NOTICE) and
+[`THIRD_PARTY_LICENSES`](THIRD_PARTY_LICENSES) files — please keep them when you
+redistribute. Everything else is © Technical University of Munich.
+
+See the [`LICENSE`](LICENSE) file for the full text. Happy experimenting! 🚀

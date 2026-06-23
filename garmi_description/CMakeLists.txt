@@ -1,3 +1,6 @@
+# Copyright 2026 Technical University of Munich
+# SPDX-License-Identifier: Apache-2.0
+
 cmake_minimum_required(VERSION 3.8)
 project(garmi_description)
 

@@ -1,3 +1,6 @@
+# Copyright 2026 Technical University of Munich
+# SPDX-License-Identifier: Apache-2.0
+
 FROM osrf/ros:jazzy-desktop
 
 # Install additional packages

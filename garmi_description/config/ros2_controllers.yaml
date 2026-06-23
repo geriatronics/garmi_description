@@ -1,3 +1,6 @@
+# Copyright 2026 Technical University of Munich
+# SPDX-License-Identifier: Apache-2.0
+
 controller_manager:
   ros__parameters:
     use_sim_time: True

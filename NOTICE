@@ -1,0 +1,32 @@
+Garmi Description
+Copyright 2026 Technical University of Munich
+
+This product includes software and 3D assets developed at the
+Technical University of Munich (TUM).
+
+The Garmi robot design (head, neck, torso, covers and overall integration)
+was created in collaboration with Leap Leap (https://leap-leap.com/).
+
+------------------------------------------------------------------------
+Third-party components
+------------------------------------------------------------------------
+
+This package bundles 3D meshes that originate from third-party projects.
+Their original licenses and copyright notices are retained and reproduced
+in the THIRD_PARTY_LICENSES file.
+
+1. Franka arm and gripper meshes
+   Files: meshes/link0..link7.{dae,stl}, meshes/hand.{dae,stl},
+          meshes/finger.dae
+   Copyright (C) 2024 Franka Robotics GmbH
+   Licensed under the Apache License, Version 2.0.
+   Source: https://github.com/frankaemika/franka_description
+
+2. Mobile base meshes (derived from the Clearpath Ridgeback description)
+   Files: chassis, cover, wheel and sensor geometry of the mobile base
+          (e.g. meshes/body.stl, meshes/mecanum.stl, meshes/axle.stl,
+          meshes/rocker.stl, meshes/side-cover.stl, meshes/end-cover.stl,
+          meshes/lights.stl, meshes/hokuyo_ust.stl)
+   Copyright 2021 Clearpath Robotics Inc.
+   Licensed under the BSD 3-Clause License.
+   Source: https://github.com/ridgeback/ridgeback

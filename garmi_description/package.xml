@@ -3,9 +3,14 @@
 <package format="3">
   <name>garmi_description</name>
   <version>0.0.1</version>
-  <description>The Garmi URDF visualization and simulation package.</description>
-  <maintainer email="user@example.com">User</maintainer>
+  <description>
+    Portable URDF description of the Garmi robot, with illustrative RViz and
+    Gazebo examples. Developed at the Technical University of Munich.
+  </description>
+  <maintainer email="jean.elsner@tum.de">Jean Elsner</maintainer>
+  <author>Jean Elsner</author>
   <license>Apache-2.0</license>
+  <url type="repository">https://github.com/geriatronics/garmi_description</url>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
