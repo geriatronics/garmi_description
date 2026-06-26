@@ -5,8 +5,9 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess
+from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command, LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import Command, LaunchConfiguration, PathJoinSubstitution, PythonExpression
 from launch.actions import RegisterEventHandler
 from launch.event_handlers import OnProcessExit
 from launch_ros.actions import Node
@@ -20,6 +21,24 @@ def generate_launch_description():
 
     model_arg = DeclareLaunchArgument(name='model', default_value=default_model_path,
                                       description='Absolute path to robot urdf file')
+
+    arm_controllers_arg = DeclareLaunchArgument(
+        name='arm_controllers', default_value='trajectory',
+        choices=['trajectory', 'velocity'],
+        description="Which controllers to load for the arms: 'trajectory' "
+                    "(JointTrajectoryController, GUI-friendly) or 'velocity' "
+                    "(forward JointGroupVelocityController, for streaming/rosbags)")
+
+    control_guis_arg = DeclareLaunchArgument(
+        name='control_guis', default_value='true',
+        choices=['true', 'false'],
+        description='Launch the rqt GUIs for jogging the joints and steering '
+                    'the base. Disable them when a node drives the robot.')
+
+    use_trajectory = IfCondition(
+        PythonExpression(["'", LaunchConfiguration('arm_controllers'), "' == 'trajectory'"]))
+    use_velocity = IfCondition(
+        PythonExpression(["'", LaunchConfiguration('arm_controllers'), "' == 'velocity'"]))
 
     gui_config = PathJoinSubstitution([get_package_share_directory('garmi_description'), 'config', 'gui.config'])
 
@@ -52,11 +71,14 @@ def generate_launch_description():
         output='screen'
     )
 
+    control_guis = IfCondition(LaunchConfiguration('control_guis'))
+
     rqt_node = Node(
         package='rqt_joint_trajectory_controller',
         executable='rqt_joint_trajectory_controller',
         parameters=[{'use_sim_time': True}],
         arguments=['--ros-args', '--log-level', 'rcl.logging_rosout:=ERROR'],
+        condition=control_guis,
     )
 
     rqt_steering_node = Node(
@@ -67,7 +89,8 @@ def generate_launch_description():
             'default_topic': '/garmi_base_controller/reference',
             'default_stamped': True,
             'use_sim_time': True
-        }]
+        }],
+        condition=control_guis,
     )
 
     spawn_entity = Node(
@@ -86,16 +109,34 @@ def generate_launch_description():
         arguments=['joint_state_broadcaster'],
     )
 
+    # Arms: spawn either the trajectory or the velocity controllers,
+    # depending on the 'arm_controllers' argument.
     load_arm_0_controller = Node(
         package='controller_manager',
         executable='spawner',
         arguments=['garmi_arm_0_controller'],
+        condition=use_trajectory,
     )
 
     load_arm_1_controller = Node(
         package='controller_manager',
         executable='spawner',
         arguments=['garmi_arm_1_controller'],
+        condition=use_trajectory,
+    )
+
+    load_arm_0_velocity_controller = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['garmi_arm_0_velocity_controller'],
+        condition=use_velocity,
+    )
+
+    load_arm_1_velocity_controller = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['garmi_arm_1_velocity_controller'],
+        condition=use_velocity,
     )
 
     load_head_controller = Node(
@@ -118,6 +159,8 @@ def generate_launch_description():
 
     return LaunchDescription([
         model_arg,
+        arm_controllers_arg,
+        control_guis_arg,
         gazebo_launch,
         clock_bridge,
         rqt_node,
@@ -128,9 +171,11 @@ def generate_launch_description():
             event_handler=OnProcessExit(
                 target_action=spawn_entity,
                 on_exit=[
-                    load_joint_state_broadcaster, 
-                    load_arm_0_controller, 
+                    load_joint_state_broadcaster,
+                    load_arm_0_controller,
                     load_arm_1_controller,
+                    load_arm_0_velocity_controller,
+                    load_arm_1_velocity_controller,
                     load_head_controller,
                     load_lift_controller,
                     load_base_controller

@@ -29,3 +29,7 @@ services:
   gazebo:
     <<: *ros-base
     command: ros2 launch garmi_description gazebo.launch.py
+
+  demo:
+    <<: *ros-base
+    command: ros2 launch garmi_description gazebo_demo.launch.py

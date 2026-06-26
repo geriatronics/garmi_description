@@ -9,11 +9,19 @@ controller_manager:
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
+    # Trajectory controllers for the arms (used by the gazebo example).
     garmi_arm_0_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
     garmi_arm_1_controller:
       type: joint_trajectory_controller/JointTrajectoryController
+
+    # Forward velocity controllers for the arms (used by the demo example).
+    garmi_arm_0_velocity_controller:
+      type: velocity_controllers/JointGroupVelocityController
+
+    garmi_arm_1_velocity_controller:
+      type: velocity_controllers/JointGroupVelocityController
 
     garmi_head_controller:
       type: joint_trajectory_controller/JointTrajectoryController
@@ -24,6 +32,8 @@ controller_manager:
     garmi_base_controller:
       type: mecanum_drive_controller/MecanumDriveController
 
+# Trajectory controllers for the arms. Used by the gazebo example and
+# compatible with the rqt_joint_trajectory_controller GUI.
 garmi_arm_0_controller:
   ros__parameters:
     use_sim_time: True
@@ -73,6 +83,34 @@ garmi_arm_1_controller:
       arm_1_fr3_joint5: { p: 250., d: 10., i: 0., i_clamp: 1. }
       arm_1_fr3_joint6: { p: 150., d: 10., i: 0., i_clamp: 1. }
       arm_1_fr3_joint7: { p: 50., d: 5., i: 0., i_clamp: 1. }
+
+# Forward velocity controllers for the arms. Used by the demo example: they
+# forward a velocity command (std_msgs/Float64MultiArray on
+# <controller>/commands) straight to the joints, which is convenient for
+# streaming or replaying recorded teleoperation rosbags.
+garmi_arm_0_velocity_controller:
+  ros__parameters:
+    use_sim_time: True
+    joints:
+      - arm_0_fr3_joint1
+      - arm_0_fr3_joint2
+      - arm_0_fr3_joint3
+      - arm_0_fr3_joint4
+      - arm_0_fr3_joint5
+      - arm_0_fr3_joint6
+      - arm_0_fr3_joint7
+
+garmi_arm_1_velocity_controller:
+  ros__parameters:
+    use_sim_time: True
+    joints:
+      - arm_1_fr3_joint1
+      - arm_1_fr3_joint2
+      - arm_1_fr3_joint3
+      - arm_1_fr3_joint4
+      - arm_1_fr3_joint5
+      - arm_1_fr3_joint6
+      - arm_1_fr3_joint7
 
 garmi_head_controller:
   ros__parameters:
