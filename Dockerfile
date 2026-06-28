@@ -15,7 +15,6 @@ RUN apt-get update && apt-get install -y \
     ros-jazzy-ros-gz-bridge \
     ros-jazzy-rqt-joint-trajectory-controller \
     ros-jazzy-teleop-twist-keyboard \
-    ros-jazzy-rqt-robot-steering \
     python3-colcon-common-extensions \
     && rm -rf /var/lib/apt/lists/*
 

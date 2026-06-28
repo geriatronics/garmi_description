@@ -32,8 +32,9 @@ def generate_launch_description():
     control_guis_arg = DeclareLaunchArgument(
         name='control_guis', default_value='true',
         choices=['true', 'false'],
-        description='Launch the rqt GUIs for jogging the joints and steering '
-                    'the base. Disable them when a node drives the robot.')
+        description='Launch the GUIs for jogging the joints (rqt) and driving '
+                    'the base (joystick teleop). Disable them when another '
+                    'node drives the robot (e.g. the demo).')
 
     use_trajectory = IfCondition(
         PythonExpression(["'", LaunchConfiguration('arm_controllers'), "' == 'trajectory'"]))
@@ -73,23 +74,19 @@ def generate_launch_description():
 
     control_guis = IfCondition(LaunchConfiguration('control_guis'))
 
+    # A single rqt window with both the joint-trajectory GUI and the Garmi
+    # twist joystick (an rqt plugin), arranged by a saved perspective. The
+    # joystick publishes a full planar twist, so the base can strafe -- unlike
+    # rqt_robot_steering (vx + yaw only).
+    rqt_perspective = os.path.join(pkg_share, 'config', 'garmi_teleop.perspective')
     rqt_node = Node(
-        package='rqt_joint_trajectory_controller',
-        executable='rqt_joint_trajectory_controller',
+        package='rqt_gui',
+        executable='rqt_gui',
+        # --clear-config so the saved perspective file is always applied
+        # (otherwise rqt may reuse a stale layout from a previous run).
+        arguments=['--clear-config', '--perspective-file', rqt_perspective,
+                   '--ros-args', '--log-level', 'rcl.logging_rosout:=ERROR'],
         parameters=[{'use_sim_time': True}],
-        arguments=['--ros-args', '--log-level', 'rcl.logging_rosout:=ERROR'],
-        condition=control_guis,
-    )
-
-    rqt_steering_node = Node(
-        package='rqt_robot_steering',
-        executable='rqt_robot_steering',
-        name='rqt_robot_steering',
-        parameters=[{
-            'default_topic': '/garmi_base_controller/reference',
-            'default_stamped': True,
-            'use_sim_time': True
-        }],
         condition=control_guis,
     )
 
@@ -164,7 +161,6 @@ def generate_launch_description():
         gazebo_launch,
         clock_bridge,
         rqt_node,
-        rqt_steering_node,
         robot_state_publisher_node,
         spawn_entity,
         RegisterEventHandler(

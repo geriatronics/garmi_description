@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  model:
+    name: Validate model & sources
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install MuJoCo & PyYAML
+        run: pip install "mujoco>=3.1" pyyaml
+      - name: Compile the MuJoCo model
+        run: |
+          python - <<'EOF'
+          import mujoco
+          for f in ("garmi_description/mujoco/garmi.xml",
+                    "garmi_description/mujoco/scene.xml"):
+              m = mujoco.MjModel.from_xml_path(f)
+              print(f"OK {f}: nbody={m.nbody} njnt={m.njnt} nq={m.nq} nu={m.nu}")
+          EOF
+      - name: Python syntax
+        run: python -m compileall -q garmi_description
+      - name: XML / JSON / YAML well-formed
+        run: |
+          python - <<'EOF'
+          import json, yaml
+          import xml.dom.minidom as X
+          # ROS XML (the MJCF files are validated by MuJoCo in the step above).
+          xmls = ["garmi_description/urdf/garmi.urdf",
+                  "garmi_description/package.xml",
+                  "garmi_description/plugin.xml"]
+          for f in xmls:
+              X.parse(f)
+          json.load(open("garmi_description/config/garmi_teleop.perspective"))
+          list(yaml.safe_load_all(open("garmi_description/config/ros2_controllers.yaml")))
+          print(f"ok: {len(xmls)} xml files + perspective + controllers yaml")
+          EOF
+
+  containers:
+    name: Build containers & integration checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the container images
+        run: docker compose build
+      - name: colcon build the ROS 2 package (in the Gazebo image)
+        # The entrypoint colcon-builds the mounted workspace; a non-zero build fails the step.
+        run: docker run --rm -v "$PWD/garmi_description":/ws/src/garmi_description garmi-sim-model echo "colcon build OK"
+      - name: Load the MuJoCo model (in the MuJoCo image)
+        run: docker run --rm -v "$PWD/garmi_description":/pkg -w /pkg/mujoco garmi-mujoco
+             python -c "import mujoco; mujoco.MjModel.from_xml_path('scene.xml'); print('MJCF loads')"

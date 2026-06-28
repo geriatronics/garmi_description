@@ -1,0 +1,815 @@
+<!--
+  Garmi robot model for MuJoCo.
+  Copyright 2026 Technical University of Munich
+  SPDX-License-Identifier: Apache-2.0
+
+  Kinematics mirror garmi_description/urdf/garmi.urdf. The two FR3 arms and the
+  Franka Hands reuse meshes and structure from mujoco_menagerie (franka_fr3 and
+  franka_emika_panda, Apache-2.0). The mobile base, lift/torso, head and covers
+  are TUM-designed. See garmi_description/mujoco/README.md and the repository
+  NOTICE / THIRD_PARTY_LICENSES files for provenance.
+
+  This file describes only the robot (no floor/light); include it from a scene,
+  e.g. scene.xml, or from your own world.
+-->
+<mujoco model="garmi">
+  <compiler angle="radian" assetdir="assets" autolimits="true"/>
+
+  <option integrator="implicitfast"/>
+
+  <default>
+    <!-- Franka FR3 arm (from mujoco_menagerie/franka_fr3). -->
+    <default class="fr3">
+      <joint damping="0.21" armature="0.195" frictionloss="1.137"/>
+      <position inheritrange="1"/>
+      <default class="fr3_vis">
+        <geom type="mesh" group="2" contype="0" conaffinity="0"/>
+      </default>
+      <default class="fr3_col">
+        <!-- contype/conaffinity 3 = bit1 (floor) + bit2 (robot self-collision) -->
+        <geom type="mesh" group="3" mass="0" density="0" contype="3" conaffinity="3"/>
+      </default>
+    </default>
+
+    <!-- Franka Hand (from mujoco_menagerie/franka_emika_panda). -->
+    <default class="hand">
+      <joint armature="0.1" damping="1" axis="0 0 1"/>
+      <general dyntype="none" biastype="affine" ctrlrange="-2.8973 2.8973" forcerange="-87 87"/>
+      <default class="finger">
+        <joint axis="0 1 0" type="slide" range="0 0.04"/>
+      </default>
+      <default class="hand_vis">
+        <geom type="mesh" contype="0" conaffinity="0" group="2"/>
+      </default>
+      <default class="hand_col">
+        <geom type="mesh" group="3" contype="3" conaffinity="3"/>
+        <default class="fingertip_pad_collision_1">
+          <geom type="box" size="0.0085 0.004 0.0085" pos="0 0.0055 0.0445"/>
+        </default>
+        <default class="fingertip_pad_collision_2">
+          <geom type="box" size="0.003 0.002 0.003" pos="0.0055 0.002 0.05"/>
+        </default>
+        <default class="fingertip_pad_collision_3">
+          <geom type="box" size="0.003 0.002 0.003" pos="-0.0055 0.002 0.05"/>
+        </default>
+        <default class="fingertip_pad_collision_4">
+          <geom type="box" size="0.003 0.002 0.0035" pos="0.0055 0.002 0.0395"/>
+        </default>
+        <default class="fingertip_pad_collision_5">
+          <geom type="box" size="0.003 0.002 0.0035" pos="-0.0055 0.002 0.0395"/>
+        </default>
+      </default>
+    </default>
+
+    <!-- Garmi-specific parts (base, lift, torso, head). -->
+    <default class="garmi_vis">
+      <geom type="mesh" group="2" contype="0" conaffinity="0" density="0"/>
+    </default>
+    <!-- Mecanum wheel hub (driven hinge about the axle). The hub itself has no
+         collision; ground contact is via the free-spinning rollers below. -->
+    <default class="wheel">
+      <joint axis="0 1 0" damping="0.3" frictionloss="0.3"/>
+    </default>
+    <!-- Mecanum rollers: small barrels mounted at 45 deg that spin freely, so
+         a spinning wheel grips perpendicular to the roller and slips along it.
+         This reproduces holonomic motion through real physics (the MuJoCo
+         equivalent of Gazebo's mu/mu2/fdir1 friction-direction trick). -->
+    <default class="roller">
+      <joint damping="0.0005" frictionloss="0.0005"/>
+      <!-- group 3 = hidden collision geom; contype 4 / conaffinity 1 lets
+           rollers touch the floor (bit1) but not each other or the self-
+           collision boxes (bit2). -->
+      <geom type="capsule" group="3" contype="4" conaffinity="1" condim="3"
+            friction="1.2 0.005 0.0001" priority="1" solref="0.01 1" solimp="0.9 0.95 0.002"/>
+    </default>
+    <!-- Coarse self-collision volumes for the torso, head and base so the arms
+         cannot pass through the body. contype/conaffinity 2 (bit2) makes them
+         collide with the arms/hands only, not the floor or wheels. -->
+    <default class="selfcol">
+      <geom type="box" group="3" contype="2" conaffinity="2" mass="0" rgba="1 0.5 0 0.15"/>
+    </default>
+  </default>
+
+  <asset>
+    <!-- Shared materials (FR3 + Hand). -->
+    <material name="black" rgba=".2 .2 .2 1"/>
+    <material name="white" rgba="1 1 1 1"/>
+    <material name="off_white" rgba="0.901961 0.921569 0.929412 1"/>
+    <material name="red" rgba="1 0.072272 0.039546 1"/>
+    <material name="gray" rgba="0.863156 0.863156 0.863157 1"/>
+    <material name="button_green" rgba="0.102241 0.571125 0.102242 1"/>
+    <material name="button_red" rgba="0.520996 0.008023 0.013702 1"/>
+    <material name="button_blue" rgba="0.024157 0.445201 0.737911 1"/>
+
+    <!-- Garmi materials. -->
+    <texture type="2d" name="fabric" file="body/fabric.png"/>
+    <texture type="2d" name="face" file="head/face.png"/>
+    <material name="Fabric" texture="fabric" specular="0.5" shininess="0.09"/>
+    <material name="Grey_Plastic" specular="0.5" shininess="0.1225" rgba="0.066626 0.059511 0.048172 1"/>
+    <material name="Screen" specular="0.5" shininess="1.0" rgba="0 0 0 1"/>
+    <material name="White_Plastic" specular="0.5" shininess="0.25" rgba="1 1 1 1"/>
+    <material name="Face" texture="face" specular="0.5" shininess="1.0"/>
+    <material name="chassis" rgba="0.2 0.2 0.2 1"/>
+    <material name="cover_grey" rgba="0.45 0.45 0.45 1"/>
+    <material name="wheel" rgba="0.1 0.1 0.1 1"/>
+
+    <!-- FR3 arm meshes (visual .obj split by material, collision .stl).
+         link0 (the base) is taken from the Panda/FER model: the FR3 link0 has a
+         brake-release tool and branded collar that the Garmi base cover hides;
+         the Panda link0 is the clean version. -->
+    <mesh file="link0_0.obj"/>
+    <mesh file="link0_1.obj"/>
+    <mesh file="link0_2.obj"/>
+    <mesh file="link0_3.obj"/>
+    <mesh file="link0_4.obj"/>
+    <mesh file="link0_5.obj"/>
+    <mesh file="link0_7.obj"/>
+    <mesh file="link0_8.obj"/>
+    <mesh file="link0_9.obj"/>
+    <mesh file="link0_10.obj"/>
+    <mesh file="link0_11.obj"/>
+    <mesh file="link1.obj"/>
+    <mesh file="link2.obj"/>
+    <mesh file="link3_0.obj"/>
+    <mesh file="link3_1.obj"/>
+    <mesh file="link4_0.obj"/>
+    <mesh file="link4_1.obj"/>
+    <mesh file="link5_0.obj"/>
+    <mesh file="link5_1.obj"/>
+    <mesh file="link5_2.obj"/>
+    <mesh file="link6_0.obj"/>
+    <mesh file="link6_1.obj"/>
+    <mesh file="link6_2.obj"/>
+    <mesh file="link6_3.obj"/>
+    <mesh file="link6_4.obj"/>
+    <mesh file="link6_5.obj"/>
+    <mesh file="link6_6.obj"/>
+    <mesh file="link6_7.obj"/>
+    <mesh file="link7_0.obj"/>
+    <mesh file="link7_1.obj"/>
+    <mesh file="link7_2.obj"/>
+    <mesh file="link7_3.obj"/>
+    <mesh name="link0_coll" file="link0.stl"/>
+    <mesh name="link1_coll" file="link1.stl"/>
+    <mesh name="link2_coll" file="link2.stl"/>
+    <mesh name="link3_coll" file="link3.stl"/>
+    <mesh name="link4_coll" file="link4.stl"/>
+    <mesh name="link5_coll" file="link5.stl"/>
+    <mesh name="link6_coll" file="link6.stl"/>
+    <mesh name="link7_coll" file="link7.stl"/>
+
+    <!-- Franka Hand meshes. -->
+    <mesh file="hand_0.obj"/>
+    <mesh file="hand_1.obj"/>
+    <mesh file="hand_2.obj"/>
+    <mesh file="hand_3.obj"/>
+    <mesh file="hand_4.obj"/>
+    <mesh file="finger_0.obj"/>
+    <mesh file="finger_1.obj"/>
+    <mesh name="hand_c" file="hand.stl"/>
+
+    <!-- Garmi base / lift / wheel meshes. -->
+    <mesh name="chassis" file="body.stl"/>
+    <mesh name="side_cover" file="side-cover.stl"/>
+    <mesh name="end_cover" file="end-cover.stl"/>
+    <mesh name="lights" file="lights.stl"/>
+    <mesh name="mecanum" file="mecanum.stl"/>
+    <mesh name="plate" file="plate.stl"/>
+    <mesh name="lift_base" file="base.stl"/>
+    <mesh name="lower" file="lower.stl"/>
+    <mesh name="upper" file="upper.stl"/>
+
+    <!-- Garmi torso / head / neck / covers (split by material). -->
+    <mesh file="body/body_0.obj"/>
+    <mesh file="body/body_1.obj"/>
+    <mesh file="body/body_2.obj"/>
+    <mesh file="body/body_3.obj"/>
+    <mesh file="head/head_0.obj"/>
+    <mesh file="head/head_1.obj"/>
+    <mesh file="cover/cover.obj"/>
+    <mesh file="mounting_plate/mounting_plate.obj"/>
+    <mesh file="neck_1/neck_1.obj"/>
+    <mesh file="neck_2/neck_2.obj"/>
+  </asset>
+
+  <worldbody>
+    <body name="base_link" pos="0 0 0.0259" childclass="garmi_vis">
+      <freejoint name="base_free"/>
+      <inertial pos="0.012 0.002 0.067" mass="165.304"
+        fullinertia="4.4744 7.1624 4.6155 0.03098 0.003647 0.1228"/>
+
+      <!-- Mobile base shell (visual only). -->
+      <geom mesh="chassis" material="chassis"/>
+      <geom mesh="side_cover" material="cover_grey"/>
+      <geom mesh="end_cover" material="cover_grey"/>
+      <geom mesh="lights" material="red"/>
+      <geom mesh="cover" material="White_Plastic" quat="0.500048 0.5 0.499952 0.5"/>
+      <geom mesh="mounting_plate" material="Grey_Plastic" quat="0.500048 0.5 0.499952 0.5"/>
+      <!-- Coarse self-collision volume for the mobile base, including the TUM
+           cover on top (spans the chassis + cover, ~0.03..0.50 m). -->
+      <geom class="selfcol" pos="0 0 0.2414" size="0.4790 0.3950 0.2378"/>
+
+      <!-- Mecanum wheels: driven hub + free-spinning 45-deg rollers
+           (true mecanum; produces holonomic motion via physics). -->
+      <body name="wheel_fl" pos="0.319 0.2755 0.05">
+        <joint name="wheel_fl_joint" class="wheel"/>
+        <inertial pos="0 0 0" mass="1.8" diaginertia="0.0035 0.0052 0.0035"/>
+        <geom class="garmi_vis" mesh="mecanum" material="wheel" quat="0.707107 0.707107 0 0"/>
+        <body name="wheel_fl_r0" pos="0.05390 0.00000 0.00000">
+          <joint name="wheel_fl_r0_j" type="hinge" axis="-0.00000 0.70711 0.70711" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.00000 -0.01414 -0.01414 -0.00000 0.01414 0.01414" size="0.022"/>
+        </body>
+        <body name="wheel_fl_r1" pos="0.04856 0.00000 0.02339">
+          <joint name="wheel_fl_r1_j" type="hinge" axis="-0.30680 0.70711 0.63708" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.00614 -0.01414 -0.01274 -0.00614 0.01414 0.01274" size="0.022"/>
+        </body>
+        <body name="wheel_fl_r2" pos="0.03361 0.00000 0.04214">
+          <joint name="wheel_fl_r2_j" type="hinge" axis="-0.55284 0.70711 0.44087" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.01106 -0.01414 -0.00882 -0.01106 0.01414 0.00882" size="0.022"/>
+        </body>
+        <body name="wheel_fl_r3" pos="0.01199 0.00000 0.05255">
+          <joint name="wheel_fl_r3_j" type="hinge" axis="-0.68938 0.70711 0.15735" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.01379 -0.01414 -0.00315 -0.01379 0.01414 0.00315" size="0.022"/>
+        </body>
+        <body name="wheel_fl_r4" pos="-0.01199 0.00000 0.05255">
+          <joint name="wheel_fl_r4_j" type="hinge" axis="-0.68938 0.70711 -0.15735" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.01379 -0.01414 0.00315 -0.01379 0.01414 -0.00315" size="0.022"/>
+        </body>
+        <body name="wheel_fl_r5" pos="-0.03361 0.00000 0.04214">
+          <joint name="wheel_fl_r5_j" type="hinge" axis="-0.55284 0.70711 -0.44087" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.01106 -0.01414 0.00882 -0.01106 0.01414 -0.00882" size="0.022"/>
+        </body>
+        <body name="wheel_fl_r6" pos="-0.04856 0.00000 0.02339">
+          <joint name="wheel_fl_r6_j" type="hinge" axis="-0.30680 0.70711 -0.63708" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.00614 -0.01414 0.01274 -0.00614 0.01414 -0.01274" size="0.022"/>
+        </body>
+        <body name="wheel_fl_r7" pos="-0.05390 0.00000 0.00000">
+          <joint name="wheel_fl_r7_j" type="hinge" axis="-0.00000 0.70711 -0.70711" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.00000 -0.01414 0.01414 -0.00000 0.01414 -0.01414" size="0.022"/>
+        </body>
+        <body name="wheel_fl_r8" pos="-0.04856 0.00000 -0.02339">
+          <joint name="wheel_fl_r8_j" type="hinge" axis="0.30680 0.70711 -0.63708" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.00614 -0.01414 0.01274 0.00614 0.01414 -0.01274" size="0.022"/>
+        </body>
+        <body name="wheel_fl_r9" pos="-0.03361 0.00000 -0.04214">
+          <joint name="wheel_fl_r9_j" type="hinge" axis="0.55284 0.70711 -0.44087" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.01106 -0.01414 0.00882 0.01106 0.01414 -0.00882" size="0.022"/>
+        </body>
+        <body name="wheel_fl_r10" pos="-0.01199 0.00000 -0.05255">
+          <joint name="wheel_fl_r10_j" type="hinge" axis="0.68938 0.70711 -0.15735" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.01379 -0.01414 0.00315 0.01379 0.01414 -0.00315" size="0.022"/>
+        </body>
+        <body name="wheel_fl_r11" pos="0.01199 0.00000 -0.05255">
+          <joint name="wheel_fl_r11_j" type="hinge" axis="0.68938 0.70711 0.15735" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.01379 -0.01414 -0.00315 0.01379 0.01414 0.00315" size="0.022"/>
+        </body>
+        <body name="wheel_fl_r12" pos="0.03361 0.00000 -0.04214">
+          <joint name="wheel_fl_r12_j" type="hinge" axis="0.55284 0.70711 0.44087" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.01106 -0.01414 -0.00882 0.01106 0.01414 0.00882" size="0.022"/>
+        </body>
+        <body name="wheel_fl_r13" pos="0.04856 0.00000 -0.02339">
+          <joint name="wheel_fl_r13_j" type="hinge" axis="0.30680 0.70711 0.63708" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.00614 -0.01414 -0.01274 0.00614 0.01414 0.01274" size="0.022"/>
+        </body>
+      </body>
+      <body name="wheel_fr" pos="0.319 -0.2755 0.05">
+        <joint name="wheel_fr_joint" class="wheel"/>
+        <inertial pos="0 0 0" mass="1.8" diaginertia="0.0035 0.0052 0.0035"/>
+        <geom class="garmi_vis" mesh="mecanum" material="wheel" quat="0.707107 0.707107 0 0"/>
+        <body name="wheel_fr_r0" pos="0.05390 0.00000 0.00000">
+          <joint name="wheel_fr_r0_j" type="hinge" axis="-0.00000 -0.70711 0.70711" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.00000 0.01414 -0.01414 -0.00000 -0.01414 0.01414" size="0.022"/>
+        </body>
+        <body name="wheel_fr_r1" pos="0.04856 0.00000 0.02339">
+          <joint name="wheel_fr_r1_j" type="hinge" axis="-0.30680 -0.70711 0.63708" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.00614 0.01414 -0.01274 -0.00614 -0.01414 0.01274" size="0.022"/>
+        </body>
+        <body name="wheel_fr_r2" pos="0.03361 0.00000 0.04214">
+          <joint name="wheel_fr_r2_j" type="hinge" axis="-0.55284 -0.70711 0.44087" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.01106 0.01414 -0.00882 -0.01106 -0.01414 0.00882" size="0.022"/>
+        </body>
+        <body name="wheel_fr_r3" pos="0.01199 0.00000 0.05255">
+          <joint name="wheel_fr_r3_j" type="hinge" axis="-0.68938 -0.70711 0.15735" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.01379 0.01414 -0.00315 -0.01379 -0.01414 0.00315" size="0.022"/>
+        </body>
+        <body name="wheel_fr_r4" pos="-0.01199 0.00000 0.05255">
+          <joint name="wheel_fr_r4_j" type="hinge" axis="-0.68938 -0.70711 -0.15735" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.01379 0.01414 0.00315 -0.01379 -0.01414 -0.00315" size="0.022"/>
+        </body>
+        <body name="wheel_fr_r5" pos="-0.03361 0.00000 0.04214">
+          <joint name="wheel_fr_r5_j" type="hinge" axis="-0.55284 -0.70711 -0.44087" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.01106 0.01414 0.00882 -0.01106 -0.01414 -0.00882" size="0.022"/>
+        </body>
+        <body name="wheel_fr_r6" pos="-0.04856 0.00000 0.02339">
+          <joint name="wheel_fr_r6_j" type="hinge" axis="-0.30680 -0.70711 -0.63708" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.00614 0.01414 0.01274 -0.00614 -0.01414 -0.01274" size="0.022"/>
+        </body>
+        <body name="wheel_fr_r7" pos="-0.05390 0.00000 0.00000">
+          <joint name="wheel_fr_r7_j" type="hinge" axis="-0.00000 -0.70711 -0.70711" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.00000 0.01414 0.01414 -0.00000 -0.01414 -0.01414" size="0.022"/>
+        </body>
+        <body name="wheel_fr_r8" pos="-0.04856 0.00000 -0.02339">
+          <joint name="wheel_fr_r8_j" type="hinge" axis="0.30680 -0.70711 -0.63708" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.00614 0.01414 0.01274 0.00614 -0.01414 -0.01274" size="0.022"/>
+        </body>
+        <body name="wheel_fr_r9" pos="-0.03361 0.00000 -0.04214">
+          <joint name="wheel_fr_r9_j" type="hinge" axis="0.55284 -0.70711 -0.44087" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.01106 0.01414 0.00882 0.01106 -0.01414 -0.00882" size="0.022"/>
+        </body>
+        <body name="wheel_fr_r10" pos="-0.01199 0.00000 -0.05255">
+          <joint name="wheel_fr_r10_j" type="hinge" axis="0.68938 -0.70711 -0.15735" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.01379 0.01414 0.00315 0.01379 -0.01414 -0.00315" size="0.022"/>
+        </body>
+        <body name="wheel_fr_r11" pos="0.01199 0.00000 -0.05255">
+          <joint name="wheel_fr_r11_j" type="hinge" axis="0.68938 -0.70711 0.15735" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.01379 0.01414 -0.00315 0.01379 -0.01414 0.00315" size="0.022"/>
+        </body>
+        <body name="wheel_fr_r12" pos="0.03361 0.00000 -0.04214">
+          <joint name="wheel_fr_r12_j" type="hinge" axis="0.55284 -0.70711 0.44087" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.01106 0.01414 -0.00882 0.01106 -0.01414 0.00882" size="0.022"/>
+        </body>
+        <body name="wheel_fr_r13" pos="0.04856 0.00000 -0.02339">
+          <joint name="wheel_fr_r13_j" type="hinge" axis="0.30680 -0.70711 0.63708" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.00614 0.01414 -0.01274 0.00614 -0.01414 0.01274" size="0.022"/>
+        </body>
+      </body>
+      <body name="wheel_rl" pos="-0.319 0.2755 0.05">
+        <joint name="wheel_rl_joint" class="wheel"/>
+        <inertial pos="0 0 0" mass="1.8" diaginertia="0.0035 0.0052 0.0035"/>
+        <geom class="garmi_vis" mesh="mecanum" material="wheel" quat="0.707107 0.707107 0 0"/>
+        <body name="wheel_rl_r0" pos="0.05390 0.00000 0.00000">
+          <joint name="wheel_rl_r0_j" type="hinge" axis="-0.00000 -0.70711 0.70711" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.00000 0.01414 -0.01414 -0.00000 -0.01414 0.01414" size="0.022"/>
+        </body>
+        <body name="wheel_rl_r1" pos="0.04856 0.00000 0.02339">
+          <joint name="wheel_rl_r1_j" type="hinge" axis="-0.30680 -0.70711 0.63708" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.00614 0.01414 -0.01274 -0.00614 -0.01414 0.01274" size="0.022"/>
+        </body>
+        <body name="wheel_rl_r2" pos="0.03361 0.00000 0.04214">
+          <joint name="wheel_rl_r2_j" type="hinge" axis="-0.55284 -0.70711 0.44087" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.01106 0.01414 -0.00882 -0.01106 -0.01414 0.00882" size="0.022"/>
+        </body>
+        <body name="wheel_rl_r3" pos="0.01199 0.00000 0.05255">
+          <joint name="wheel_rl_r3_j" type="hinge" axis="-0.68938 -0.70711 0.15735" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.01379 0.01414 -0.00315 -0.01379 -0.01414 0.00315" size="0.022"/>
+        </body>
+        <body name="wheel_rl_r4" pos="-0.01199 0.00000 0.05255">
+          <joint name="wheel_rl_r4_j" type="hinge" axis="-0.68938 -0.70711 -0.15735" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.01379 0.01414 0.00315 -0.01379 -0.01414 -0.00315" size="0.022"/>
+        </body>
+        <body name="wheel_rl_r5" pos="-0.03361 0.00000 0.04214">
+          <joint name="wheel_rl_r5_j" type="hinge" axis="-0.55284 -0.70711 -0.44087" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.01106 0.01414 0.00882 -0.01106 -0.01414 -0.00882" size="0.022"/>
+        </body>
+        <body name="wheel_rl_r6" pos="-0.04856 0.00000 0.02339">
+          <joint name="wheel_rl_r6_j" type="hinge" axis="-0.30680 -0.70711 -0.63708" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.00614 0.01414 0.01274 -0.00614 -0.01414 -0.01274" size="0.022"/>
+        </body>
+        <body name="wheel_rl_r7" pos="-0.05390 0.00000 0.00000">
+          <joint name="wheel_rl_r7_j" type="hinge" axis="-0.00000 -0.70711 -0.70711" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.00000 0.01414 0.01414 -0.00000 -0.01414 -0.01414" size="0.022"/>
+        </body>
+        <body name="wheel_rl_r8" pos="-0.04856 0.00000 -0.02339">
+          <joint name="wheel_rl_r8_j" type="hinge" axis="0.30680 -0.70711 -0.63708" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.00614 0.01414 0.01274 0.00614 -0.01414 -0.01274" size="0.022"/>
+        </body>
+        <body name="wheel_rl_r9" pos="-0.03361 0.00000 -0.04214">
+          <joint name="wheel_rl_r9_j" type="hinge" axis="0.55284 -0.70711 -0.44087" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.01106 0.01414 0.00882 0.01106 -0.01414 -0.00882" size="0.022"/>
+        </body>
+        <body name="wheel_rl_r10" pos="-0.01199 0.00000 -0.05255">
+          <joint name="wheel_rl_r10_j" type="hinge" axis="0.68938 -0.70711 -0.15735" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.01379 0.01414 0.00315 0.01379 -0.01414 -0.00315" size="0.022"/>
+        </body>
+        <body name="wheel_rl_r11" pos="0.01199 0.00000 -0.05255">
+          <joint name="wheel_rl_r11_j" type="hinge" axis="0.68938 -0.70711 0.15735" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.01379 0.01414 -0.00315 0.01379 -0.01414 0.00315" size="0.022"/>
+        </body>
+        <body name="wheel_rl_r12" pos="0.03361 0.00000 -0.04214">
+          <joint name="wheel_rl_r12_j" type="hinge" axis="0.55284 -0.70711 0.44087" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.01106 0.01414 -0.00882 0.01106 -0.01414 0.00882" size="0.022"/>
+        </body>
+        <body name="wheel_rl_r13" pos="0.04856 0.00000 -0.02339">
+          <joint name="wheel_rl_r13_j" type="hinge" axis="0.30680 -0.70711 0.63708" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.00614 0.01414 -0.01274 0.00614 -0.01414 0.01274" size="0.022"/>
+        </body>
+      </body>
+      <body name="wheel_rr" pos="-0.319 -0.2755 0.05">
+        <joint name="wheel_rr_joint" class="wheel"/>
+        <inertial pos="0 0 0" mass="1.8" diaginertia="0.0035 0.0052 0.0035"/>
+        <geom class="garmi_vis" mesh="mecanum" material="wheel" quat="0.707107 0.707107 0 0"/>
+        <body name="wheel_rr_r0" pos="0.05390 0.00000 0.00000">
+          <joint name="wheel_rr_r0_j" type="hinge" axis="-0.00000 0.70711 0.70711" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.00000 -0.01414 -0.01414 -0.00000 0.01414 0.01414" size="0.022"/>
+        </body>
+        <body name="wheel_rr_r1" pos="0.04856 0.00000 0.02339">
+          <joint name="wheel_rr_r1_j" type="hinge" axis="-0.30680 0.70711 0.63708" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.00614 -0.01414 -0.01274 -0.00614 0.01414 0.01274" size="0.022"/>
+        </body>
+        <body name="wheel_rr_r2" pos="0.03361 0.00000 0.04214">
+          <joint name="wheel_rr_r2_j" type="hinge" axis="-0.55284 0.70711 0.44087" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.01106 -0.01414 -0.00882 -0.01106 0.01414 0.00882" size="0.022"/>
+        </body>
+        <body name="wheel_rr_r3" pos="0.01199 0.00000 0.05255">
+          <joint name="wheel_rr_r3_j" type="hinge" axis="-0.68938 0.70711 0.15735" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.01379 -0.01414 -0.00315 -0.01379 0.01414 0.00315" size="0.022"/>
+        </body>
+        <body name="wheel_rr_r4" pos="-0.01199 0.00000 0.05255">
+          <joint name="wheel_rr_r4_j" type="hinge" axis="-0.68938 0.70711 -0.15735" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.01379 -0.01414 0.00315 -0.01379 0.01414 -0.00315" size="0.022"/>
+        </body>
+        <body name="wheel_rr_r5" pos="-0.03361 0.00000 0.04214">
+          <joint name="wheel_rr_r5_j" type="hinge" axis="-0.55284 0.70711 -0.44087" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.01106 -0.01414 0.00882 -0.01106 0.01414 -0.00882" size="0.022"/>
+        </body>
+        <body name="wheel_rr_r6" pos="-0.04856 0.00000 0.02339">
+          <joint name="wheel_rr_r6_j" type="hinge" axis="-0.30680 0.70711 -0.63708" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.00614 -0.01414 0.01274 -0.00614 0.01414 -0.01274" size="0.022"/>
+        </body>
+        <body name="wheel_rr_r7" pos="-0.05390 0.00000 0.00000">
+          <joint name="wheel_rr_r7_j" type="hinge" axis="-0.00000 0.70711 -0.70711" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="0.00000 -0.01414 0.01414 -0.00000 0.01414 -0.01414" size="0.022"/>
+        </body>
+        <body name="wheel_rr_r8" pos="-0.04856 0.00000 -0.02339">
+          <joint name="wheel_rr_r8_j" type="hinge" axis="0.30680 0.70711 -0.63708" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.00614 -0.01414 0.01274 0.00614 0.01414 -0.01274" size="0.022"/>
+        </body>
+        <body name="wheel_rr_r9" pos="-0.03361 0.00000 -0.04214">
+          <joint name="wheel_rr_r9_j" type="hinge" axis="0.55284 0.70711 -0.44087" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.01106 -0.01414 0.00882 0.01106 0.01414 -0.00882" size="0.022"/>
+        </body>
+        <body name="wheel_rr_r10" pos="-0.01199 0.00000 -0.05255">
+          <joint name="wheel_rr_r10_j" type="hinge" axis="0.68938 0.70711 -0.15735" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.01379 -0.01414 0.00315 0.01379 0.01414 -0.00315" size="0.022"/>
+        </body>
+        <body name="wheel_rr_r11" pos="0.01199 0.00000 -0.05255">
+          <joint name="wheel_rr_r11_j" type="hinge" axis="0.68938 0.70711 0.15735" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.01379 -0.01414 -0.00315 0.01379 0.01414 0.00315" size="0.022"/>
+        </body>
+        <body name="wheel_rr_r12" pos="0.03361 0.00000 -0.04214">
+          <joint name="wheel_rr_r12_j" type="hinge" axis="0.55284 0.70711 0.44087" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.01106 -0.01414 -0.00882 0.01106 0.01414 0.00882" size="0.022"/>
+        </body>
+        <body name="wheel_rr_r13" pos="0.04856 0.00000 -0.02339">
+          <joint name="wheel_rr_r13_j" type="hinge" axis="0.30680 0.70711 0.63708" damping="0.0005" frictionloss="0.0005"/>
+          <geom class="roller" fromto="-0.00614 -0.01414 -0.01274 0.00614 0.01414 0.01274" size="0.022"/>
+        </body>
+      </body>
+
+      <!-- Lift / torso column. -->
+      <body name="default_mount" pos="0 0 0.28">
+        <body name="lift_0_plate" pos="0.1115 0 -0.0037" quat="0.923880 0 0 0.382683">
+          <geom class="garmi_vis" mesh="plate" material="cover_grey"/>
+          <body name="lift_0_base" pos="0 0 0.018">
+            <geom class="garmi_vis" mesh="lift_base" material="cover_grey" pos="0 0 -0.0179"/>
+            <body name="lift_0_lower" pos="0 0 0.027">
+              <!-- High damping/armature + frictionloss model the slow, stiff,
+                   non-backdrivable lead-screw lift (URDF limit: 0.088 m/s). -->
+              <joint name="lift_0_lower_joint" type="slide" axis="0 0 1" range="0 0.4"
+                     armature="20" damping="15000" frictionloss="10"/>
+              <inertial pos="0 0 0.4" mass="10" diaginertia="0.5536 0.5537 0.0407"/>
+              <geom class="garmi_vis" mesh="lower" material="cover_grey" pos="0 0 -0.467"/>
+              <!-- Second telescoping stage. In the URDF this joint mimics
+                   lift_0_lower_joint (multiplier 1), so both stages extend
+                   together for ~0.8 m total travel. Reproduced here with a
+                   stiff equality coupling (see <equality>); only the lower
+                   stage is actuated, as in the Gazebo controller. -->
+              <body name="lift_0_upper" pos="0 0 0.007">
+                <joint name="lift_0_upper_joint" type="slide" axis="0 0 1" range="0 0.4"
+                       armature="5" damping="200" frictionloss="10"/>
+                <inertial pos="0 0 0.419" mass="10" diaginertia="0.599 0.599 0.0277"/>
+                <geom class="garmi_vis" mesh="upper" material="cover_grey" pos="0 0 -0.847"/>
+
+                <body name="lift_0_mount" pos="0 0 0.838">
+                  <body name="lift_0_mount_rotated" quat="0.923879 0 0 -0.382684">
+
+                    <!-- Static neck stub + torso shell ride on the lift mount. -->
+                    <geom class="garmi_vis" mesh="neck_1" material="Grey_Plastic"
+                      pos="-0.1109 0 -1.1513" quat="0.500048 0.5 0.499952 0.5"/>
+
+                    <body name="body_link" pos="-0.1109 0 -1.1663" quat="0.500048 0.5 0.499952 0.5">
+                      <geom class="garmi_vis" mesh="body_0" material="White_Plastic"/>
+                      <geom class="garmi_vis" mesh="body_1" material="Grey_Plastic"/>
+                      <geom class="garmi_vis" mesh="body_2" material="Fabric"/>
+                      <geom class="garmi_vis" mesh="body_3" material="Screen"/>
+                      <geom class="selfcol" pos="0.0013 0.9196 0.2028" quat="0.500049 -0.500001 -0.499951 -0.499999" size="0.2636 0.2221 0.4056"/>
+                    </body>
+
+                    <!-- Head: pan then tilt. -->
+                    <body name="neck_2" pos="0.0279 0 0.0269">
+                      <joint name="head_pan_joint" axis="0 0 1" range="-1.5707 1.5707"/>
+                      <inertial pos="0 0 0" mass="0.5" diaginertia="0.001 0.001 0.001"/>
+                      <geom class="garmi_vis" mesh="neck_2" material="Grey_Plastic"
+                        pos="-0.1388 0 -1.1782" quat="0.500048 0.5 0.499952 0.5"/>
+                      <body name="head" pos="0 -0.034 0.1521">
+                        <joint name="head_tilt_joint" axis="0 -1 0" range="-0.7853 0.7853"/>
+                        <inertial pos="0 0 0" mass="2.5" diaginertia="0.01 0.01 0.01"/>
+                        <geom class="garmi_vis" mesh="head_0" material="Face"
+                          pos="-0.1388 0.034 -1.3303" quat="0.500048 0.5 0.499952 0.5"/>
+                        <geom class="garmi_vis" mesh="head_1" material="White_Plastic"
+                          pos="-0.1388 0.034 -1.3303" quat="0.500048 0.5 0.499952 0.5"/>
+                        <geom class="selfcol" pos="0.0412 0.0340 -0.0142" size="0.1605 0.1352 0.1601"/>
+                      </body>
+                    </body>
+
+                    <!-- ================= LEFT ARM (arm_0) ================= -->
+                    <body name="arm_0_mount" pos="0.1452 0.0611 -0.5157"
+                      quat="0.828424 -0.441238 0.235103 -0.252485" childclass="fr3">
+                      <body name="arm_0_link0">
+                        <geom mesh="link0_0" material="off_white" class="fr3_vis"/>
+                        <geom mesh="link0_1" material="black" class="fr3_vis"/>
+                        <geom mesh="link0_2" material="off_white" class="fr3_vis"/>
+                        <geom mesh="link0_3" material="black" class="fr3_vis"/>
+                        <geom mesh="link0_4" material="off_white" class="fr3_vis"/>
+                        <geom mesh="link0_5" material="black" class="fr3_vis"/>
+                        <geom mesh="link0_7" material="white" class="fr3_vis"/>
+                        <geom mesh="link0_8" material="white" class="fr3_vis"/>
+                        <geom mesh="link0_9" material="black" class="fr3_vis"/>
+                        <geom mesh="link0_10" material="off_white" class="fr3_vis"/>
+                        <geom mesh="link0_11" material="white" class="fr3_vis"/>
+                        <geom name="arm_0_link0_col" mesh="link0_coll" class="fr3_col"/>
+                        <body name="arm_0_link1" pos="0 0 0.333">
+                          <inertial pos="4.128e-07 -0.0181251 -0.0386036" quat="0.998098 -0.0605364 0.00380499 0.0110109" mass="2.92747" diaginertia="0.0239286 0.0227246 0.00610634"/>
+                          <joint name="arm_0_joint1" axis="0 0 1" range="-2.9007 2.9007" actuatorfrcrange="-87 87"/>
+                          <geom name="arm_0_link1_col" class="fr3_col" mesh="link1_coll"/>
+                          <geom material="white" mesh="link1" class="fr3_vis"/>
+                          <body name="arm_0_link2" quat="1 -1 0 0">
+                            <inertial pos="0.00318289 -0.0743222 0.00881461" quat="0.502599 0.584437 -0.465998 0.434366" mass="2.93554" diaginertia="0.0629567 0.0411924 0.0246371"/>
+                            <joint name="arm_0_joint2" axis="0 0 1" range="-1.8361 1.8361" actuatorfrcrange="-87 87"/>
+                            <geom material="white" mesh="link2" class="fr3_vis"/>
+                            <geom name="arm_0_link2_col" class="fr3_col" mesh="link2_coll"/>
+                            <body name="arm_0_link3" pos="0 -0.316 0" quat="1 1 0 0">
+                              <inertial pos="0.0407016 -0.00482006 -0.0289731" quat="0.921025 -0.244161 0.155272 0.260745" mass="2.2449" diaginertia="0.0267409 0.0189869 0.0171587"/>
+                              <joint name="arm_0_joint3" axis="0 0 1" range="-2.9007 2.9007" actuatorfrcrange="-87 87"/>
+                              <geom mesh="link3_0" material="white" class="fr3_vis"/>
+                              <geom mesh="link3_1" material="black" class="fr3_vis"/>
+                              <geom name="arm_0_link3_col" class="fr3_col" mesh="link3_coll"/>
+                              <body name="arm_0_link4" pos="0.0825 0 0" quat="1 1 0 0">
+                                <inertial pos="-0.0459101 0.0630493 -0.00851879" quat="0.438018 0.803311 0.00937812 0.403414" mass="2.6156" diaginertia="0.05139 0.0372717 0.0160047"/>
+                                <joint name="arm_0_joint4" axis="0 0 1" range="-3.077 -0.1169" actuatorfrcrange="-87 87"/>
+                                <geom mesh="link4_0" material="white" class="fr3_vis"/>
+                                <geom mesh="link4_1" material="black" class="fr3_vis"/>
+                                <geom name="arm_0_link4_col" class="fr3_col" mesh="link4_coll"/>
+                                <body name="arm_0_link5" pos="-0.0825 0.384 0" quat="1 -1 0 0">
+                                  <inertial pos="-0.00160396 0.0292536 -0.0972966" quat="0.919031 0.125604 0.0751531 -0.366003" mass="2.32712" diaginertia="0.0579335 0.0449144 0.0130634"/>
+                                  <joint name="arm_0_joint5" axis="0 0 1" range="-2.8763 2.8763" actuatorfrcrange="-12 12" armature="0.074" frictionloss="0.763"/>
+                                  <geom mesh="link5_0" material="white" class="fr3_vis"/>
+                                  <geom mesh="link5_1" material="white" class="fr3_vis"/>
+                                  <geom mesh="link5_2" material="black" class="fr3_vis"/>
+                                  <geom name="arm_0_link5_col" class="fr3_col" mesh="link5_coll"/>
+                                  <body name="arm_0_link6" quat="1 1 0 0">
+                                    <inertial pos="0.0597131 -0.0410295 -0.0101693" quat="0.621301 0.552665 0.510011 0.220081" mass="1.81704" diaginertia="0.0175039 0.0161123 0.00193529"/>
+                                    <joint name="arm_0_joint6" axis="0 0 1" range="0.4398 4.6216" actuatorfrcrange="-12 12" armature="0.074" frictionloss="0.44"/>
+                                    <geom mesh="link6_0" material="button_green" class="fr3_vis"/>
+                                    <geom mesh="link6_1" material="white" class="fr3_vis"/>
+                                    <geom mesh="link6_2" material="white" class="fr3_vis"/>
+                                    <geom mesh="link6_3" material="gray" class="fr3_vis"/>
+                                    <geom mesh="link6_4" material="button_red" class="fr3_vis"/>
+                                    <geom mesh="link6_5" material="white" class="fr3_vis"/>
+                                    <geom mesh="link6_6" material="black" class="fr3_vis"/>
+                                    <geom mesh="link6_7" material="button_blue" class="fr3_vis"/>
+                                    <geom name="arm_0_link6_col" class="fr3_col" mesh="link6_coll"/>
+                                    <body name="arm_0_link7" pos="0.088 0 0" quat="1 1 0 0">
+                                      <inertial pos="0.00452258 0.00862619 -0.0161633" quat="0.727579 0.0978688 -0.24906 0.63168" mass="0.627143" diaginertia="0.000223836 0.000223642 5.64132e-07"/>
+                                      <joint name="arm_0_joint7" axis="0 0 1" range="-3.0508 3.0508" actuatorfrcrange="-12 12" armature="0.074" frictionloss="0.248"/>
+                                      <geom mesh="link7_0" material="black" class="fr3_vis"/>
+                                      <geom mesh="link7_1" material="white" class="fr3_vis"/>
+                                      <geom mesh="link7_2" material="white" class="fr3_vis"/>
+                                      <geom mesh="link7_3" material="black" class="fr3_vis"/>
+                                      <geom name="arm_0_link7_col" class="fr3_col" mesh="link7_coll"/>
+                                      <body name="arm_0_hand" pos="0 0 0.107" quat="0.9238795 0 0 -0.3826834" childclass="hand">
+                                        <inertial mass="0.73" pos="-0.01 0 0.03" diaginertia="0.001 0.0025 0.0017"/>
+                                        <geom mesh="hand_0" material="off_white" class="hand_vis"/>
+                                        <geom mesh="hand_1" material="black" class="hand_vis"/>
+                                        <geom mesh="hand_2" material="black" class="hand_vis"/>
+                                        <geom mesh="hand_3" material="white" class="hand_vis"/>
+                                        <geom mesh="hand_4" material="off_white" class="hand_vis"/>
+                                        <geom mesh="hand_c" class="hand_col"/>
+                                        <body name="arm_0_left_finger" pos="0 0 0.0584">
+                                          <inertial mass="0.015" pos="0 0 0" diaginertia="2.375e-6 2.375e-6 7.5e-7"/>
+                                          <joint name="arm_0_finger_joint1" class="finger"/>
+                                          <geom mesh="finger_0" material="off_white" class="hand_vis"/>
+                                          <geom mesh="finger_1" material="black" class="hand_vis"/>
+                                          <geom mesh="finger_0" class="hand_col"/>
+                                          <geom class="fingertip_pad_collision_1"/>
+                                          <geom class="fingertip_pad_collision_2"/>
+                                          <geom class="fingertip_pad_collision_3"/>
+                                          <geom class="fingertip_pad_collision_4"/>
+                                          <geom class="fingertip_pad_collision_5"/>
+                                        </body>
+                                        <body name="arm_0_right_finger" pos="0 0 0.0584" quat="0 0 0 1">
+                                          <inertial mass="0.015" pos="0 0 0" diaginertia="2.375e-6 2.375e-6 7.5e-7"/>
+                                          <joint name="arm_0_finger_joint2" class="finger"/>
+                                          <geom mesh="finger_0" material="off_white" class="hand_vis"/>
+                                          <geom mesh="finger_1" material="black" class="hand_vis"/>
+                                          <geom mesh="finger_0" class="hand_col"/>
+                                          <geom class="fingertip_pad_collision_1"/>
+                                          <geom class="fingertip_pad_collision_2"/>
+                                          <geom class="fingertip_pad_collision_3"/>
+                                          <geom class="fingertip_pad_collision_4"/>
+                                          <geom class="fingertip_pad_collision_5"/>
+                                        </body>
+                                      </body>
+                                    </body>
+                                  </body>
+                                </body>
+                              </body>
+                            </body>
+                          </body>
+                        </body>
+                      </body>
+                    </body>
+
+                    <!-- ================= RIGHT ARM (arm_1) ================= -->
+                    <body name="arm_1_mount" pos="0.1452 -0.0611 -0.5157"
+                      quat="0.828424 0.441238 0.235103 0.252485" childclass="fr3">
+                      <body name="arm_1_link0">
+                        <geom mesh="link0_0" material="off_white" class="fr3_vis"/>
+                        <geom mesh="link0_1" material="black" class="fr3_vis"/>
+                        <geom mesh="link0_2" material="off_white" class="fr3_vis"/>
+                        <geom mesh="link0_3" material="black" class="fr3_vis"/>
+                        <geom mesh="link0_4" material="off_white" class="fr3_vis"/>
+                        <geom mesh="link0_5" material="black" class="fr3_vis"/>
+                        <geom mesh="link0_7" material="white" class="fr3_vis"/>
+                        <geom mesh="link0_8" material="white" class="fr3_vis"/>
+                        <geom mesh="link0_9" material="black" class="fr3_vis"/>
+                        <geom mesh="link0_10" material="off_white" class="fr3_vis"/>
+                        <geom mesh="link0_11" material="white" class="fr3_vis"/>
+                        <geom name="arm_1_link0_col" mesh="link0_coll" class="fr3_col"/>
+                        <body name="arm_1_link1" pos="0 0 0.333">
+                          <inertial pos="4.128e-07 -0.0181251 -0.0386036" quat="0.998098 -0.0605364 0.00380499 0.0110109" mass="2.92747" diaginertia="0.0239286 0.0227246 0.00610634"/>
+                          <joint name="arm_1_joint1" axis="0 0 1" range="-2.9007 2.9007" actuatorfrcrange="-87 87"/>
+                          <geom name="arm_1_link1_col" class="fr3_col" mesh="link1_coll"/>
+                          <geom material="white" mesh="link1" class="fr3_vis"/>
+                          <body name="arm_1_link2" quat="1 -1 0 0">
+                            <inertial pos="0.00318289 -0.0743222 0.00881461" quat="0.502599 0.584437 -0.465998 0.434366" mass="2.93554" diaginertia="0.0629567 0.0411924 0.0246371"/>
+                            <joint name="arm_1_joint2" axis="0 0 1" range="-1.8361 1.8361" actuatorfrcrange="-87 87"/>
+                            <geom material="white" mesh="link2" class="fr3_vis"/>
+                            <geom name="arm_1_link2_col" class="fr3_col" mesh="link2_coll"/>
+                            <body name="arm_1_link3" pos="0 -0.316 0" quat="1 1 0 0">
+                              <inertial pos="0.0407016 -0.00482006 -0.0289731" quat="0.921025 -0.244161 0.155272 0.260745" mass="2.2449" diaginertia="0.0267409 0.0189869 0.0171587"/>
+                              <joint name="arm_1_joint3" axis="0 0 1" range="-2.9007 2.9007" actuatorfrcrange="-87 87"/>
+                              <geom mesh="link3_0" material="white" class="fr3_vis"/>
+                              <geom mesh="link3_1" material="black" class="fr3_vis"/>
+                              <geom name="arm_1_link3_col" class="fr3_col" mesh="link3_coll"/>
+                              <body name="arm_1_link4" pos="0.0825 0 0" quat="1 1 0 0">
+                                <inertial pos="-0.0459101 0.0630493 -0.00851879" quat="0.438018 0.803311 0.00937812 0.403414" mass="2.6156" diaginertia="0.05139 0.0372717 0.0160047"/>
+                                <joint name="arm_1_joint4" axis="0 0 1" range="-3.077 -0.1169" actuatorfrcrange="-87 87"/>
+                                <geom mesh="link4_0" material="white" class="fr3_vis"/>
+                                <geom mesh="link4_1" material="black" class="fr3_vis"/>
+                                <geom name="arm_1_link4_col" class="fr3_col" mesh="link4_coll"/>
+                                <body name="arm_1_link5" pos="-0.0825 0.384 0" quat="1 -1 0 0">
+                                  <inertial pos="-0.00160396 0.0292536 -0.0972966" quat="0.919031 0.125604 0.0751531 -0.366003" mass="2.32712" diaginertia="0.0579335 0.0449144 0.0130634"/>
+                                  <joint name="arm_1_joint5" axis="0 0 1" range="-2.8763 2.8763" actuatorfrcrange="-12 12" armature="0.074" frictionloss="0.763"/>
+                                  <geom mesh="link5_0" material="white" class="fr3_vis"/>
+                                  <geom mesh="link5_1" material="white" class="fr3_vis"/>
+                                  <geom mesh="link5_2" material="black" class="fr3_vis"/>
+                                  <geom name="arm_1_link5_col" class="fr3_col" mesh="link5_coll"/>
+                                  <body name="arm_1_link6" quat="1 1 0 0">
+                                    <inertial pos="0.0597131 -0.0410295 -0.0101693" quat="0.621301 0.552665 0.510011 0.220081" mass="1.81704" diaginertia="0.0175039 0.0161123 0.00193529"/>
+                                    <joint name="arm_1_joint6" axis="0 0 1" range="0.4398 4.6216" actuatorfrcrange="-12 12" armature="0.074" frictionloss="0.44"/>
+                                    <geom mesh="link6_0" material="button_green" class="fr3_vis"/>
+                                    <geom mesh="link6_1" material="white" class="fr3_vis"/>
+                                    <geom mesh="link6_2" material="white" class="fr3_vis"/>
+                                    <geom mesh="link6_3" material="gray" class="fr3_vis"/>
+                                    <geom mesh="link6_4" material="button_red" class="fr3_vis"/>
+                                    <geom mesh="link6_5" material="white" class="fr3_vis"/>
+                                    <geom mesh="link6_6" material="black" class="fr3_vis"/>
+                                    <geom mesh="link6_7" material="button_blue" class="fr3_vis"/>
+                                    <geom name="arm_1_link6_col" class="fr3_col" mesh="link6_coll"/>
+                                    <body name="arm_1_link7" pos="0.088 0 0" quat="1 1 0 0">
+                                      <inertial pos="0.00452258 0.00862619 -0.0161633" quat="0.727579 0.0978688 -0.24906 0.63168" mass="0.627143" diaginertia="0.000223836 0.000223642 5.64132e-07"/>
+                                      <joint name="arm_1_joint7" axis="0 0 1" range="-3.0508 3.0508" actuatorfrcrange="-12 12" armature="0.074" frictionloss="0.248"/>
+                                      <geom mesh="link7_0" material="black" class="fr3_vis"/>
+                                      <geom mesh="link7_1" material="white" class="fr3_vis"/>
+                                      <geom mesh="link7_2" material="white" class="fr3_vis"/>
+                                      <geom mesh="link7_3" material="black" class="fr3_vis"/>
+                                      <geom name="arm_1_link7_col" class="fr3_col" mesh="link7_coll"/>
+                                      <body name="arm_1_hand" pos="0 0 0.107" quat="0.9238795 0 0 -0.3826834" childclass="hand">
+                                        <inertial mass="0.73" pos="-0.01 0 0.03" diaginertia="0.001 0.0025 0.0017"/>
+                                        <geom mesh="hand_0" material="off_white" class="hand_vis"/>
+                                        <geom mesh="hand_1" material="black" class="hand_vis"/>
+                                        <geom mesh="hand_2" material="black" class="hand_vis"/>
+                                        <geom mesh="hand_3" material="white" class="hand_vis"/>
+                                        <geom mesh="hand_4" material="off_white" class="hand_vis"/>
+                                        <geom mesh="hand_c" class="hand_col"/>
+                                        <body name="arm_1_left_finger" pos="0 0 0.0584">
+                                          <inertial mass="0.015" pos="0 0 0" diaginertia="2.375e-6 2.375e-6 7.5e-7"/>
+                                          <joint name="arm_1_finger_joint1" class="finger"/>
+                                          <geom mesh="finger_0" material="off_white" class="hand_vis"/>
+                                          <geom mesh="finger_1" material="black" class="hand_vis"/>
+                                          <geom mesh="finger_0" class="hand_col"/>
+                                          <geom class="fingertip_pad_collision_1"/>
+                                          <geom class="fingertip_pad_collision_2"/>
+                                          <geom class="fingertip_pad_collision_3"/>
+                                          <geom class="fingertip_pad_collision_4"/>
+                                          <geom class="fingertip_pad_collision_5"/>
+                                        </body>
+                                        <body name="arm_1_right_finger" pos="0 0 0.0584" quat="0 0 0 1">
+                                          <inertial mass="0.015" pos="0 0 0" diaginertia="2.375e-6 2.375e-6 7.5e-7"/>
+                                          <joint name="arm_1_finger_joint2" class="finger"/>
+                                          <geom mesh="finger_0" material="off_white" class="hand_vis"/>
+                                          <geom mesh="finger_1" material="black" class="hand_vis"/>
+                                          <geom mesh="finger_0" class="hand_col"/>
+                                          <geom class="fingertip_pad_collision_1"/>
+                                          <geom class="fingertip_pad_collision_2"/>
+                                          <geom class="fingertip_pad_collision_3"/>
+                                          <geom class="fingertip_pad_collision_4"/>
+                                          <geom class="fingertip_pad_collision_5"/>
+                                        </body>
+                                      </body>
+                                    </body>
+                                  </body>
+                                </body>
+                              </body>
+                            </body>
+                          </body>
+                        </body>
+                      </body>
+                    </body>
+
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <contact>
+    <exclude body1="arm_0_link0" body2="arm_0_link1"/>
+    <exclude body1="arm_0_hand" body2="arm_0_left_finger"/>
+    <exclude body1="arm_0_hand" body2="arm_0_right_finger"/>
+    <exclude body1="arm_1_link0" body2="arm_1_link1"/>
+    <exclude body1="arm_1_hand" body2="arm_1_left_finger"/>
+    <exclude body1="arm_1_hand" body2="arm_1_right_finger"/>
+    <!-- Keep the coarse self-collision volumes from touching each other. -->
+    <exclude body1="body_link" body2="head"/>
+    <exclude body1="body_link" body2="base_link"/>
+    <exclude body1="head" body2="base_link"/>
+    <!-- The shoulder / upper-arm links rest against the torso in the ready
+         pose; exclude them from the torso box so there is no start-up
+         penetration. The forearm, wrist and hand still collide with it. -->
+    <exclude body1="body_link" body2="arm_0_link0"/>
+    <exclude body1="body_link" body2="arm_0_link1"/>
+    <exclude body1="body_link" body2="arm_0_link2"/>
+    <exclude body1="body_link" body2="arm_1_link0"/>
+    <exclude body1="body_link" body2="arm_1_link1"/>
+    <exclude body1="body_link" body2="arm_1_link2"/>
+  </contact>
+
+  <tendon>
+    <fixed name="arm_0_split">
+      <joint joint="arm_0_finger_joint1" coef="0.5"/>
+      <joint joint="arm_0_finger_joint2" coef="0.5"/>
+    </fixed>
+    <fixed name="arm_1_split">
+      <joint joint="arm_1_finger_joint1" coef="0.5"/>
+      <joint joint="arm_1_finger_joint2" coef="0.5"/>
+    </fixed>
+  </tendon>
+
+  <equality>
+    <!-- Telescoping lift: upper stage mimics the lower (URDF mimic, multiplier
+         1). Stiff solref/solimp so the two stages move as one (no spring). -->
+    <joint joint1="lift_0_upper_joint" joint2="lift_0_lower_joint" polycoef="0 1 0 0 0"
+           solref="0.002 1" solimp="0.999 0.9999 0.001"/>
+    <joint joint1="arm_0_finger_joint1" joint2="arm_0_finger_joint2" solimp="0.95 0.99 0.001" solref="0.005 1"/>
+    <joint joint1="arm_1_finger_joint1" joint2="arm_1_finger_joint2" solimp="0.95 0.99 0.001" solref="0.005 1"/>
+  </equality>
+
+  <actuator>
+    <position class="fr3" name="arm_0_joint1" joint="arm_0_joint1" kp="4500" kv="450"/>
+    <position class="fr3" name="arm_0_joint2" joint="arm_0_joint2" kp="4500" kv="450"/>
+    <position class="fr3" name="arm_0_joint3" joint="arm_0_joint3" kp="3500" kv="350"/>
+    <position class="fr3" name="arm_0_joint4" joint="arm_0_joint4" kp="3500" kv="350"/>
+    <position class="fr3" name="arm_0_joint5" joint="arm_0_joint5" kp="2000" kv="200"/>
+    <position class="fr3" name="arm_0_joint6" joint="arm_0_joint6" kp="2000" kv="200"/>
+    <position class="fr3" name="arm_0_joint7" joint="arm_0_joint7" kp="2000" kv="200"/>
+    <position class="fr3" name="arm_1_joint1" joint="arm_1_joint1" kp="4500" kv="450"/>
+    <position class="fr3" name="arm_1_joint2" joint="arm_1_joint2" kp="4500" kv="450"/>
+    <position class="fr3" name="arm_1_joint3" joint="arm_1_joint3" kp="3500" kv="350"/>
+    <position class="fr3" name="arm_1_joint4" joint="arm_1_joint4" kp="3500" kv="350"/>
+    <position class="fr3" name="arm_1_joint5" joint="arm_1_joint5" kp="2000" kv="200"/>
+    <position class="fr3" name="arm_1_joint6" joint="arm_1_joint6" kp="2000" kv="200"/>
+    <position class="fr3" name="arm_1_joint7" joint="arm_1_joint7" kp="2000" kv="200"/>
+    <general class="hand" name="arm_0_gripper" tendon="arm_0_split" forcerange="-100 100" ctrlrange="0 255" gainprm="0.01568627451 0 0" biasprm="0 -100 -10"/>
+    <general class="hand" name="arm_1_gripper" tendon="arm_1_split" forcerange="-100 100" ctrlrange="0 255" gainprm="0.01568627451 0 0" biasprm="0 -100 -10"/>
+    <position name="head_pan" joint="head_pan_joint" kp="50" kv="5" ctrlrange="-1.5707 1.5707" forcerange="-30 30"/>
+    <position name="head_tilt" joint="head_tilt_joint" kp="50" kv="5" ctrlrange="-0.7853 0.7853" forcerange="-30 30"/>
+    <position name="lift" joint="lift_0_lower_joint" kp="120000" kv="3000" ctrlrange="0 0.4" forcerange="-2000 2000"/>
+    <!-- Wheel velocity servos; ctrlrange matches the URDF wheel speed limit (10 rad/s). -->
+    <velocity name="wheel_fl" joint="wheel_fl_joint" kv="20" ctrlrange="-10 10" forcerange="-100 100"/>
+    <velocity name="wheel_fr" joint="wheel_fr_joint" kv="20" ctrlrange="-10 10" forcerange="-100 100"/>
+    <velocity name="wheel_rl" joint="wheel_rl_joint" kv="20" ctrlrange="-10 10" forcerange="-100 100"/>
+    <velocity name="wheel_rr" joint="wheel_rr_joint" kv="20" ctrlrange="-10 10" forcerange="-100 100"/>
+  </actuator>
+
+  <keyframe>
+    <key name="home"
+      qpos="0 0 0.0259 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -0.785 0 -2.356 0 1.571 0.785 0.04 0.04 0 -0.785 0 -2.356 0 1.571 0.785 0.04 0.04"
+      ctrl="0 -0.785 0 -2.356 0 1.571 0.785  0 -0.785 0 -2.356 0 1.571 0.785  255 255  0 0  0  0 0 0 0"/>
+  </keyframe>
+</mujoco>

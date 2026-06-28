@@ -1,0 +1,14 @@
+{
+  "keys": {},
+  "groups": {
+    "pluginmanager": {
+      "keys": {
+        "running-plugins": {
+          "type": "repr",
+          "repr": "{'rqt_joint_trajectory_controller/JointTrajectoryController': [1], 'garmi_description/TwistJoystick': [1]}"
+        }
+      },
+      "groups": {}
+    }
+  }
+}

@@ -25,6 +25,22 @@ files themselves.
 
 
 ========================================================================
+1b. MuJoCo FR3 arm and Franka Hand assets (MuJoCo Menagerie)
+========================================================================
+
+Applies to: mujoco/assets/link*.{obj,stl}, mujoco/assets/hand*.obj,
+            mujoco/assets/finger*.obj, mujoco/assets/hand.stl
+
+Copyright 2022 The MuJoCo Menagerie Authors
+Source:    https://github.com/google-deepmind/mujoco_menagerie
+           (franka_fr3 and franka_emika_panda models; meshes derive from
+           franka_description, Copyright Franka Robotics GmbH)
+
+Licensed under the Apache License, Version 2.0. The complete license text
+is identical to the one distributed with this package in the LICENSE file.
+
+
+========================================================================
 2. Clearpath Ridgeback mobile base meshes
 ========================================================================
 

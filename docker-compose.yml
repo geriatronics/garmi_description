@@ -1,8 +1,6 @@
 # Copyright 2026 Technical University of Munich
 # SPDX-License-Identifier: Apache-2.0
 
-version: '3.8'
-
 x-ros-base: &ros-base
   build: .
   image: garmi-sim-model
@@ -21,6 +19,26 @@ x-ros-base: &ros-base
     - /dev/dri:/dev/dri
   network_mode: host
 
+# Standalone MuJoCo (no ROS).
+x-mujoco-base: &mujoco-base
+  build:
+    context: .
+    dockerfile: Dockerfile.mujoco
+  image: garmi-mujoco
+  volumes:
+    # Mount the whole package so the MuJoCo teleop can reuse scripts/.
+    - ./garmi_description:/pkg
+    - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    - ${XAUTHORITY:-$HOME/.Xauthority}:/root/.Xauthority:ro
+  working_dir: /pkg/mujoco
+  environment:
+    - DISPLAY=${DISPLAY}
+    - XAUTHORITY=/root/.Xauthority
+    - MUJOCO_GL=glfw
+  devices:
+    - /dev/dri:/dev/dri
+  network_mode: host
+
 services:
   rviz:
     <<: *ros-base
@@ -30,6 +48,16 @@ services:
     <<: *ros-base
     command: ros2 launch garmi_description gazebo.launch.py
 
-  demo:
+  gazebo-motion:
     <<: *ros-base
     command: ros2 launch garmi_description gazebo_demo.launch.py
+
+  # Interactive viewer (drag joints / apply forces), robot in its home pose.
+  mujoco:
+    <<: *mujoco-base
+    command: python view.py
+
+  # Viewer + a twist teleop panel (joystick + turn slider) for the mecanum base.
+  mujoco-teleop:
+    <<: *mujoco-base
+    command: python teleop.py

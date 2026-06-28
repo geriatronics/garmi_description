@@ -30,3 +30,13 @@ in the THIRD_PARTY_LICENSES file.
    Copyright 2021 Clearpath Robotics Inc.
    Licensed under the BSD 3-Clause License.
    Source: https://github.com/ridgeback/ridgeback
+
+3. MuJoCo FR3 arm and Franka Hand assets
+   Files: mujoco/assets/link*.{obj,stl}, mujoco/assets/hand*.obj,
+          mujoco/assets/finger*.obj, mujoco/assets/hand.stl, and the
+          corresponding model structure in mujoco/garmi.xml
+   Reused from MuJoCo Menagerie (franka_fr3 and franka_emika_panda).
+   Copyright 2022 The MuJoCo Menagerie Authors; the meshes derive from
+   franka_description, Copyright Franka Robotics GmbH.
+   Licensed under the Apache License, Version 2.0.
+   Source: https://github.com/google-deepmind/mujoco_menagerie
