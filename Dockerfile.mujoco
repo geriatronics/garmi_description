@@ -1,0 +1,24 @@
+# Copyright 2026 Technical University of Munich
+# SPDX-License-Identifier: Apache-2.0
+
+FROM python:3.12-slim
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Runtime libraries for the interactive viewer (GLFW + OpenGL) and for
+# headless offscreen rendering (EGL / OSMesa).
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1 \
+    libglfw3 \
+    libglew2.2 \
+    libosmesa6 \
+    libegl1 \
+    python3-tk \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir mujoco
+
+# Interactive GLFW viewer by default; needs an X11 display (see docker-compose).
+ENV MUJOCO_GL=glfw
+WORKDIR /model
+CMD ["python", "-m", "mujoco.viewer", "--mjcf=scene.xml"]

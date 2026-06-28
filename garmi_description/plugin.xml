@@ -1,0 +1,17 @@
+<library path="garmi_description">
+  <class name="TwistJoystick"
+         type="garmi_description.rqt_twist_joystick.TwistJoystickPlugin"
+         base_class_type="rqt_gui_py::Plugin">
+    <description>
+      Joystick teleop for the Garmi mecanum base: publishes a full planar twist
+      (vx, vy, yaw) to the base controller, so the base can strafe.
+    </description>
+    <qtgui>
+      <group>
+        <label>Garmi</label>
+      </group>
+      <label>Twist Joystick</label>
+      <statustip>Drive the Garmi mecanum base by twist.</statustip>
+    </qtgui>
+  </class>
+</library>

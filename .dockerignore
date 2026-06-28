@@ -1,0 +1,6 @@
+.git
+**/__pycache__
+*.pyc
+garmi_description/mujoco/build/*env*
+.vscode
+*.gif

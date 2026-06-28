@@ -1,0 +1,6 @@
+# Build-time dependencies for (re)generating the MuJoCo assets.
+# Only needed to regenerate assets/ — end users running the viewer do not need these.
+mujoco>=3.1
+obj2mjcf>=0.0.4
+coacd>=1.0
+pillow>=10.0
