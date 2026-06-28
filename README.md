@@ -48,8 +48,6 @@ docker compose up rviz
 
 The simulation is an empty world, but we've included GUIs to see all of the robot's Degrees of Freedom (DoF) in motion!
 
-![Gazebo Simulation Preview](garmi_description/preview.gif)
-
 ```bash
 docker compose up gazebo
 ```
