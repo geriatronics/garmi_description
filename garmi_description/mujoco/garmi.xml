@@ -198,11 +198,16 @@
       <inertial pos="0.012 0.002 0.067" mass="165.304"
         fullinertia="4.4744 7.1624 4.6155 0.03098 0.003647 0.1228"/>
 
-      <!-- Mobile base shell (visual only). -->
+      <!-- Mobile base shell (visual only). The side / end covers and the lights
+           come in mirrored pairs that share one mesh; the second of each pair is
+           the mesh rotated 180 deg about z (quat 0 0 0 1), matching the URDF. -->
       <geom mesh="chassis" material="chassis"/>
       <geom mesh="side_cover" material="cover_grey"/>
+      <geom mesh="side_cover" material="cover_grey" quat="0 0 0 1"/>
       <geom mesh="end_cover" material="cover_grey"/>
-      <geom mesh="lights" material="red"/>
+      <geom mesh="end_cover" material="cover_grey" quat="0 0 0 1"/>
+      <geom mesh="lights" material="white"/>
+      <geom mesh="lights" material="red" quat="0 0 0 1"/>
       <geom mesh="cover" material="White_Plastic" quat="0.500048 0.5 0.499952 0.5"/>
       <geom mesh="mounting_plate" material="Grey_Plastic" quat="0.500048 0.5 0.499952 0.5"/>
       <!-- Coarse self-collision volume for the mobile base, including the TUM

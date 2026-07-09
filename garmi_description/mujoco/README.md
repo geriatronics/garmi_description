@@ -31,14 +31,18 @@ zero on release). The twist is mapped to the four wheel actuators with the
 mecanum inverse kinematics.
 
 The **"closed loop" checkbox** (on by default) runs a feedforward + proportional
-controller on the base's measured twist. Open loop, the base drifts and
-over-rotates (mecanum inverse kinematics assumes ideal no-slip rolling); closed
-loop tracks the commanded twist closely and — like the real joystick-driven
-robot — stops without overshooting (the feedforward keeps the controller from
-winding up, so releasing the joystick doesn't cause a reverse lurch). This is
-the role wheel-odometry/IMU feedback plays on the real robot (here using
-MuJoCo's ground-truth base velocity as perfect odometry). Toggle it off to feel
-the raw open-loop drift.
+controller on the base's measured twist, plus a small, tightly-clamped integral
+on the yaw axis. Open loop, the base drifts and over-rotates (mecanum inverse
+kinematics assumes ideal no-slip rolling); closed loop tracks the commanded
+twist closely and — like the real joystick-driven robot — stops without
+overshooting (accurate feedforward keeps it from winding up), while the yaw
+integral cancels the small rotation the discrete-roller model induces when
+strafing. This is the role wheel-odometry/IMU feedback plays on the real robot
+(here using MuJoCo's ground-truth base velocity as perfect odometry). Toggle it
+off to feel the raw open-loop drift.
+
+As on the real robot, strafing is capped slower than driving forward/back
+(`LATERAL_SCALE` in `teleop.py`).
 
 The joystick itself ([`../scripts/twist_joystick.py`](../scripts/twist_joystick.py))
 is a dependency-free Tk widget. The Gazebo example offers the same control as an

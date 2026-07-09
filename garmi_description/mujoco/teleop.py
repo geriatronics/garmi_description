@@ -32,23 +32,27 @@ LXY = 0.319 + 0.2755      # half wheelbase + half track [m]
 WHEEL_CLAMP = 10.0        # rad/s, matches the actuator ctrlrange
 
 # Teleop maxima (kept so a single axis stays within the wheel speed limit).
-VMAX = 0.7                # m/s
+VMAX = 0.7                # m/s (forward/back)
 WMAX = 1.2                # rad/s
+# Sideways is capped lower than forward: like the real robot, strafing is
+# noticeably slower, and the lower lateral speed also reduces the small
+# yaw the discrete-roller mecanum model induces while strafing.
+LATERAL_SCALE = 0.6       # max strafe speed = VMAX * LATERAL_SCALE
 
 # Closed-loop twist controller gains (per axis: vx, vy, wz).
 #
-# FF is a feedforward that compensates the base's open-loop DC gain: forward
-# and strafe are ~unity, but in-place rotation is ~4x (the free rollers make
-# the base spin faster than no-slip kinematics predicts), so its feedforward is
-# scaled down. With an accurate feedforward the controller barely has to
-# integrate, which is what avoids the velocity overshoot/reversal when the
-# command returns to zero -- so we deliberately use feedforward + proportional
-# only (KI = 0). Raise KI slightly for tighter steady-state tracking at the
-# cost of a little overshoot.
+# FF is a feedforward compensating the base's open-loop DC gain: forward/strafe
+# are ~unity, but in-place rotation is ~4x (the free rollers make the base spin
+# faster than no-slip kinematics predicts), so its feedforward is scaled down.
+# Accurate feedforward means the controller barely integrates, which avoids the
+# velocity overshoot/reversal when a command returns to zero. A small,
+# tightly-clamped integral on the yaw axis (wz) cancels the residual yaw the
+# discrete-roller model induces while strafing/swerving, without noticeable
+# turn overshoot (the tight I_CLAMP bounds any windup).
 FF = (1.0, 1.0, 0.25)
 KP = (1.6, 1.6, 1.6)
-KI = (0.0, 0.0, 0.0)
-I_CLAMP = (0.5, 0.5, 0.8)  # anti-windup limit on the integral term
+KI = (0.0, 0.0, 2.5)
+I_CLAMP = (0.5, 0.5, 0.1)  # anti-windup limit on the integral term
 
 
 def twist_to_wheels(vx, vy, wz):
@@ -121,7 +125,9 @@ def main():
         if not viewer.is_running():
             root.destroy()
             return
-        wheels, integ[:] = control_step(js.twist(),
+        vx, vy, wz = js.twist()
+        desired = (vx, vy * LATERAL_SCALE, wz)   # strafing is slower than driving forward
+        wheels, integ[:] = control_step(desired,
                                         measure_twist(m, d, base_id, base_dofadr),
                                         integ, dt, bool(closed_var.get()))
         for aid, val in zip(wheel_ids, wheels):

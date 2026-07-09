@@ -6,6 +6,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-06-28
+
+### Fixed
+- MuJoCo base: added the missing **left side panel** and **rear panel** of the
+  mobile base (only one side/end was drawn before, exposing the rear wheels and
+  the inside of the base), and corrected the **light colours** — front lights
+  white, rear lights red — to match the URDF.
+- MuJoCo teleop: cancel the small base rotation that appeared when **strafing**
+  (a tightly-clamped yaw integral in the closed-loop base controller, effective
+  for combined strafe+turn commands too), and cap strafing slower than forward
+  driving to match the real robot.
+
 ## [0.1.0] - 2026-06-28
 
 First public release of the portable Garmi robot description.
@@ -35,5 +47,6 @@ First public release of the portable Garmi robot description.
 - Continuous integration validating the MuJoCo model, building the container
   images, and `colcon`-building the ROS 2 package.
 
-[Unreleased]: https://github.com/geriatronics/garmi_description/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/geriatronics/garmi_description/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/geriatronics/garmi_description/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/geriatronics/garmi_description/releases/tag/v0.1.0
