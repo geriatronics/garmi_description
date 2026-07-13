@@ -6,6 +6,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+- Renamed joints, links (TF frames) and controllers to match the **real Garmi
+  robot**, so the model lines up with its `/joint_states`, TF, and controller
+  topics: arms → `left_fr3_*` / `right_fr3_*` (joints, links, hand & finger
+  frames), head → `o1_motor_1` / `o1_motor_2`, controllers →
+  `left_arm_joint_trajectory_controller`, `platform_velocity_controller`, etc.
+  (wheels and lift already matched). The URDF and MJCF now use identical names.
+
 ## [0.1.1] - 2026-06-28
 
 ### Fixed

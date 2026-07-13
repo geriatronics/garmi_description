@@ -31,8 +31,8 @@ from std_msgs.msg import Float64MultiArray
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 # Joint names, matching config/ros2_controllers.yaml and the URDF.
-ARM_0_JOINTS = [f'arm_0_fr3_joint{i}' for i in range(1, 8)]
-ARM_1_JOINTS = [f'arm_1_fr3_joint{i}' for i in range(1, 8)]
+ARM_0_JOINTS = [f'left_fr3_joint{i}' for i in range(1, 8)]
+ARM_1_JOINTS = [f'right_fr3_joint{i}' for i in range(1, 8)]
 LIFT_JOINTS = ['lift_0_lower_joint']
 
 
@@ -49,13 +49,13 @@ class GarmiDemo(Node):
         #    points).
         #  * The mecanum base takes a velocity reference as a TwistStamped.
         self.arm_0_pub = self.create_publisher(
-            Float64MultiArray, '/garmi_arm_0_velocity_controller/commands', 10)
+            Float64MultiArray, '/left_arm_joint_velocity_controller/commands', 10)
         self.arm_1_pub = self.create_publisher(
-            Float64MultiArray, '/garmi_arm_1_velocity_controller/commands', 10)
+            Float64MultiArray, '/right_arm_joint_velocity_controller/commands', 10)
         self.lift_pub = self.create_publisher(
-            JointTrajectory, '/garmi_lift_controller/joint_trajectory', 10)
+            JointTrajectory, '/lift_0_position_controller/joint_trajectory', 10)
         self.base_pub = self.create_publisher(
-            TwistStamped, '/garmi_base_controller/reference', 10)
+            TwistStamped, '/platform_velocity_controller/reference', 10)
 
         # Motion parameters (gentle, but clearly visible).
         self.arm_amplitude = 0.3       # rad, sets the joint sweep (peak 2*A)

@@ -111,47 +111,47 @@ def generate_launch_description():
     load_arm_0_controller = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['garmi_arm_0_controller'],
+        arguments=['left_arm_joint_trajectory_controller'],
         condition=use_trajectory,
     )
 
     load_arm_1_controller = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['garmi_arm_1_controller'],
+        arguments=['right_arm_joint_trajectory_controller'],
         condition=use_trajectory,
     )
 
     load_arm_0_velocity_controller = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['garmi_arm_0_velocity_controller'],
+        arguments=['left_arm_joint_velocity_controller'],
         condition=use_velocity,
     )
 
     load_arm_1_velocity_controller = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['garmi_arm_1_velocity_controller'],
+        arguments=['right_arm_joint_velocity_controller'],
         condition=use_velocity,
     )
 
     load_head_controller = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['garmi_head_controller'],
+        arguments=['head_controller'],
     )
 
     load_lift_controller = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['garmi_lift_controller'],
+        arguments=['lift_0_position_controller'],
     )
 
     load_base_controller = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['garmi_base_controller'],
+        arguments=['platform_velocity_controller'],
     )
 
     return LaunchDescription([

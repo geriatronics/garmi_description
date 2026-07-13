@@ -10,121 +10,121 @@ controller_manager:
       type: joint_state_broadcaster/JointStateBroadcaster
 
     # Trajectory controllers for the arms (used by the gazebo example).
-    garmi_arm_0_controller:
+    left_arm_joint_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
-    garmi_arm_1_controller:
+    right_arm_joint_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
     # Forward velocity controllers for the arms (used by the demo example).
-    garmi_arm_0_velocity_controller:
+    left_arm_joint_velocity_controller:
       type: velocity_controllers/JointGroupVelocityController
 
-    garmi_arm_1_velocity_controller:
+    right_arm_joint_velocity_controller:
       type: velocity_controllers/JointGroupVelocityController
 
-    garmi_head_controller:
+    head_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
-    garmi_lift_controller:
+    lift_0_position_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
-    garmi_base_controller:
+    platform_velocity_controller:
       type: mecanum_drive_controller/MecanumDriveController
 
 # Trajectory controllers for the arms. Used by the gazebo example and
 # compatible with the rqt_joint_trajectory_controller GUI.
-garmi_arm_0_controller:
+left_arm_joint_trajectory_controller:
   ros__parameters:
     use_sim_time: True
     joints:
-      - arm_0_fr3_joint1
-      - arm_0_fr3_joint2
-      - arm_0_fr3_joint3
-      - arm_0_fr3_joint4
-      - arm_0_fr3_joint5
-      - arm_0_fr3_joint6
-      - arm_0_fr3_joint7
+      - left_fr3_joint1
+      - left_fr3_joint2
+      - left_fr3_joint3
+      - left_fr3_joint4
+      - left_fr3_joint5
+      - left_fr3_joint6
+      - left_fr3_joint7
     command_interfaces:
       - position
     state_interfaces:
       - position
       - velocity
     gains:
-      arm_0_fr3_joint1: { p: 600., d: 30., i: 0., i_clamp: 1. }
-      arm_0_fr3_joint2: { p: 600., d: 30., i: 0., i_clamp: 1. }
-      arm_0_fr3_joint3: { p: 600., d: 30., i: 0., i_clamp: 1. }
-      arm_0_fr3_joint4: { p: 600., d: 30., i: 0., i_clamp: 1. }
-      arm_0_fr3_joint5: { p: 250., d: 10., i: 0., i_clamp: 1. }
-      arm_0_fr3_joint6: { p: 150., d: 10., i: 0., i_clamp: 1. }
-      arm_0_fr3_joint7: { p: 50., d: 5., i: 0., i_clamp: 1. }
+      left_fr3_joint1: { p: 600., d: 30., i: 0., i_clamp: 1. }
+      left_fr3_joint2: { p: 600., d: 30., i: 0., i_clamp: 1. }
+      left_fr3_joint3: { p: 600., d: 30., i: 0., i_clamp: 1. }
+      left_fr3_joint4: { p: 600., d: 30., i: 0., i_clamp: 1. }
+      left_fr3_joint5: { p: 250., d: 10., i: 0., i_clamp: 1. }
+      left_fr3_joint6: { p: 150., d: 10., i: 0., i_clamp: 1. }
+      left_fr3_joint7: { p: 50., d: 5., i: 0., i_clamp: 1. }
 
-garmi_arm_1_controller:
+right_arm_joint_trajectory_controller:
   ros__parameters:
     use_sim_time: True
     joints:
-      - arm_1_fr3_joint1
-      - arm_1_fr3_joint2
-      - arm_1_fr3_joint3
-      - arm_1_fr3_joint4
-      - arm_1_fr3_joint5
-      - arm_1_fr3_joint6
-      - arm_1_fr3_joint7
+      - right_fr3_joint1
+      - right_fr3_joint2
+      - right_fr3_joint3
+      - right_fr3_joint4
+      - right_fr3_joint5
+      - right_fr3_joint6
+      - right_fr3_joint7
     command_interfaces:
       - position
     state_interfaces:
       - position
       - velocity
     gains:
-      arm_1_fr3_joint1: { p: 600., d: 30., i: 0., i_clamp: 1. }
-      arm_1_fr3_joint2: { p: 600., d: 30., i: 0., i_clamp: 1. }
-      arm_1_fr3_joint3: { p: 600., d: 30., i: 0., i_clamp: 1. }
-      arm_1_fr3_joint4: { p: 600., d: 30., i: 0., i_clamp: 1. }
-      arm_1_fr3_joint5: { p: 250., d: 10., i: 0., i_clamp: 1. }
-      arm_1_fr3_joint6: { p: 150., d: 10., i: 0., i_clamp: 1. }
-      arm_1_fr3_joint7: { p: 50., d: 5., i: 0., i_clamp: 1. }
+      right_fr3_joint1: { p: 600., d: 30., i: 0., i_clamp: 1. }
+      right_fr3_joint2: { p: 600., d: 30., i: 0., i_clamp: 1. }
+      right_fr3_joint3: { p: 600., d: 30., i: 0., i_clamp: 1. }
+      right_fr3_joint4: { p: 600., d: 30., i: 0., i_clamp: 1. }
+      right_fr3_joint5: { p: 250., d: 10., i: 0., i_clamp: 1. }
+      right_fr3_joint6: { p: 150., d: 10., i: 0., i_clamp: 1. }
+      right_fr3_joint7: { p: 50., d: 5., i: 0., i_clamp: 1. }
 
 # Forward velocity controllers for the arms. Used by the demo example: they
 # forward a velocity command (std_msgs/Float64MultiArray on
 # <controller>/commands) straight to the joints, which is convenient for
 # streaming or replaying recorded teleoperation rosbags.
-garmi_arm_0_velocity_controller:
+left_arm_joint_velocity_controller:
   ros__parameters:
     use_sim_time: True
     joints:
-      - arm_0_fr3_joint1
-      - arm_0_fr3_joint2
-      - arm_0_fr3_joint3
-      - arm_0_fr3_joint4
-      - arm_0_fr3_joint5
-      - arm_0_fr3_joint6
-      - arm_0_fr3_joint7
+      - left_fr3_joint1
+      - left_fr3_joint2
+      - left_fr3_joint3
+      - left_fr3_joint4
+      - left_fr3_joint5
+      - left_fr3_joint6
+      - left_fr3_joint7
 
-garmi_arm_1_velocity_controller:
+right_arm_joint_velocity_controller:
   ros__parameters:
     use_sim_time: True
     joints:
-      - arm_1_fr3_joint1
-      - arm_1_fr3_joint2
-      - arm_1_fr3_joint3
-      - arm_1_fr3_joint4
-      - arm_1_fr3_joint5
-      - arm_1_fr3_joint6
-      - arm_1_fr3_joint7
+      - right_fr3_joint1
+      - right_fr3_joint2
+      - right_fr3_joint3
+      - right_fr3_joint4
+      - right_fr3_joint5
+      - right_fr3_joint6
+      - right_fr3_joint7
 
-garmi_head_controller:
+head_controller:
   ros__parameters:
     use_sim_time: True
     joints:
-      - head_pan_joint
-      - head_tilt_joint
+      - o1_motor_1
+      - o1_motor_2
     command_interfaces:
       - position
     state_interfaces:
       - position
       - velocity
 
-garmi_lift_controller:
+lift_0_position_controller:
   ros__parameters:
     use_sim_time: True
     joints:
@@ -135,7 +135,7 @@ garmi_lift_controller:
       - position
       - velocity
 
-garmi_base_controller:
+platform_velocity_controller:
   ros__parameters:
     use_sim_time: True
     interface_name: velocity

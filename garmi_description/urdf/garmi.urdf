@@ -819,8 +819,8 @@
   </joint>
   <!-- Extras -->
   <!-- Parent Joint -->
-  <joint name="arm_0_fr3_joint0" type="fixed">
-    <child link="arm_0_fr3_link0"/>
+  <joint name="left_fr3_joint0" type="fixed">
+    <child link="left_fr3_link0"/>
     <parent link="arm_mount_left_link"/>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </joint>
@@ -831,13 +831,13 @@
   <!-- inertials: description of the inertials that comes from a YAML file. Example definition: ${xacro.load_yaml('$(find franka_description)/robots/fr3/inertials.yaml')} -->
   <!-- dynamics: description of the dynamics that comes from a YAML file. Example definition: ${xacro.load_yaml('$(find franka_description)/robots/fr3/dynamics.yaml')} -->
   <!-- sub-link defining detailed meshes for collision with environment -->
-  <link name="arm_0_fr3_link0"> 
-    <visual name="arm_0_fr3_link0_visual">
+  <link name="left_fr3_link0"> 
+    <visual name="left_fr3_link0_visual">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link0.dae"/>
       </geometry>
     </visual>
-    <collision name="arm_0_fr3_link0_collision">
+    <collision name="left_fr3_link0_collision">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link0.stl"/>
       </geometry>
@@ -849,14 +849,14 @@
     </inertial>
   </link>
   <!-- sub-link defining detailed meshes for collision with environment -->
-  <link name="arm_0_fr3_link1">
+  <link name="left_fr3_link1">
 
-    <visual name="arm_0_fr3_link1_visual">
+    <visual name="left_fr3_link1_visual">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link1.dae"/>
       </geometry>
     </visual>
-    <collision name="arm_0_fr3_link1_collision">
+    <collision name="left_fr3_link1_collision">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link1.stl"/>
       </geometry>
@@ -867,10 +867,10 @@
       <inertia ixx="0.023927316485107913" ixy="1.3317903455714081e-05" ixz="-0.00011404774918616684" iyy="0.0224821613275756" iyz="-0.0019950320628240115" izz="0.006350098258530016"/>
     </inertial>
   </link>
-  <joint name="arm_0_fr3_joint1" type="revolute">
+  <joint name="left_fr3_joint1" type="revolute">
     <origin rpy="0 0 0" xyz="0 0 0.333"/>
-    <parent link="arm_0_fr3_link0"/>
-    <child link="arm_0_fr3_link1"/>
+    <parent link="left_fr3_link0"/>
+    <child link="left_fr3_link1"/>
     <axis xyz="0 0 1"/>
     <limit effort="87.0" lower="-2.9007" upper="2.9007" velocity="2.62"/>
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.9007" soft_upper_limit="2.9007"/>
@@ -878,14 +878,14 @@
     <dynamics D="1" K="7000" damping="0.003" friction="0.2" mu_coulomb="0" mu_viscous="16"/>
   </joint>
   <!-- sub-link defining detailed meshes for collision with environment -->
-  <link name="arm_0_fr3_link2">
+  <link name="left_fr3_link2">
 
-    <visual name="arm_0_fr3_link2_visual">
+    <visual name="left_fr3_link2_visual">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link2.dae"/>
       </geometry>
     </visual>
-    <collision name="arm_0_fr3_link2_collision">
+    <collision name="left_fr3_link2_collision">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link2.stl"/>
       </geometry>
@@ -896,10 +896,10 @@
       <inertia ixx="0.041938946257609425" ixy="0.00020257331521090626" ixz="0.004077784227179924" iyy="0.02514514885014724" iyz="-0.0042252158006570156" izz="0.06170214472888839"/>
     </inertial>
   </link>
-  <joint name="arm_0_fr3_joint2" type="revolute">
+  <joint name="left_fr3_joint2" type="revolute">
     <origin rpy="-1.570796326794897 0 0" xyz="0 0 0"/>
-    <parent link="arm_0_fr3_link1"/>
-    <child link="arm_0_fr3_link2"/>
+    <parent link="left_fr3_link1"/>
+    <child link="left_fr3_link2"/>
     <axis xyz="0 0 1"/>
     <limit effort="87.0" lower="-1.8361" upper="1.8361" velocity="2.62"/>
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-1.8361" soft_upper_limit="1.8361"/>
@@ -907,14 +907,14 @@
     <dynamics D="1" K="7000" damping="0.003" friction="0.2" mu_coulomb="0" mu_viscous="16"/>
   </joint>
   <!-- sub-link defining detailed meshes for collision with environment -->
-  <link name="arm_0_fr3_link3">
+  <link name="left_fr3_link3">
 
-    <visual name="arm_0_fr3_link3_visual">
+    <visual name="left_fr3_link3_visual">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link3.dae"/>
       </geometry>
     </visual>
-    <collision name="arm_0_fr3_link3_collision">
+    <collision name="left_fr3_link3_collision">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link3.stl"/>
       </geometry>
@@ -925,10 +925,10 @@
       <inertia ixx="0.02410142547240885" ixy="0.002404694559042109" ixz="-0.002856269270114313" iyy="0.01974053266708178" iyz="-0.002104212683891874" izz="0.019044494482244823"/>
     </inertial>
   </link>
-  <joint name="arm_0_fr3_joint3" type="revolute">
+  <joint name="left_fr3_joint3" type="revolute">
     <origin rpy="1.570796326794897 0 0" xyz="0 -0.316 0"/>
-    <parent link="arm_0_fr3_link2"/>
-    <child link="arm_0_fr3_link3"/>
+    <parent link="left_fr3_link2"/>
+    <child link="left_fr3_link3"/>
     <axis xyz="0 0 1"/>
     <limit effort="87.0" lower="-2.9007" upper="2.9007" velocity="2.62"/>
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.9007" soft_upper_limit="2.9007"/>
@@ -936,14 +936,14 @@
     <dynamics D="1" K="7000" damping="0.003" friction="0.2" mu_coulomb="0" mu_viscous="16"/>
   </joint>
   <!-- sub-link defining detailed meshes for collision with environment -->
-  <link name="arm_0_fr3_link4">
+  <link name="left_fr3_link4">
 
-    <visual name="arm_0_fr3_link4_visual">
+    <visual name="left_fr3_link4_visual">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link4.dae"/>
       </geometry>
     </visual>
-    <collision name="arm_0_fr3_link4_collision">
+    <collision name="left_fr3_link4_collision">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link4.stl"/>
       </geometry>
@@ -954,10 +954,10 @@
       <inertia ixx="0.03452998321913202" ixy="0.01322552265982813" ixz="0.01015142998484113" iyy="0.028881621933049058" iyz="-0.0009762833870704552" izz="0.04125471171146641"/>
     </inertial>
   </link>
-  <joint name="arm_0_fr3_joint4" type="revolute">
+  <joint name="left_fr3_joint4" type="revolute">
     <origin rpy="1.570796326794897 0 0" xyz="0.0825 0 0"/>
-    <parent link="arm_0_fr3_link3"/>
-    <child link="arm_0_fr3_link4"/>
+    <parent link="left_fr3_link3"/>
+    <child link="left_fr3_link4"/>
     <axis xyz="0 0 1"/>
     <limit effort="87.0" lower="-3.077" upper="-0.1169" velocity="2.62"/>
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-3.077" soft_upper_limit="-0.1169"/>
@@ -965,14 +965,14 @@
     <dynamics D="1" K="7000" damping="0.003" friction="0.2" mu_coulomb="0" mu_viscous="16"/>
   </joint>
   <!-- sub-link defining detailed meshes for collision with environment -->
-  <link name="arm_0_fr3_link5">
+  <link name="left_fr3_link5">
 
-    <visual name="arm_0_fr3_link5_visual">
+    <visual name="left_fr3_link5_visual">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link5.dae"/>
       </geometry>
     </visual>
-    <collision name="arm_0_fr3_link5_collision">
+    <collision name="left_fr3_link5_collision">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link5.stl"/>
       </geometry>
@@ -983,10 +983,10 @@
       <inertia ixx="0.051610278463662895" ixy="-0.005715173387783472" ixz="-0.0035673167625872135" iyy="0.04787729713371481" iyz="0.010673985108535986" izz="0.016423625579357254"/>
     </inertial>
   </link>
-  <joint name="arm_0_fr3_joint5" type="revolute">
+  <joint name="left_fr3_joint5" type="revolute">
     <origin rpy="-1.570796326794897 0 0" xyz="-0.0825 0.384 0"/>
-    <parent link="arm_0_fr3_link4"/>
-    <child link="arm_0_fr3_link5"/>
+    <parent link="left_fr3_link4"/>
+    <child link="left_fr3_link5"/>
     <axis xyz="0 0 1"/>
     <limit effort="12.0" lower="-2.8763" upper="2.8763" velocity="5.26"/>
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.8763" soft_upper_limit="2.8763"/>
@@ -994,14 +994,14 @@
     <dynamics D="1" K="7000" damping="0.003" friction="0.2" mu_coulomb="0" mu_viscous="16"/>
   </joint>
   <!-- sub-link defining detailed meshes for collision with environment -->
-  <link name="arm_0_fr3_link6">
+  <link name="left_fr3_link6">
 
-    <visual name="arm_0_fr3_link6_visual">
+    <visual name="left_fr3_link6_visual">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link6.dae"/>
       </geometry>
     </visual>
-    <collision name="arm_0_fr3_link6_collision">
+    <collision name="left_fr3_link6_collision">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link6.stl"/>
       </geometry>
@@ -1012,10 +1012,10 @@
       <inertia ixx="0.005412333594383447" ixy="0.006193456360285834" ixz="0.0014219289306117652" iyy="0.014058329545509979" iyz="-0.0013140753741120031" izz="0.016080817924212554"/>
     </inertial>
   </link>
-  <joint name="arm_0_fr3_joint6" type="revolute">
+  <joint name="left_fr3_joint6" type="revolute">
     <origin rpy="1.570796326794897 0 0" xyz="0 0 0"/>
-    <parent link="arm_0_fr3_link5"/>
-    <child link="arm_0_fr3_link6"/>
+    <parent link="left_fr3_link5"/>
+    <child link="left_fr3_link6"/>
     <axis xyz="0 0 1"/>
     <limit effort="12.0" lower="0.4398" upper="4.6216" velocity="4.18"/>
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="0.4398" soft_upper_limit="4.6216"/>
@@ -1023,14 +1023,14 @@
     <dynamics D="1" K="7000" damping="0.003" friction="0.2" mu_coulomb="0" mu_viscous="16"/>
   </joint>
   <!-- sub-link defining detailed meshes for collision with environment -->
-  <link name="arm_0_fr3_link7">
+  <link name="left_fr3_link7">
 
-    <visual name="arm_0_fr3_link7_visual">
+    <visual name="left_fr3_link7_visual">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link7.dae"/>
       </geometry>
     </visual>
-    <collision name="arm_0_fr3_link7_collision">
+    <collision name="left_fr3_link7_collision">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link7.stl"/>
       </geometry>
@@ -1041,27 +1041,27 @@
       <inertia ixx="0.00021092389150104718" ixy="-2.433299114461931e-05" ixz="4.564480393778983e-05" iyy="0.00017718568002411474" iyz="8.744070223226438e-05" izz="5.993190599659971e-05"/>
     </inertial>
   </link>
-  <joint name="arm_0_fr3_joint7" type="revolute">
+  <joint name="left_fr3_joint7" type="revolute">
     <origin rpy="1.570796326794897 0 0" xyz="0.088 0 0"/>
-    <parent link="arm_0_fr3_link6"/>
-    <child link="arm_0_fr3_link7"/>
+    <parent link="left_fr3_link6"/>
+    <child link="left_fr3_link7"/>
     <axis xyz="0 0 1"/>
     <limit effort="12.0" lower="-3.0508" upper="3.0508" velocity="5.26"/>
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-3.0508" soft_upper_limit="3.0508"/>
     <position_based_velocity_limits deceleration_limit="17.0" velocity_offset="0.4592"/>
     <dynamics D="1" K="7000" damping="0.003" friction="0.2" mu_coulomb="0" mu_viscous="16"/>
   </joint>
-  <link name="arm_0_fr3_link8"/>
-  <joint name="arm_0_fr3_joint8" type="fixed">
+  <link name="left_fr3_link8"/>
+  <joint name="left_fr3_joint8" type="fixed">
     <origin rpy="0 0 0" xyz="0 0 0.107"/>
-    <parent link="arm_0_fr3_link7"/>
-    <child link="arm_0_fr3_link8"/>
+    <parent link="left_fr3_link7"/>
+    <child link="left_fr3_link8"/>
   </joint>
   <ros2_control name="arm_0_FrankaHardwareInterface" type="system">
     <hardware>
       <plugin>gz_ros2_control/GazeboSimSystem</plugin>
     </hardware>
-    <joint name="arm_0_fr3_joint1">
+    <joint name="left_fr3_joint1">
       <command_interface name="position"/>
       <command_interface name="velocity"/>
       <command_interface name="effort"/>
@@ -1072,7 +1072,7 @@
       <param name="initial_value">0.0</param>
       <state_interface name="effort"/>
     </joint>
-    <joint name="arm_0_fr3_joint2">
+    <joint name="left_fr3_joint2">
       <command_interface name="position"/>
       <command_interface name="velocity"/>
       <command_interface name="effort"/>
@@ -1083,7 +1083,7 @@
       <param name="initial_value">0.0</param>
       <state_interface name="effort"/>
     </joint>
-    <joint name="arm_0_fr3_joint3">
+    <joint name="left_fr3_joint3">
       <command_interface name="position"/>
       <command_interface name="velocity"/>
       <command_interface name="effort"/>
@@ -1094,7 +1094,7 @@
       <param name="initial_value">0.0</param>
       <state_interface name="effort"/>
     </joint>
-    <joint name="arm_0_fr3_joint4">
+    <joint name="left_fr3_joint4">
       <command_interface name="position"/>
       <command_interface name="velocity"/>
       <command_interface name="effort"/>
@@ -1105,7 +1105,7 @@
       <param name="initial_value">0.0</param>
       <state_interface name="effort"/>
     </joint>
-    <joint name="arm_0_fr3_joint5">
+    <joint name="left_fr3_joint5">
       <command_interface name="position"/>
       <command_interface name="velocity"/>
       <command_interface name="effort"/>
@@ -1116,7 +1116,7 @@
       <param name="initial_value">0.0</param>
       <state_interface name="effort"/>
     </joint>
-    <joint name="arm_0_fr3_joint6">
+    <joint name="left_fr3_joint6">
       <command_interface name="position"/>
       <command_interface name="velocity"/>
       <command_interface name="effort"/>
@@ -1127,7 +1127,7 @@
       <param name="initial_value">0.0</param>
       <state_interface name="effort"/>
     </joint>
-    <joint name="arm_0_fr3_joint7">
+    <joint name="left_fr3_joint7">
       <command_interface name="position"/>
       <command_interface name="velocity"/>
       <command_interface name="effort"/>
@@ -1140,8 +1140,8 @@
     </joint>
   </ros2_control>
   <!-- Parent Joint -->
-  <joint name="arm_1_fr3_joint0" type="fixed">
-    <child link="arm_1_fr3_link0"/>
+  <joint name="right_fr3_joint0" type="fixed">
+    <child link="right_fr3_link0"/>
     <parent link="arm_mount_right_link"/>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </joint>
@@ -1152,14 +1152,14 @@
   <!-- inertials: description of the inertials that comes from a YAML file. Example definition: ${xacro.load_yaml('$(find franka_description)/robots/fr3/inertials.yaml')} -->
   <!-- dynamics: description of the dynamics that comes from a YAML file. Example definition: ${xacro.load_yaml('$(find franka_description)/robots/fr3/dynamics.yaml')} -->
   <!-- sub-link defining detailed meshes for collision with environment -->
-  <link name="arm_1_fr3_link0">
+  <link name="right_fr3_link0">
 
-    <visual name="arm_1_fr3_link0_visual">
+    <visual name="right_fr3_link0_visual">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link0.dae"/>
       </geometry>
     </visual>
-    <collision name="arm_1_fr3_link0_collision">
+    <collision name="right_fr3_link0_collision">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link0.stl"/>
       </geometry>
@@ -1171,14 +1171,14 @@
     </inertial>
   </link>
   <!-- sub-link defining detailed meshes for collision with environment -->
-  <link name="arm_1_fr3_link1">
+  <link name="right_fr3_link1">
 
-    <visual name="arm_1_fr3_link1_visual">
+    <visual name="right_fr3_link1_visual">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link1.dae"/>
       </geometry>
     </visual>
-    <collision name="arm_1_fr3_link1_collision">
+    <collision name="right_fr3_link1_collision">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link1.stl"/>
       </geometry>
@@ -1189,10 +1189,10 @@
       <inertia ixx="0.023927316485107913" ixy="1.3317903455714081e-05" ixz="-0.00011404774918616684" iyy="0.0224821613275756" iyz="-0.0019950320628240115" izz="0.006350098258530016"/>
     </inertial>
   </link>
-  <joint name="arm_1_fr3_joint1" type="revolute">
+  <joint name="right_fr3_joint1" type="revolute">
     <origin rpy="0 0 0" xyz="0 0 0.333"/>
-    <parent link="arm_1_fr3_link0"/>
-    <child link="arm_1_fr3_link1"/>
+    <parent link="right_fr3_link0"/>
+    <child link="right_fr3_link1"/>
     <axis xyz="0 0 1"/>
     <limit effort="87.0" lower="-2.9007" upper="2.9007" velocity="2.62"/>
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.9007" soft_upper_limit="2.9007"/>
@@ -1200,14 +1200,14 @@
     <dynamics D="1" K="7000" damping="0.003" friction="0.2" mu_coulomb="0" mu_viscous="16"/>
   </joint>
   <!-- sub-link defining detailed meshes for collision with environment -->
-  <link name="arm_1_fr3_link2">
+  <link name="right_fr3_link2">
 
-    <visual name="arm_1_fr3_link2_visual">
+    <visual name="right_fr3_link2_visual">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link2.dae"/>
       </geometry>
     </visual>
-    <collision name="arm_1_fr3_link2_collision">
+    <collision name="right_fr3_link2_collision">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link2.stl"/>
       </geometry>
@@ -1218,10 +1218,10 @@
       <inertia ixx="0.041938946257609425" ixy="0.00020257331521090626" ixz="0.004077784227179924" iyy="0.02514514885014724" iyz="-0.0042252158006570156" izz="0.06170214472888839"/>
     </inertial>
   </link>
-  <joint name="arm_1_fr3_joint2" type="revolute">
+  <joint name="right_fr3_joint2" type="revolute">
     <origin rpy="-1.570796326794897 0 0" xyz="0 0 0"/>
-    <parent link="arm_1_fr3_link1"/>
-    <child link="arm_1_fr3_link2"/>
+    <parent link="right_fr3_link1"/>
+    <child link="right_fr3_link2"/>
     <axis xyz="0 0 1"/>
     <limit effort="87.0" lower="-1.8361" upper="1.8361" velocity="2.62"/>
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-1.8361" soft_upper_limit="1.8361"/>
@@ -1229,14 +1229,14 @@
     <dynamics D="1" K="7000" damping="0.003" friction="0.2" mu_coulomb="0" mu_viscous="16"/>
   </joint>
   <!-- sub-link defining detailed meshes for collision with environment -->
-  <link name="arm_1_fr3_link3">
+  <link name="right_fr3_link3">
 
-    <visual name="arm_1_fr3_link3_visual">
+    <visual name="right_fr3_link3_visual">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link3.dae"/>
       </geometry>
     </visual>
-    <collision name="arm_1_fr3_link3_collision">
+    <collision name="right_fr3_link3_collision">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link3.stl"/>
       </geometry>
@@ -1247,10 +1247,10 @@
       <inertia ixx="0.02410142547240885" ixy="0.002404694559042109" ixz="-0.002856269270114313" iyy="0.01974053266708178" iyz="-0.002104212683891874" izz="0.019044494482244823"/>
     </inertial>
   </link>
-  <joint name="arm_1_fr3_joint3" type="revolute">
+  <joint name="right_fr3_joint3" type="revolute">
     <origin rpy="1.570796326794897 0 0" xyz="0 -0.316 0"/>
-    <parent link="arm_1_fr3_link2"/>
-    <child link="arm_1_fr3_link3"/>
+    <parent link="right_fr3_link2"/>
+    <child link="right_fr3_link3"/>
     <axis xyz="0 0 1"/>
     <limit effort="87.0" lower="-2.9007" upper="2.9007" velocity="2.62"/>
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.9007" soft_upper_limit="2.9007"/>
@@ -1258,14 +1258,14 @@
     <dynamics D="1" K="7000" damping="0.003" friction="0.2" mu_coulomb="0" mu_viscous="16"/>
   </joint>
   <!-- sub-link defining detailed meshes for collision with environment -->
-  <link name="arm_1_fr3_link4">
+  <link name="right_fr3_link4">
 
-    <visual name="arm_1_fr3_link4_visual">
+    <visual name="right_fr3_link4_visual">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link4.dae"/>
       </geometry>
     </visual>
-    <collision name="arm_1_fr3_link4_collision">
+    <collision name="right_fr3_link4_collision">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link4.stl"/>
       </geometry>
@@ -1276,10 +1276,10 @@
       <inertia ixx="0.03452998321913202" ixy="0.01322552265982813" ixz="0.01015142998484113" iyy="0.028881621933049058" iyz="-0.0009762833870704552" izz="0.04125471171146641"/>
     </inertial>
   </link>
-  <joint name="arm_1_fr3_joint4" type="revolute">
+  <joint name="right_fr3_joint4" type="revolute">
     <origin rpy="1.570796326794897 0 0" xyz="0.0825 0 0"/>
-    <parent link="arm_1_fr3_link3"/>
-    <child link="arm_1_fr3_link4"/>
+    <parent link="right_fr3_link3"/>
+    <child link="right_fr3_link4"/>
     <axis xyz="0 0 1"/>
     <limit effort="87.0" lower="-3.077" upper="-0.1169" velocity="2.62"/>
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-3.077" soft_upper_limit="-0.1169"/>
@@ -1287,14 +1287,14 @@
     <dynamics D="1" K="7000" damping="0.003" friction="0.2" mu_coulomb="0" mu_viscous="16"/>
   </joint>
   <!-- sub-link defining detailed meshes for collision with environment -->
-  <link name="arm_1_fr3_link5">
+  <link name="right_fr3_link5">
 
-    <visual name="arm_1_fr3_link5_visual">
+    <visual name="right_fr3_link5_visual">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link5.dae"/>
       </geometry>
     </visual>
-    <collision name="arm_1_fr3_link5_collision">
+    <collision name="right_fr3_link5_collision">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link5.stl"/>
       </geometry>
@@ -1305,10 +1305,10 @@
       <inertia ixx="0.051610278463662895" ixy="-0.005715173387783472" ixz="-0.0035673167625872135" iyy="0.04787729713371481" iyz="0.010673985108535986" izz="0.016423625579357254"/>
     </inertial>
   </link>
-  <joint name="arm_1_fr3_joint5" type="revolute">
+  <joint name="right_fr3_joint5" type="revolute">
     <origin rpy="-1.570796326794897 0 0" xyz="-0.0825 0.384 0"/>
-    <parent link="arm_1_fr3_link4"/>
-    <child link="arm_1_fr3_link5"/>
+    <parent link="right_fr3_link4"/>
+    <child link="right_fr3_link5"/>
     <axis xyz="0 0 1"/>
     <limit effort="12.0" lower="-2.8763" upper="2.8763" velocity="5.26"/>
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-2.8763" soft_upper_limit="2.8763"/>
@@ -1316,14 +1316,14 @@
     <dynamics D="1" K="7000" damping="0.003" friction="0.2" mu_coulomb="0" mu_viscous="16"/>
   </joint>
   <!-- sub-link defining detailed meshes for collision with environment -->
-  <link name="arm_1_fr3_link6">
+  <link name="right_fr3_link6">
 
-    <visual name="arm_1_fr3_link6_visual">
+    <visual name="right_fr3_link6_visual">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link6.dae"/>
       </geometry>
     </visual>
-    <collision name="arm_1_fr3_link6_collision">
+    <collision name="right_fr3_link6_collision">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link6.stl"/>
       </geometry>
@@ -1334,10 +1334,10 @@
       <inertia ixx="0.005412333594383447" ixy="0.006193456360285834" ixz="0.0014219289306117652" iyy="0.014058329545509979" iyz="-0.0013140753741120031" izz="0.016080817924212554"/>
     </inertial>
   </link>
-  <joint name="arm_1_fr3_joint6" type="revolute">
+  <joint name="right_fr3_joint6" type="revolute">
     <origin rpy="1.570796326794897 0 0" xyz="0 0 0"/>
-    <parent link="arm_1_fr3_link5"/>
-    <child link="arm_1_fr3_link6"/>
+    <parent link="right_fr3_link5"/>
+    <child link="right_fr3_link6"/>
     <axis xyz="0 0 1"/>
     <limit effort="12.0" lower="0.4398" upper="4.6216" velocity="4.18"/>
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="0.4398" soft_upper_limit="4.6216"/>
@@ -1345,14 +1345,14 @@
     <dynamics D="1" K="7000" damping="0.003" friction="0.2" mu_coulomb="0" mu_viscous="16"/>
   </joint>
   <!-- sub-link defining detailed meshes for collision with environment -->
-  <link name="arm_1_fr3_link7">
+  <link name="right_fr3_link7">
 
-    <visual name="arm_1_fr3_link7_visual">
+    <visual name="right_fr3_link7_visual">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link7.dae"/>
       </geometry>
     </visual>
-    <collision name="arm_1_fr3_link7_collision">
+    <collision name="right_fr3_link7_collision">
       <geometry>
         <mesh filename="package://garmi_description/meshes/link7.stl"/>
       </geometry>
@@ -1363,27 +1363,27 @@
       <inertia ixx="0.00021092389150104718" ixy="-2.433299114461931e-05" ixz="4.564480393778983e-05" iyy="0.00017718568002411474" iyz="8.744070223226438e-05" izz="5.993190599659971e-05"/>
     </inertial>
   </link>
-  <joint name="arm_1_fr3_joint7" type="revolute">
+  <joint name="right_fr3_joint7" type="revolute">
     <origin rpy="1.570796326794897 0 0" xyz="0.088 0 0"/>
-    <parent link="arm_1_fr3_link6"/>
-    <child link="arm_1_fr3_link7"/>
+    <parent link="right_fr3_link6"/>
+    <child link="right_fr3_link7"/>
     <axis xyz="0 0 1"/>
     <limit effort="12.0" lower="-3.0508" upper="3.0508" velocity="5.26"/>
     <safety_controller k_position="100.0" k_velocity="40.0" soft_lower_limit="-3.0508" soft_upper_limit="3.0508"/>
     <position_based_velocity_limits deceleration_limit="17.0" velocity_offset="0.4592"/>
     <dynamics D="1" K="7000" damping="0.003" friction="0.2" mu_coulomb="0" mu_viscous="16"/>
   </joint>
-  <link name="arm_1_fr3_link8"/>
-  <joint name="arm_1_fr3_joint8" type="fixed">
+  <link name="right_fr3_link8"/>
+  <joint name="right_fr3_joint8" type="fixed">
     <origin rpy="0 0 0" xyz="0 0 0.107"/>
-    <parent link="arm_1_fr3_link7"/>
-    <child link="arm_1_fr3_link8"/>
+    <parent link="right_fr3_link7"/>
+    <child link="right_fr3_link8"/>
   </joint>
   <ros2_control name="arm_1_FrankaHardwareInterface" type="system">
     <hardware>
       <plugin>gz_ros2_control/GazeboSimSystem</plugin>
     </hardware>
-    <joint name="arm_1_fr3_joint1">
+    <joint name="right_fr3_joint1">
       <command_interface name="position"/>
       <command_interface name="velocity"/>
       <command_interface name="effort"/>
@@ -1394,7 +1394,7 @@
       <param name="initial_value">0.0</param>
       <state_interface name="effort"/>
     </joint>
-    <joint name="arm_1_fr3_joint2">
+    <joint name="right_fr3_joint2">
       <command_interface name="position"/>
       <command_interface name="velocity"/>
       <command_interface name="effort"/>
@@ -1405,7 +1405,7 @@
       <param name="initial_value">0.0</param>
       <state_interface name="effort"/>
     </joint>
-    <joint name="arm_1_fr3_joint3">
+    <joint name="right_fr3_joint3">
       <command_interface name="position"/>
       <command_interface name="velocity"/>
       <command_interface name="effort"/>
@@ -1416,7 +1416,7 @@
       <param name="initial_value">0.0</param>
       <state_interface name="effort"/>
     </joint>
-    <joint name="arm_1_fr3_joint4">
+    <joint name="right_fr3_joint4">
       <command_interface name="position"/>
       <command_interface name="velocity"/>
       <command_interface name="effort"/>
@@ -1427,7 +1427,7 @@
       <param name="initial_value">0.0</param>
       <state_interface name="effort"/>
     </joint>
-    <joint name="arm_1_fr3_joint5">
+    <joint name="right_fr3_joint5">
       <command_interface name="position"/>
       <command_interface name="velocity"/>
       <command_interface name="effort"/>
@@ -1438,7 +1438,7 @@
       <param name="initial_value">0.0</param>
       <state_interface name="effort"/>
     </joint>
-    <joint name="arm_1_fr3_joint6">
+    <joint name="right_fr3_joint6">
       <command_interface name="position"/>
       <command_interface name="velocity"/>
       <command_interface name="effort"/>
@@ -1449,7 +1449,7 @@
       <param name="initial_value">0.0</param>
       <state_interface name="effort"/>
     </joint>
-    <joint name="arm_1_fr3_joint7">
+    <joint name="right_fr3_joint7">
       <command_interface name="position"/>
       <command_interface name="velocity"/>
       <command_interface name="effort"/>
@@ -1461,19 +1461,19 @@
       <state_interface name="effort"/>
     </joint>
   </ros2_control>
-  <joint name="arm_0_gripper_fr3_hand_joint" type="fixed">
-    <parent link="arm_0_fr3_link8"/>
-    <child link="arm_0_gripper_fr3_hand"/>
+  <joint name="left_fr3_hand_joint" type="fixed">
+    <parent link="left_fr3_link8"/>
+    <child link="left_fr3_hand"/>
     <origin rpy="0 0 -0.7853981633974483" xyz="0 0 0"/>
   </joint>
   <!-- sub-link defining detailed meshes for collision with environment -->
-  <link name="arm_0_gripper_fr3_hand">
-    <visual name="arm_0_gripper_fr3_hand_visual">
+  <link name="left_fr3_hand">
+    <visual name="left_fr3_hand_visual">
       <geometry>
         <mesh filename="package://garmi_description/meshes/hand.dae"/>
       </geometry>
     </visual>
-    <collision name="arm_0_gripper_fr3_hand_collision">
+    <collision name="left_fr3_hand_collision">
       <geometry>
         <mesh filename="package://garmi_description/meshes/hand.stl"/>
       </geometry>
@@ -1485,14 +1485,14 @@
     </inertial>
   </link>
   <!-- Define the hand_tcp frame -->
-  <link name="arm_0_gripper_fr3_hand_tcp"/>
-  <joint name="arm_0_gripper_fr3_hand_tcp_joint" type="fixed">
+  <link name="left_fr3_hand_tcp"/>
+  <joint name="left_fr3_hand_tcp_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 0 0.1034"/>
-    <parent link="arm_0_gripper_fr3_hand"/>
-    <child link="arm_0_gripper_fr3_hand_tcp"/>
+    <parent link="left_fr3_hand"/>
+    <child link="left_fr3_hand_tcp"/>
   </joint>
-  <link name="arm_0_gripper_fr3_leftfinger">
-    <visual name="arm_0_gripper_fr3_leftfinger_visual">
+  <link name="left_fr3_leftfinger">
+    <visual name="left_fr3_leftfinger_visual">
       <geometry>
         <mesh filename="package://garmi_description/meshes/finger.dae"/>
       </geometry>
@@ -1531,8 +1531,8 @@
       <inertia ixx="8.49e-06" ixy="0.0" ixz="0.0" iyy="8.53e-06" iyz="-1.06e-06" izz="1.77e-06"/>
     </inertial>
   </link>
-  <link name="arm_0_gripper_fr3_rightfinger">
-    <visual name="arm_0_gripper_fr3_rightfinger_visual">
+  <link name="left_fr3_rightfinger">
+    <visual name="left_fr3_rightfinger_visual">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <mesh filename="package://garmi_description/meshes/finger.dae"/>
@@ -1572,36 +1572,36 @@
       <inertia ixx="8.49e-06" ixy="0.0" ixz="0.0" iyy="8.53e-06" iyz="-1.06e-06" izz="1.77e-06"/>
     </inertial>
   </link>
-  <joint name="arm_0_gripper_fr3_finger_joint1" type="prismatic">
-    <parent link="arm_0_gripper_fr3_hand"/>
-    <child link="arm_0_gripper_fr3_leftfinger"/>
+  <joint name="left_fr3_finger_joint1" type="prismatic">
+    <parent link="left_fr3_hand"/>
+    <child link="left_fr3_leftfinger"/>
     <origin rpy="0 0 0" xyz="0 0 0.0584"/>
     <axis xyz="0 1 0"/>
     <limit effort="100" lower="0.0" upper="0.04" velocity="0.2"/>
     <dynamics damping="0.3"/>
   </joint>
-  <joint name="arm_0_gripper_fr3_finger_joint2" type="prismatic">
-    <parent link="arm_0_gripper_fr3_hand"/>
-    <child link="arm_0_gripper_fr3_rightfinger"/>
+  <joint name="left_fr3_finger_joint2" type="prismatic">
+    <parent link="left_fr3_hand"/>
+    <child link="left_fr3_rightfinger"/>
     <origin rpy="0 0 3.141592653589793" xyz="0 0 0.0584"/>
     <axis xyz="0 1 0"/>
     <limit effort="100" lower="0.0" upper="0.04" velocity="0.2"/>
-    <mimic joint="arm_0_gripper_fr3_finger_joint1"/>
+    <mimic joint="left_fr3_finger_joint1"/>
     <dynamics damping="0.3"/>
   </joint>
-  <joint name="arm_1_gripper_fr3_hand_joint" type="fixed">
-    <parent link="arm_1_fr3_link8"/>
-    <child link="arm_1_gripper_fr3_hand"/>
+  <joint name="right_fr3_hand_joint" type="fixed">
+    <parent link="right_fr3_link8"/>
+    <child link="right_fr3_hand"/>
     <origin rpy="0 0 -0.7853981633974483" xyz="0 0 0"/>
   </joint>
   <!-- sub-link defining detailed meshes for collision with environment -->
-  <link name="arm_1_gripper_fr3_hand">
-    <visual name="arm_1_gripper_fr3_hand_visual">
+  <link name="right_fr3_hand">
+    <visual name="right_fr3_hand_visual">
       <geometry>
         <mesh filename="package://garmi_description/meshes/hand.dae"/>
       </geometry>
     </visual>
-    <collision name="arm_1_gripper_fr3_hand_collision">
+    <collision name="right_fr3_hand_collision">
       <geometry>
         <mesh filename="package://garmi_description/meshes/hand.stl"/>
       </geometry>
@@ -1613,14 +1613,14 @@
     </inertial>
   </link>
   <!-- Define the hand_tcp frame -->
-  <link name="arm_1_gripper_fr3_hand_tcp"/>
-  <joint name="arm_1_gripper_fr3_hand_tcp_joint" type="fixed">
+  <link name="right_fr3_hand_tcp"/>
+  <joint name="right_fr3_hand_tcp_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 0 0.1034"/>
-    <parent link="arm_1_gripper_fr3_hand"/>
-    <child link="arm_1_gripper_fr3_hand_tcp"/>
+    <parent link="right_fr3_hand"/>
+    <child link="right_fr3_hand_tcp"/>
   </joint>
-  <link name="arm_1_gripper_fr3_leftfinger">
-    <visual name="arm_1_gripper_fr3_leftfinger_visual">
+  <link name="right_fr3_leftfinger">
+    <visual name="right_fr3_leftfinger_visual">
       <geometry>
         <mesh filename="package://garmi_description/meshes/finger.dae"/>
       </geometry>
@@ -1659,8 +1659,8 @@
       <inertia ixx="8.49e-06" ixy="0.0" ixz="0.0" iyy="8.53e-06" iyz="-1.06e-06" izz="1.77e-06"/>
     </inertial>
   </link>
-  <link name="arm_1_gripper_fr3_rightfinger">
-    <visual name="arm_1_gripper_fr3_rightfinger_visual">
+  <link name="right_fr3_rightfinger">
+    <visual name="right_fr3_rightfinger_visual">
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
         <mesh filename="package://garmi_description/meshes/finger.dae"/>
@@ -1700,21 +1700,21 @@
       <inertia ixx="8.49e-06" ixy="0.0" ixz="0.0" iyy="8.53e-06" iyz="-1.06e-06" izz="1.77e-06"/>
     </inertial>
   </link>
-  <joint name="arm_1_gripper_fr3_finger_joint1" type="prismatic">
-    <parent link="arm_1_gripper_fr3_hand"/>
-    <child link="arm_1_gripper_fr3_leftfinger"/>
+  <joint name="right_fr3_finger_joint1" type="prismatic">
+    <parent link="right_fr3_hand"/>
+    <child link="right_fr3_leftfinger"/>
     <origin rpy="0 0 0" xyz="0 0 0.0584"/>
     <axis xyz="0 1 0"/>
     <limit effort="100" lower="0.0" upper="0.04" velocity="0.2"/>
     <dynamics damping="0.3"/>
   </joint>
-  <joint name="arm_1_gripper_fr3_finger_joint2" type="prismatic">
-    <parent link="arm_1_gripper_fr3_hand"/>
-    <child link="arm_1_gripper_fr3_rightfinger"/>
+  <joint name="right_fr3_finger_joint2" type="prismatic">
+    <parent link="right_fr3_hand"/>
+    <child link="right_fr3_rightfinger"/>
     <origin rpy="0 0 3.141592653589793" xyz="0 0 0.0584"/>
     <axis xyz="0 1 0"/>
     <limit effort="100" lower="0.0" upper="0.04" velocity="0.2"/>
-    <mimic joint="arm_1_gripper_fr3_finger_joint1"/>
+    <mimic joint="right_fr3_finger_joint1"/>
     <dynamics damping="0.3"/>
   </joint>
   <link name="body_link">
@@ -1827,14 +1827,14 @@
     <child link="neck_1"/>
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.015"/>
   </joint>
-  <joint name="head_pan_joint" type="revolute">
+  <joint name="o1_motor_1" type="revolute">
     <origin rpy="0.0 0.0 0.0" xyz="0.0279 0.0 0.0119"/>
     <parent link="neck_1"/>
     <child link="neck_2"/>
     <axis xyz="0 0 1"/>
     <limit effort="30" lower="-1.5707" upper="1.5707" velocity="1.5707"/>
   </joint>
-  <joint name="head_tilt_joint" type="revolute">
+  <joint name="o1_motor_2" type="revolute">
     <origin rpy="0.0 0.0 0.0" xyz="0.0 -0.034 0.1521"/>
     <parent link="neck_2"/>
     <child link="head"/>
@@ -1845,7 +1845,7 @@
     <hardware>
       <plugin>gz_ros2_control/GazeboSimSystem</plugin>
     </hardware>
-    <joint name="head_pan_joint">
+    <joint name="o1_motor_1">
       <command_interface name="position"/>
       <command_interface name="effort"/>
       <command_interface name="velocity"/>
@@ -1856,7 +1856,7 @@
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
     </joint>
-    <joint name="head_tilt_joint">
+    <joint name="o1_motor_2">
       <command_interface name="position"/>
       <command_interface name="effort"/>
       <command_interface name="velocity"/>
@@ -1900,99 +1900,99 @@
     </plugin>
   </gazebo>
   
-  <!-- <gazebo reference="arm_0_fr3_link0">
+  <!-- <gazebo reference="left_fr3_link0">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_0_fr3_link1">
+  <gazebo reference="left_fr3_link1">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_0_fr3_link2">
+  <gazebo reference="left_fr3_link2">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_0_fr3_link3">
+  <gazebo reference="left_fr3_link3">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_0_fr3_link4">
+  <gazebo reference="left_fr3_link4">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_0_fr3_link5">
+  <gazebo reference="left_fr3_link5">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_0_fr3_link6">
+  <gazebo reference="left_fr3_link6">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_0_fr3_link7">
+  <gazebo reference="left_fr3_link7">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_0_fr3_link8">
+  <gazebo reference="left_fr3_link8">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_0_gripper_fr3_rightfinger">
+  <gazebo reference="left_fr3_rightfinger">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_0_gripper_fr3_leftfinger">
+  <gazebo reference="left_fr3_leftfinger">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_0_gripper_fr3_hand">
+  <gazebo reference="left_fr3_hand">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_1_fr3_link0">
+  <gazebo reference="right_fr3_link0">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_1_fr3_link1">
+  <gazebo reference="right_fr3_link1">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_1_fr3_link2">
+  <gazebo reference="right_fr3_link2">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_1_fr3_link3">
+  <gazebo reference="right_fr3_link3">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_1_fr3_link4">
+  <gazebo reference="right_fr3_link4">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_1_fr3_link5">
+  <gazebo reference="right_fr3_link5">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_1_fr3_link6">
+  <gazebo reference="right_fr3_link6">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_1_fr3_link7">
+  <gazebo reference="right_fr3_link7">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_1_fr3_link8">
+  <gazebo reference="right_fr3_link8">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_1_gripper_fr3_rightfinger">
+  <gazebo reference="right_fr3_rightfinger">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_1_gripper_fr3_leftfinger">
+  <gazebo reference="right_fr3_leftfinger">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo>
-  <gazebo reference="arm_1_gripper_fr3_hand">
+  <gazebo reference="right_fr3_hand">
     <turnGravityOff>true</turnGravityOff>
     <gravity>0</gravity>
   </gazebo> -->

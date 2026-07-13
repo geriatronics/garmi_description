@@ -21,7 +21,7 @@ from python_qt_binding.QtWidgets import QHBoxLayout, QLabel, QSlider, QVBoxLayou
 from geometry_msgs.msg import TwistStamped
 from rqt_gui_py.plugin import Plugin
 
-TOPIC = "/garmi_base_controller/reference"
+TOPIC = "/platform_velocity_controller/reference"
 VMAX = 0.7      # m/s
 WMAX = 1.2      # rad/s
 PUBLISH_HZ = 30.0
