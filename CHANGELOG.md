@@ -6,6 +6,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-07-14
+
+### Added
+- `docs/real_robot.md` documenting the real robot's ROS 2 interface — the two
+  namespaced controller managers (`/garmi/arms`, `/r100_0603`), the `olive` head
+  servo, how the sim controllers map to the hardware, and how to aggregate the
+  per-manager `/joint_states` — with a pointer from the README.
+
 ### Changed
 - Renamed joints, links (TF frames) and controllers to match the **real Garmi
   robot**, so the model lines up with its `/joint_states`, TF, and controller
@@ -55,6 +63,7 @@ First public release of the portable Garmi robot description.
 - Continuous integration validating the MuJoCo model, building the container
   images, and `colcon`-building the ROS 2 package.
 
-[Unreleased]: https://github.com/geriatronics/garmi_description/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/geriatronics/garmi_description/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/geriatronics/garmi_description/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/geriatronics/garmi_description/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/geriatronics/garmi_description/releases/tag/v0.1.0

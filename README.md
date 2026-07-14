@@ -90,6 +90,7 @@ the [MuJoCo README](garmi_description/mujoco/README.md) for details.
   - `launch/` & `config/`: Setup for the illustrative RViz and Gazebo tests.
   - `scripts/`: The `demo_motion.py` example controller node.
   - `mujoco/`: Standalone MuJoCo (MJCF) model, scene and assets.
+- `docs/`: Reference notes, including the [real robot's ROS 2 interface](docs/real_robot.md) (namespaces, controllers, topics) for hardware integrators.
 
 ## ⚠️ Caveats & Known Issues
 

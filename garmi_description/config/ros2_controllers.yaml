@@ -1,5 +1,11 @@
 # Copyright 2026 Technical University of Munich
 # SPDX-License-Identifier: Apache-2.0
+#
+# Controllers for the illustrative Gazebo/RViz examples. Names and joints match
+# the real robot; controller *types* are simplified for sim stability. On the
+# hardware the arms+lift and the base run under two separate, namespaced
+# controller managers (/garmi/arms and /r100_0603) and the head is an olive
+# servo -- see docs/real_robot.md for the full mapping.
 
 controller_manager:
   ros__parameters:
