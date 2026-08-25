@@ -6,6 +6,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-08-25
+
+### Fixed
+- **2D lidar angular resolution** — both `lidar2d_0` and `lidar2d_1` scanned at
+  0.5 deg (540 samples over their 270 deg span), which is Clearpath's *simulation*
+  default rather than the sensor's own step. The Hokuyo UST on the robot reports at
+  its native 0.25 deg, so the model now uses 1080 samples and matches what the
+  hardware publishes. Coarse beams straddle thin obstacles: at 0.5 deg the example
+  navigation misses table legs at range that the real robot sees.
+
 ## [0.1.2] - 2026-07-14
 
 ### Added
@@ -63,7 +73,8 @@ First public release of the portable Garmi robot description.
 - Continuous integration validating the MuJoCo model, building the container
   images, and `colcon`-building the ROS 2 package.
 
-[Unreleased]: https://github.com/geriatronics/garmi_description/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/geriatronics/garmi_description/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/geriatronics/garmi_description/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/geriatronics/garmi_description/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/geriatronics/garmi_description/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/geriatronics/garmi_description/releases/tag/v0.1.0
