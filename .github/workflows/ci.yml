@@ -6,6 +6,27 @@ on:
   pull_request:
 
 jobs:
+  # The same ruff verdict garmi-core's pre-push gate reaches over this tree. garmi-core vendors
+  # this repository as a submodule and lints the whole checked-out filesystem, so a finding here
+  # blocks a push there -- and cannot be fixed from that side. Judging it here, where it can be,
+  # is the point of this job.
+  quality:
+    name: Code quality gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      # Pinned, and pinned to garmi-core's version on purpose: a different ruff reaches a
+      # different verdict, so this pin and garmi-core's Dockerfile pin must move together.
+      - name: Install ruff
+        run: pip install ruff==0.14.4
+      - name: ruff lint (all files)
+        run: ruff check --config ruff.toml --force-exclude .
+      - name: ruff format check (all files)
+        run: ruff format --config ruff.toml --force-exclude --check .
+
   model:
     name: Validate model & sources
     runs-on: ubuntu-latest

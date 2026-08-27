@@ -1,0 +1,73 @@
+# =================================================================================================
+# Configuration of automatic code sanity checks
+#
+# The rules themselves live in ruff.toml and are garmi-core's verbatim. This repository is consumed
+# as a submodule of garmi-core, whose pre-push gate judges the whole checked-out tree -- this one
+# included -- so a rule that differs here is a rule that fails over there, on a push nobody can fix
+# from that side.
+#
+# One deliberate difference from garmi-core: it runs ruff from a Dockerfile-pinned system install
+# because its devcontainer owns the toolchain and a second version pin in this file could silently
+# diverge from it. This repository has no such container, so `language: system` here means "the ruff
+# on your PATH" -- install the pinned one with `pip install ruff==0.14.4`. CI pins it explicitly
+# (.github/workflows/ci.yml) and is the authority; that is what keeps commit, push and CI on one
+# version, which is the point of garmi-core's rule.
+#
+# Scope, deliberately: the ruff gate only. garmi-core also runs whitespace/EOF hygiene hooks and
+# gitlint, but those judge staged files and commit messages, never a submodule checkout, so they
+# cannot break garmi-core's verdict -- and adopting them here would mean reformatting garmi.urdf
+# and a .dae mesh for no gate-related reason.
+# =================================================================================================
+
+repos:
+  - repo: local
+    hooks:
+      # Per-commit: lint and format the STAGED files, autofixing as we go. Fixing belongs on
+      # the commit stage, where the developer sees the change and can review it.
+      # --force-exclude on every ruff invocation: ruff silently skips its exclude lists for
+      # paths passed explicitly on the command line, and pre-commit always passes staged files
+      # explicitly, so without the flag an excluded file is linted anyway.
+      - id: ruff
+        name: ruff lint (staged files)
+        entry: ruff check
+        language: system
+        types: [python]
+        args: [--config, ruff.toml, --force-exclude,
+               --fix, --show-fixes, --exit-non-zero-on-fix]
+        stages: [pre-commit]
+
+      - id: ruff-format
+        name: ruff format (staged files)
+        entry: >-
+          bash -c 'ruff format --config ruff.toml --force-exclude --check "$@";
+          ruff format --config ruff.toml --force-exclude "$@"' --
+        language: system
+        types: [python]
+        stages: [pre-commit]
+
+      # Per-push: CHECK the whole tree, never fix it. A whole-tree hook is a judge, never a
+      # fixer -- one that rewrites what it was asked to assess exits with the rewrite's status
+      # and so can never fail, which is how a misformatted committed file sails through.
+      # always_run rather than a types filter: a push touching no Python must still receive the
+      # whole-tree verdict instead of silently skipping it.
+      - id: ruff-lint-all
+        name: ruff lint check (all files)
+        entry: ruff check
+        language: system
+        always_run: true
+        pass_filenames: false
+        args: [--config, ruff.toml, --force-exclude, .]
+        stages: [pre-push]
+
+      - id: ruff-format-all
+        name: ruff format check (all files)
+        entry: ruff format
+        language: system
+        always_run: true
+        pass_filenames: false
+        args: [--config, ruff.toml, --force-exclude, --check, .]
+        stages: [pre-push]
+
+# Additional configuration
+default_stages: [pre-commit]
+fail_fast: false
