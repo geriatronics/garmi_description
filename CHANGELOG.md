@@ -6,6 +6,23 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- **Code quality gate matching garmi-core's** — `ruff.toml` carries garmi-core's ruff rules
+  verbatim, a `.pre-commit-config.yaml` runs them (autofixing staged files on commit, judging
+  the whole tree on push), and CI reaches the same verdict on every pull request with the same
+  pinned ruff. garmi-core vendors this repository as a submodule and lints the whole checked-out
+  tree on push, so a finding here used to block a push there that nobody could fix from that
+  side; now it is caught where it can be fixed.
+
+### Changed
+- **Python sources brought up to that gate** — quotes, import order and formatting normalised,
+  docstrings added, and a handful of real cleanups: an unused `numpy` import dropped, an unused
+  model argument removed from `measure_twist`, the wheel clamp turned from an assigned lambda
+  into a named function, `zip()` in the teleop loop made `strict=True`, unclosed file handles in
+  the asset builder given context managers, and its output tidying extracted into its own
+  function. Behaviour is unchanged; Qt's `mousePressEvent`-style overrides keep their names,
+  which the gate is told about rather than renaming what Qt looks up.
+
 ## [0.1.3] - 2026-08-25
 
 ### Fixed

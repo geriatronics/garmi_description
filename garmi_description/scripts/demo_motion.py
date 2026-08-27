@@ -23,24 +23,24 @@ or, in an environment that already has the simulation running:
 import math
 
 import rclpy
-from rclpy.node import Node
-from rclpy.duration import Duration
-
 from geometry_msgs.msg import TwistStamped
+from rclpy.duration import Duration
+from rclpy.node import Node
 from std_msgs.msg import Float64MultiArray
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 # Joint names, matching config/ros2_controllers.yaml and the URDF.
-ARM_0_JOINTS = [f'left_fr3_joint{i}' for i in range(1, 8)]
-ARM_1_JOINTS = [f'right_fr3_joint{i}' for i in range(1, 8)]
-LIFT_JOINTS = ['lift_0_lower_joint']
+ARM_0_JOINTS = [f"left_fr3_joint{i}" for i in range(1, 8)]
+ARM_1_JOINTS = [f"right_fr3_joint{i}" for i in range(1, 8)]
+LIFT_JOINTS = ["lift_0_lower_joint"]
 
 
 class GarmiDemo(Node):
     """Publishes periodic references to all of Garmi's controllers."""
 
     def __init__(self):
-        super().__init__('garmi_demo_controller')
+        """Create one publisher per controller and start the command timer."""
+        super().__init__("garmi_demo_controller")
 
         # Publishers, one per controller.
         #  * The arms use forward velocity controllers and take a
@@ -49,29 +49,34 @@ class GarmiDemo(Node):
         #    points).
         #  * The mecanum base takes a velocity reference as a TwistStamped.
         self.arm_0_pub = self.create_publisher(
-            Float64MultiArray, '/left_arm_joint_velocity_controller/commands', 10)
+            Float64MultiArray, "/left_arm_joint_velocity_controller/commands", 10
+        )
         self.arm_1_pub = self.create_publisher(
-            Float64MultiArray, '/right_arm_joint_velocity_controller/commands', 10)
+            Float64MultiArray, "/right_arm_joint_velocity_controller/commands", 10
+        )
         self.lift_pub = self.create_publisher(
-            JointTrajectory, '/lift_0_position_controller/joint_trajectory', 10)
+            JointTrajectory, "/lift_0_position_controller/joint_trajectory", 10
+        )
         self.base_pub = self.create_publisher(
-            TwistStamped, '/platform_velocity_controller/reference', 10)
+            TwistStamped, "/platform_velocity_controller/reference", 10
+        )
 
         # Motion parameters (gentle, but clearly visible).
-        self.arm_amplitude = 0.3       # rad, sets the joint sweep (peak 2*A)
-        self.arm_period = 5.0          # s
-        self.lift_center = 0.2         # m, mid-stroke (limits: 0.0 .. 0.4)
-        self.lift_amplitude = 0.15     # m
-        self.lift_period = 12.0        # s (stays under the 0.088 m/s limit)
-        self.base_linear = 0.3         # m/s forward
-        self.base_angular = 0.5        # rad/s -> circle radius ~0.6 m
+        self.arm_amplitude = 0.3  # rad, sets the joint sweep (peak 2*A)
+        self.arm_period = 5.0  # s
+        self.lift_center = 0.2  # m, mid-stroke (limits: 0.0 .. 0.4)
+        self.lift_amplitude = 0.15  # m
+        self.lift_period = 12.0  # s (stays under the 0.088 m/s limit)
+        self.base_linear = 0.3  # m/s forward
+        self.base_angular = 0.5  # rad/s -> circle radius ~0.6 m
 
-        self.dt = 0.1                  # s, 10 Hz command rate
+        self.dt = 0.1  # s, 10 Hz command rate
         self.start_time = None
         self.timer = self.create_timer(self.dt, self.update)
-        self.get_logger().info('Garmi demo controller started.')
+        self.get_logger().info("Garmi demo controller started.")
 
     def update(self):
+        """Command the arms, the lift and the base for the elapsed demo time."""
         now = self.get_clock().now()
         if self.start_time is None:
             self.start_time = now
@@ -100,7 +105,7 @@ class GarmiDemo(Node):
     def _command_base(self):
         msg = TwistStamped()
         msg.header.stamp = self.get_clock().now().to_msg()
-        msg.header.frame_id = 'base_link'
+        msg.header.frame_id = "base_link"
         msg.twist.linear.x = self.base_linear
         msg.twist.angular.z = self.base_angular
         self.base_pub.publish(msg)
@@ -123,6 +128,7 @@ class GarmiDemo(Node):
 
 
 def main(args=None):
+    """Spin the demo controller until it is interrupted."""
     rclpy.init(args=args)
     node = GarmiDemo()
     try:
@@ -134,5 +140,5 @@ def main(args=None):
         rclpy.try_shutdown()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
