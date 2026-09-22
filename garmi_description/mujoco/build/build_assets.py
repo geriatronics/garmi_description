@@ -50,26 +50,58 @@ FR3_FILES = (
 )
 # Franka Hand meshes + the Panda/FER link0 base (both in the panda model dir).
 PANDA_FILES = (
-    [f"hand_{i}.obj" for i in range(5)] + ["finger_0.obj", "finger_1.obj", "hand.stl"]
+    [f"hand_{i}.obj" for i in range(5)]
+    + ["finger_0.obj", "finger_1.obj", "hand.stl"]
     + [f"link0_{i}.obj" for i in (0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11)]
     + ["link0.stl"]
 )
 
 # Garmi's own meshes (mobile base, wheels, lift). STL loads into MuJoCo as-is.
 BASE_STL = [
-    "body.stl", "body-collision.stl", "side-cover.stl", "end-cover.stl",
-    "lights.stl", "axle.stl", "rocker.stl", "mecanum.stl", "hokuyo_ust.stl",
-    "plate.stl", "base.stl", "lower.stl", "upper.stl",
+    "body.stl",
+    "body-collision.stl",
+    "side-cover.stl",
+    "end-cover.stl",
+    "lights.stl",
+    "axle.stl",
+    "rocker.stl",
+    "mecanum.stl",
+    "hokuyo_ust.stl",
+    "plate.stl",
+    "base.stl",
+    "lower.stl",
+    "upper.stl",
 ]
 # TUM multi-material parts -> split by material with obj2mjcf.
 TUM_OBJ = ["body.obj", "head.obj", "cover.obj", "mounting_plate.obj", "neck_1.obj", "neck_2.obj"]
 
 
 def fetch(rel_url, dest):
+    """Download ``rel_url`` from the menagerie raw endpoint into ``dest``."""
     urllib.request.urlretrieve(f"{RAW}/{rel_url}", dest)
 
 
+def _tidy_obj2mjcf_output():
+    """Drop obj2mjcf's leftovers and the material refs garmi.xml supersedes.
+
+    Removes the example MJCF snippets, the source JPEGs (the PNGs MuJoCo needs
+    stay) and the MTLs, then strips the now dangling material references from
+    the split OBJs -- materials live in garmi.xml, not in the OBJ files.
+    """
+    for root, _, files in os.walk(ASSETS):
+        for fn in files:
+            if fn.endswith((".jpeg", ".jpg", ".xml")) or fn == "material.mtl":
+                os.remove(os.path.join(root, fn))
+            elif fn.endswith(".obj"):
+                path = os.path.join(root, fn)
+                with open(path) as fh:
+                    lines = [ln for ln in fh if not ln.startswith(("mtllib ", "usemtl "))]
+                with open(path, "w") as fh:
+                    fh.writelines(lines)
+
+
 def main():
+    """Fetch, copy and split every mesh the MuJoCo model needs into assets/."""
     os.makedirs(ASSETS, exist_ok=True)
 
     print("[1/3] Downloading menagerie FR3 arm + Panda (hand, link0) meshes ...")
@@ -94,7 +126,9 @@ def main():
             src = os.path.join(URDF_MESHES, tex)
             if os.path.exists(src):
                 shutil.copy2(src, os.path.join(tmp, tex))
-        obj2mjcf = shutil.which("obj2mjcf") or os.path.join(os.path.dirname(sys.executable), "obj2mjcf")
+        obj2mjcf = shutil.which("obj2mjcf") or os.path.join(
+            os.path.dirname(sys.executable), "obj2mjcf"
+        )
         subprocess.run(
             [obj2mjcf, "--obj-dir", tmp, "--save-mjcf", "--overwrite"],
             check=True,
@@ -110,18 +144,7 @@ def main():
                     shutil.rmtree(dst)
                 shutil.move(out, dst)
 
-    # Tidy the obj2mjcf output: drop the example MJCF snippets, the source
-    # JPEGs (we keep the PNGs MuJoCo needs) and the MTLs, and strip the now
-    # dangling material references from the split OBJs (materials live in
-    # garmi.xml, not the OBJ files).
-    for root, _, files in os.walk(ASSETS):
-        for fn in files:
-            if fn.endswith((".jpeg", ".jpg", ".xml")) or fn == "material.mtl":
-                os.remove(os.path.join(root, fn))
-            elif fn.endswith(".obj"):
-                p = os.path.join(root, fn)
-                lines = [ln for ln in open(p) if not ln.startswith(("mtllib ", "usemtl "))]
-                open(p, "w").writelines(lines)
+    _tidy_obj2mjcf_output()
 
     print(f"Done. Assets written to {ASSETS}")
 

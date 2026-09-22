@@ -7,6 +7,7 @@
 configuration (arms flat). This launcher loads the `home` keyframe first, so
 the robot opens in the same ready pose the Gazebo model starts in.
 """
+
 import mujoco
 import mujoco.viewer
 

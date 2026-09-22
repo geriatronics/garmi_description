@@ -19,25 +19,25 @@ Run with a display (see `docker compose up teleop`), or locally from this dir:
 
     python teleop.py
 """
+
 import os
 import sys
 
 import mujoco
 import mujoco.viewer
-import numpy as np
 
 # Base geometry (matches garmi.xml / the URDF).
-WHEEL_R = 0.0759          # wheel radius [m]
-LXY = 0.319 + 0.2755      # half wheelbase + half track [m]
-WHEEL_CLAMP = 10.0        # rad/s, matches the actuator ctrlrange
+WHEEL_R = 0.0759  # wheel radius [m]
+LXY = 0.319 + 0.2755  # half wheelbase + half track [m]
+WHEEL_CLAMP = 10.0  # rad/s, matches the actuator ctrlrange
 
 # Teleop maxima (kept so a single axis stays within the wheel speed limit).
-VMAX = 0.7                # m/s (forward/back)
-WMAX = 1.2                # rad/s
+VMAX = 0.7  # m/s (forward/back)
+WMAX = 1.2  # rad/s
 # Sideways is capped lower than forward: like the real robot, strafing is
 # noticeably slower, and the lower lateral speed also reduces the small
 # yaw the discrete-roller mecanum model induces while strafing.
-LATERAL_SCALE = 0.6       # max strafe speed = VMAX * LATERAL_SCALE
+LATERAL_SCALE = 0.6  # max strafe speed = VMAX * LATERAL_SCALE
 
 # Closed-loop twist controller gains (per axis: vx, vy, wz).
 #
@@ -55,14 +55,18 @@ KI = (0.0, 0.0, 2.5)
 I_CLAMP = (0.5, 0.5, 0.1)  # anti-windup limit on the integral term
 
 
+def _clamp_wheel(v):
+    """Clamp one wheel speed to the actuator limit."""
+    return max(-WHEEL_CLAMP, min(WHEEL_CLAMP, v))
+
+
 def twist_to_wheels(vx, vy, wz):
     """Mecanum inverse kinematics: body twist -> (fl, fr, rl, rr) wheel speeds."""
     fl = (vx + vy + LXY * wz) / WHEEL_R
     fr = (vx - vy - LXY * wz) / WHEEL_R
     rl = (vx - vy + LXY * wz) / WHEEL_R
     rr = (vx + vy - LXY * wz) / WHEEL_R
-    clamp = lambda v: max(-WHEEL_CLAMP, min(WHEEL_CLAMP, v))
-    return [clamp(fl), clamp(fr), clamp(rl), clamp(rr)]
+    return [_clamp_wheel(fl), _clamp_wheel(fr), _clamp_wheel(rl), _clamp_wheel(rr)]
 
 
 def control_step(desired, measured, integ, dt, closed):
@@ -78,23 +82,28 @@ def control_step(desired, measured, integ, dt, closed):
     return twist_to_wheels(*cmd), new_integ
 
 
-def measure_twist(m, d, base_id, dofadr):
-    """Base twist (vx, vy, wz) in the base frame -- 'perfect odometry'.
+def measure_twist(d, base_id, dofadr):
+    """Measure the base twist (vx, vy, wz) in the base frame -- 'perfect odometry'.
 
     For a free joint MuJoCo stores qvel as linear velocity in the global frame
     followed by angular velocity in the local frame, so we rotate the linear
     part into the base frame and take the local yaw rate directly.
     """
-    R = d.xmat[base_id].reshape(3, 3)
-    v_body = R.T @ d.qvel[dofadr:dofadr + 3]
-    w_body = d.qvel[dofadr + 3:dofadr + 6]
+    rot = d.xmat[base_id].reshape(3, 3)
+    v_body = rot.T @ d.qvel[dofadr : dofadr + 3]
+    w_body = d.qvel[dofadr + 3 : dofadr + 6]
     return (float(v_body[0]), float(v_body[1]), float(w_body[2]))
 
 
 def main():
-    import tkinter as tk
+    """Run the MuJoCo simulation with the Tk joystick driving the base."""
+    # Both imports stay local, deliberately. Tk is a GUI dependency this module must not
+    # require of anyone importing twist_to_wheels/control_step headless, and TwistJoystick
+    # is only importable after the sys.path insert below puts scripts/ on the path.
+    import tkinter as tk  # noqa: PLC0415
+
     sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "scripts"))
-    from twist_joystick import TwistJoystick
+    from twist_joystick import TwistJoystick  # noqa: PLC0415
 
     m = mujoco.MjModel.from_xml_path("scene.xml")
     d = mujoco.MjData(m)
@@ -112,10 +121,17 @@ def main():
     js.grid(row=0, column=0)
 
     closed_var = tk.IntVar(value=1)
-    tk.Checkbutton(root, text="closed loop", variable=closed_var,
-                   command=lambda: integ.__setitem__(slice(None), [0.0, 0.0, 0.0]),
-                   fg="#ccc", bg="#222", selectcolor="#444",
-                   activebackground="#222", activeforeground="#fff").grid(row=1, column=0)
+    tk.Checkbutton(
+        root,
+        text="closed loop",
+        variable=closed_var,
+        command=lambda: integ.__setitem__(slice(None), [0.0, 0.0, 0.0]),
+        fg="#ccc",
+        bg="#222",
+        selectcolor="#444",
+        activebackground="#222",
+        activeforeground="#fff",
+    ).grid(row=1, column=0)
 
     viewer = mujoco.viewer.launch_passive(m, d)
     substeps = max(1, round(1.0 / 60.0 / m.opt.timestep))
@@ -126,11 +142,11 @@ def main():
             root.destroy()
             return
         vx, vy, wz = js.twist()
-        desired = (vx, vy * LATERAL_SCALE, wz)   # strafing is slower than driving forward
-        wheels, integ[:] = control_step(desired,
-                                        measure_twist(m, d, base_id, base_dofadr),
-                                        integ, dt, bool(closed_var.get()))
-        for aid, val in zip(wheel_ids, wheels):
+        desired = (vx, vy * LATERAL_SCALE, wz)  # strafing is slower than driving forward
+        wheels, integ[:] = control_step(
+            desired, measure_twist(d, base_id, base_dofadr), integ, dt, bool(closed_var.get())
+        )
+        for aid, val in zip(wheel_ids, wheels, strict=True):
             d.ctrl[aid] = val
         for _ in range(substeps):
             mujoco.mj_step(m, d)

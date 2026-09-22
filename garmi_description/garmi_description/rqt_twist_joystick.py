@@ -12,18 +12,18 @@ This is the Qt counterpart of the Tk joystick used by the MuJoCo teleop
 (garmi_description/scripts/twist_joystick.py); the two are kept deliberately
 similar.
 """
+
 import math
 
-from python_qt_binding.QtCore import Qt, QTimer, QPointF
+from geometry_msgs.msg import TwistStamped
+from python_qt_binding.QtCore import QPointF, Qt, QTimer
 from python_qt_binding.QtGui import QPainter, QPalette, QPen
 from python_qt_binding.QtWidgets import QHBoxLayout, QLabel, QSlider, QVBoxLayout, QWidget
-
-from geometry_msgs.msg import TwistStamped
 from rqt_gui_py.plugin import Plugin
 
 TOPIC = "/platform_velocity_controller/reference"
-VMAX = 0.7      # m/s
-WMAX = 1.2      # rad/s
+VMAX = 0.7  # m/s
+WMAX = 1.2  # rad/s
 PUBLISH_HZ = 30.0
 
 
@@ -31,6 +31,7 @@ class JoystickPad(QWidget):
     """Draggable 2D pad. up = +x (forward), left = +y. Springs back on release."""
 
     def __init__(self, radius=95):
+        """Create the pad with a knob travel radius of ``radius`` pixels."""
         super().__init__()
         self._R = radius
         self.vx = 0.0
@@ -48,22 +49,30 @@ class JoystickPad(QWidget):
         if dist > self._R:
             dx, dy = dx * self._R / dist, dy * self._R / dist
         self._knob = QPointF(dx, dy)
-        self.vx = -dy / self._R * VMAX   # up = forward
-        self.vy = -dx / self._R * VMAX   # left = +y
+        self.vx = -dy / self._R * VMAX  # up = forward
+        self.vy = -dx / self._R * VMAX  # left = +y
         self.update()
 
-    def mousePressEvent(self, e):
+    # Qt dispatches these four by name. Renaming them to snake_case would not rename what
+    # Qt looks up, it would simply stop Qt calling them. Suppressed in the source rather than
+    # in ruff.toml because garmi-core lints this file with its own config, which cannot see
+    # ours -- only a directive travelling with the file satisfies both gates.
+    def mousePressEvent(self, e):  # noqa: N802
+        """Start dragging: jump the knob to the press position."""
         self._set_from_pos(e.pos())
 
-    def mouseMoveEvent(self, e):
+    def mouseMoveEvent(self, e):  # noqa: N802
+        """Track the drag, clamping the knob to the pad radius."""
         self._set_from_pos(e.pos())
 
-    def mouseReleaseEvent(self, e):
+    def mouseReleaseEvent(self, _e):  # noqa: N802
+        """Spring the knob back to centre and stop the base."""
         self._knob = QPointF(0, 0)
         self.vx = self.vy = 0.0
         self.update()
 
-    def paintEvent(self, _):
+    def paintEvent(self, _):  # noqa: N802
+        """Draw the pad's guides and the knob in rqt's own palette."""
         # Use the system palette so the widget matches rqt's theme (light/dark).
         pal = self.palette()
         p = QPainter(self)
@@ -80,7 +89,10 @@ class JoystickPad(QWidget):
 
 
 class TwistJoystickWidget(QWidget):
+    """Joystick pad plus a yaw-rate slider: the full planar twist."""
+
     def __init__(self):
+        """Build the pad, the yaw slider and their labels."""
         super().__init__()
         self.setObjectName("GarmiTwistJoystick")
         # No hardcoded colors: inherit rqt's system theme (light or dark).
@@ -104,11 +116,15 @@ class TwistJoystickWidget(QWidget):
         layout.addLayout(right)
 
     def twist(self):
+        """Return the commanded twist as ``(vx, vy, wz)`` in SI units."""
         return (self.pad.vx, self.pad.vy, self.slider.value() / 100.0 * WMAX)
 
 
 class TwistJoystickPlugin(Plugin):
+    """rqt plugin publishing the widget's twist at ``PUBLISH_HZ``."""
+
     def __init__(self, context):
+        """Wire the widget into rqt and start the publish timer."""
         super().__init__(context)
         self.setObjectName("GarmiTwistJoystickPlugin")
         self._node = context.node
@@ -135,5 +151,6 @@ class TwistJoystickPlugin(Plugin):
         self._pub.publish(msg)
 
     def shutdown_plugin(self):
+        """Stop the timer and drop the publisher when rqt unloads us."""
         self._timer.stop()
         self._node.destroy_publisher(self._pub)
