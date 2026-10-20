@@ -76,6 +76,11 @@ own scene or attach it to other models.
 A `home` keyframe places the arms in the same ready pose the Gazebo model
 starts in.
 
+Each Franka Hand carries Garmi's long 70 mm fingertips (`<side>_fr3_<finger>_tip`
+bodies), and a site `<side>_fr3_hand_tcp` marks the tool centre between them,
+129.5 mm out from the hand, as in the URDF. Sites are in group 4, hidden in the
+viewer until that group is switched on.
+
 **Collisions & limits.** The arm links and grippers have collision geometry and
 also collide with the torso, neck, head and mobile base, so the arms cannot pass
 through the body. Those collide as the URDF's own collision geometry: true-size

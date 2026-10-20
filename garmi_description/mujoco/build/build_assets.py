@@ -57,7 +57,7 @@ PANDA_FILES = (
     + ["link0.stl"]
 )
 
-# Garmi's own meshes (mobile base, wheels, lift). STL loads into MuJoCo as-is.
+# Garmi's own meshes (mobile base, wheels, lift, fingertips). STL loads into MuJoCo as-is.
 BASE_STL = [
     "body.stl",
     "body-collision.stl",
@@ -72,6 +72,7 @@ BASE_STL = [
     "base.stl",
     "lower.stl",
     "upper.stl",
+    "fingertip.stl",
 ]
 # The URDF's collision proxies (meshes/collision/), copied to assets/collision/.
 COLLISION_STL = [

@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
+- **Garmi's long fingertips** — each finger now carries the robot's 70 mm tip (`<side>_fr3_<finger>_tip`,
+  a box for collision, drawn as a wedge), and the tool centre `<side>_fr3_hand_tcp` moves between
+  their pads, 129.5 mm out from the hand instead of 103.4 mm; the MuJoCo model gains the same tips
+  and a `<side>_fr3_hand_tcp` site.
 - **Code quality gate matching garmi-core's** — `ruff.toml` carries garmi-core's ruff rules
   verbatim, a `.pre-commit-config.yaml` runs them (autofixing staged files on commit, judging
   the whole tree on push), and CI reaches the same verdict on every pull request with the same

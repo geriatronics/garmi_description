@@ -43,22 +43,15 @@
       </default>
       <default class="hand_col">
         <geom type="mesh" group="3" contype="3" conaffinity="3"/>
-        <default class="fingertip_pad_collision_1">
-          <geom type="box" size="0.0085 0.004 0.0085" pos="0 0.0055 0.0445"/>
-        </default>
-        <default class="fingertip_pad_collision_2">
-          <geom type="box" size="0.003 0.002 0.003" pos="0.0055 0.002 0.05"/>
-        </default>
-        <default class="fingertip_pad_collision_3">
-          <geom type="box" size="0.003 0.002 0.003" pos="-0.0055 0.002 0.05"/>
-        </default>
-        <default class="fingertip_pad_collision_4">
-          <geom type="box" size="0.003 0.002 0.0035" pos="0.0055 0.002 0.0395"/>
-        </default>
-        <default class="fingertip_pad_collision_5">
-          <geom type="box" size="0.003 0.002 0.0035" pos="-0.0055 0.002 0.0395"/>
+        <!-- Garmi's long fingertip (see the URDF): a 17.8 x 10.9 x 70 mm box in
+             the tip's frame, the grip surface on its y = 0 plane. It replaces
+             menagerie's stock rubber pads, which lie inside it. -->
+        <default class="fingertip_collision">
+          <geom type="box" size="0.0089 0.00545 0.035" pos="0 0.00545 0"/>
         </default>
       </default>
+      <!-- Frames such as the tool centre; hidden unless group 4 is shown. -->
+      <site size="0.005" group="4" rgba="1 0.2 0.2 1"/>
     </default>
 
     <!-- Garmi-specific parts (base, lift, torso, head). -->
@@ -169,6 +162,10 @@
     <mesh file="finger_0.obj"/>
     <mesh file="finger_1.obj"/>
     <mesh name="hand_c" file="hand.stl"/>
+
+    <!-- Garmi's long fingertips. -->
+    <material name="fingertip_black" rgba="0.1 0.1 0.1 1"/>
+    <mesh name="fingertip" file="fingertip.stl"/>
 
     <!-- Garmi base / lift / wheel meshes. -->
     <mesh name="chassis" file="body.stl"/>
@@ -608,17 +605,19 @@
                                         <geom mesh="hand_3" material="white" class="hand_vis"/>
                                         <geom mesh="hand_4" material="off_white" class="hand_vis"/>
                                         <geom mesh="hand_c" class="hand_col"/>
+                                        <!-- Tool centre between the long fingertips' pads. -->
+                                        <site name="left_fr3_hand_tcp" pos="0 0 0.1295"/>
                                         <body name="left_fr3_leftfinger" pos="0 0 0.0584">
                                           <inertial mass="0.015" pos="0 0 0" diaginertia="2.375e-6 2.375e-6 7.5e-7"/>
                                           <joint name="left_fr3_finger_joint1" class="finger"/>
                                           <geom mesh="finger_0" material="off_white" class="hand_vis"/>
                                           <geom mesh="finger_1" material="black" class="hand_vis"/>
                                           <geom mesh="finger_0" class="hand_col"/>
-                                          <geom class="fingertip_pad_collision_1"/>
-                                          <geom class="fingertip_pad_collision_2"/>
-                                          <geom class="fingertip_pad_collision_3"/>
-                                          <geom class="fingertip_pad_collision_4"/>
-                                          <geom class="fingertip_pad_collision_5"/>
+                                          <body name="left_fr3_leftfinger_tip" pos="0 0 0.0711">
+                                            <inertial mass="0.00628" pos="0 0.00545 0.0089" diaginertia="1.488e-06 1.592e-06 2.28e-07"/>
+                                            <geom mesh="fingertip" material="fingertip_black" class="hand_vis"/>
+                                            <geom class="fingertip_collision"/>
+                                          </body>
                                         </body>
                                         <body name="left_fr3_rightfinger" pos="0 0 0.0584" quat="0 0 0 1">
                                           <inertial mass="0.015" pos="0 0 0" diaginertia="2.375e-6 2.375e-6 7.5e-7"/>
@@ -626,11 +625,11 @@
                                           <geom mesh="finger_0" material="off_white" class="hand_vis"/>
                                           <geom mesh="finger_1" material="black" class="hand_vis"/>
                                           <geom mesh="finger_0" class="hand_col"/>
-                                          <geom class="fingertip_pad_collision_1"/>
-                                          <geom class="fingertip_pad_collision_2"/>
-                                          <geom class="fingertip_pad_collision_3"/>
-                                          <geom class="fingertip_pad_collision_4"/>
-                                          <geom class="fingertip_pad_collision_5"/>
+                                          <body name="left_fr3_rightfinger_tip" pos="0 0 0.0711">
+                                            <inertial mass="0.00628" pos="0 0.00545 0.0089" diaginertia="1.488e-06 1.592e-06 2.28e-07"/>
+                                            <geom mesh="fingertip" material="fingertip_black" class="hand_vis"/>
+                                            <geom class="fingertip_collision"/>
+                                          </body>
                                         </body>
                                       </body>
                                     </body>
@@ -716,17 +715,19 @@
                                         <geom mesh="hand_3" material="white" class="hand_vis"/>
                                         <geom mesh="hand_4" material="off_white" class="hand_vis"/>
                                         <geom mesh="hand_c" class="hand_col"/>
+                                        <!-- Tool centre between the long fingertips' pads. -->
+                                        <site name="right_fr3_hand_tcp" pos="0 0 0.1295"/>
                                         <body name="right_fr3_leftfinger" pos="0 0 0.0584">
                                           <inertial mass="0.015" pos="0 0 0" diaginertia="2.375e-6 2.375e-6 7.5e-7"/>
                                           <joint name="right_fr3_finger_joint1" class="finger"/>
                                           <geom mesh="finger_0" material="off_white" class="hand_vis"/>
                                           <geom mesh="finger_1" material="black" class="hand_vis"/>
                                           <geom mesh="finger_0" class="hand_col"/>
-                                          <geom class="fingertip_pad_collision_1"/>
-                                          <geom class="fingertip_pad_collision_2"/>
-                                          <geom class="fingertip_pad_collision_3"/>
-                                          <geom class="fingertip_pad_collision_4"/>
-                                          <geom class="fingertip_pad_collision_5"/>
+                                          <body name="right_fr3_leftfinger_tip" pos="0 0 0.0711">
+                                            <inertial mass="0.00628" pos="0 0.00545 0.0089" diaginertia="1.488e-06 1.592e-06 2.28e-07"/>
+                                            <geom mesh="fingertip" material="fingertip_black" class="hand_vis"/>
+                                            <geom class="fingertip_collision"/>
+                                          </body>
                                         </body>
                                         <body name="right_fr3_rightfinger" pos="0 0 0.0584" quat="0 0 0 1">
                                           <inertial mass="0.015" pos="0 0 0" diaginertia="2.375e-6 2.375e-6 7.5e-7"/>
@@ -734,11 +735,11 @@
                                           <geom mesh="finger_0" material="off_white" class="hand_vis"/>
                                           <geom mesh="finger_1" material="black" class="hand_vis"/>
                                           <geom mesh="finger_0" class="hand_col"/>
-                                          <geom class="fingertip_pad_collision_1"/>
-                                          <geom class="fingertip_pad_collision_2"/>
-                                          <geom class="fingertip_pad_collision_3"/>
-                                          <geom class="fingertip_pad_collision_4"/>
-                                          <geom class="fingertip_pad_collision_5"/>
+                                          <body name="right_fr3_rightfinger_tip" pos="0 0 0.0711">
+                                            <inertial mass="0.00628" pos="0 0.00545 0.0089" diaginertia="1.488e-06 1.592e-06 2.28e-07"/>
+                                            <geom mesh="fingertip" material="fingertip_black" class="hand_vis"/>
+                                            <geom class="fingertip_collision"/>
+                                          </body>
                                         </body>
                                       </body>
                                     </body>
