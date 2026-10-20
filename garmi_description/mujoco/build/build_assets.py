@@ -57,7 +57,8 @@ PANDA_FILES = (
     + ["link0.stl"]
 )
 
-# Garmi's own meshes (mobile base, wheels, lift, fingertips). STL loads into MuJoCo as-is.
+# Garmi's own meshes (mobile base, wheels, lift, fingertips, head camera). STL loads into
+# MuJoCo as-is.
 BASE_STL = [
     "body.stl",
     "body-collision.stl",
@@ -73,6 +74,8 @@ BASE_STL = [
     "lower.stl",
     "upper.stl",
     "fingertip.stl",
+    "olive_camera.stl",
+    "olive_camera_housing.stl",
 ]
 # The URDF's collision proxies (meshes/collision/), copied to assets/collision/.
 COLLISION_STL = [
@@ -82,6 +85,7 @@ COLLISION_STL = [
     "neck_1.stl",
     "neck_2.stl",
     "head.stl",
+    "olive_camera.stl",
 ]
 # TUM multi-material parts -> split by material with obj2mjcf.
 TUM_OBJ = ["body.obj", "head.obj", "cover.obj", "mounting_plate.obj", "neck_1.obj", "neck_2.obj"]

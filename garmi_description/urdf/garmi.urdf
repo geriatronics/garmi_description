@@ -45,6 +45,12 @@
   <material name="fingertip_black">
     <color rgba="0.1 0.1 0.1 1"/>
   </material>
+  <material name="olive_camera_white">
+    <color rgba="0.92 0.92 0.9 1"/>
+  </material>
+  <material name="olive_camera_dark">
+    <color rgba="0.12 0.12 0.12 1"/>
+  </material>
   <!-- Chassis -->
   <link name="base_link"/>
   <joint name="base_link_joint" type="fixed">
@@ -1964,6 +1970,93 @@
     <axis xyz="0 -1 0"/>
     <limit effort="30" lower="-0.7853" upper="0.7853" velocity="1.5707"/>
   </joint>
+  <!-- Head camera: the Olive stereo fisheye camera in its white housing, on a provisional stand
+       on top of the head, riding the head's pan and tilt.
+
+       Mount. `head_camera_mount` sits on the head's top surface over the round recess at the
+       front of its camera slot, with the head's axes. The stand on it (a black ball-head base and
+       a short post, provisional until a printed mount replaces it) is drawn and collides as plain
+       cylinders sized from photos.
+
+       Camera. The stand is adjustable, so the camera's pose on it is a best guess from photos:
+       housing underside about 3 cm above the head, lenses forward, pitched down 10 degrees,
+       centred on the head. Its meshes are derived from Olive's CAD, in the camera's own frame
+       `olive_camera_link`: origin on the board's front face midway between the lenses, x forward
+       along the optical axes, y left, z up. The board and lenses are drawn dark on that link, the
+       housing white on `olive_camera_housing`. Camera and housing collide as one convex proxy.
+
+       Optical frames, one per lens (z forward, x right, y down), on the lens axes in the board's
+       front face, 63.0 mm apart. No calibration places the projection centres yet. -->
+  <joint name="head_camera_mount_joint" type="fixed">
+    <parent link="head"/>
+    <child link="head_camera_mount"/>
+    <origin rpy="0 0 0" xyz="0.0614 0.034 0.09"/>
+  </joint>
+  <link name="head_camera_mount">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0.011"/>
+      <geometry>
+        <cylinder length="0.022" radius="0.011"/>
+      </geometry>
+      <material name="olive_camera_dark"/>
+    </visual>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0.026"/>
+      <geometry>
+        <cylinder length="0.008" radius="0.004"/>
+      </geometry>
+      <material name="olive_camera_dark"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0.015"/>
+      <geometry>
+        <cylinder length="0.03" radius="0.011"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="olive_camera_joint" type="fixed">
+    <parent link="head_camera_mount"/>
+    <child link="olive_camera_link"/>
+    <origin rpy="0 0.174533 0" xyz="0.005 0 0.051"/>
+  </joint>
+  <link name="olive_camera_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://garmi_description/meshes/olive_camera.stl"/>
+      </geometry>
+      <material name="olive_camera_dark"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://garmi_description/meshes/collision/olive_camera.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="olive_camera_housing_joint" type="fixed">
+    <parent link="olive_camera_link"/>
+    <child link="olive_camera_housing"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+  </joint>
+  <link name="olive_camera_housing">
+    <visual>
+      <geometry>
+        <mesh filename="package://garmi_description/meshes/olive_camera_housing.stl"/>
+      </geometry>
+      <material name="olive_camera_white"/>
+    </visual>
+  </link>
+  <joint name="olive_camera_left_optical_joint" type="fixed">
+    <parent link="olive_camera_link"/>
+    <child link="olive_camera_left_optical_frame"/>
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0.0315 0"/>
+  </joint>
+  <link name="olive_camera_left_optical_frame"/>
+  <joint name="olive_camera_right_optical_joint" type="fixed">
+    <parent link="olive_camera_link"/>
+    <child link="olive_camera_right_optical_frame"/>
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 -0.0315 0"/>
+  </joint>
+  <link name="olive_camera_right_optical_frame"/>
   <ros2_control name="GarmiHeadSimSystem" type="system">
     <hardware>
       <plugin>gz_ros2_control/GazeboSimSystem</plugin>

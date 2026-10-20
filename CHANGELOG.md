@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
+- **The head camera** — the Olive stereo camera in its white housing on its stand on top of the
+  head (`head_camera_mount`, `olive_camera_link`, one `olive_camera_<lens>_optical_frame` per
+  lens, 63.0 mm apart), its pose on the adjustable stand a best guess from photos; the MuJoCo
+  model renders through one camera per lens.
 - **Garmi's long fingertips** — each finger now carries the robot's 70 mm tip (`<side>_fr3_<finger>_tip`,
   a box for collision, drawn as a wedge), and the tool centre `<side>_fr3_hand_tcp` moves between
   their pads, 129.5 mm out from the hand instead of 103.4 mm; the MuJoCo model gains the same tips

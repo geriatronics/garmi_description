@@ -198,6 +198,13 @@
     <mesh name="neck_1_collision" file="collision/neck_1.stl"/>
     <mesh name="neck_2_collision" file="collision/neck_2.stl"/>
     <mesh name="head_collision" file="collision/head.stl"/>
+
+    <!-- Olive stereo camera on top of the head (see the URDF). -->
+    <material name="olive_camera_white" rgba="0.92 0.92 0.9 1"/>
+    <material name="olive_camera_dark" rgba="0.12 0.12 0.12 1"/>
+    <mesh name="olive_camera" file="olive_camera.stl"/>
+    <mesh name="olive_camera_housing" file="olive_camera_housing.stl"/>
+    <mesh name="olive_camera_collision" file="collision/olive_camera.stl"/>
   </asset>
 
   <worldbody>
@@ -529,6 +536,23 @@
                           pos="-0.1388 0.034 -1.3303" quat="0.500048 0.5 0.499952 0.5"/>
                         <geom class="selfcol" mesh="head_collision"
                           pos="-0.1388 0.034 -1.3303" quat="0.500048 0.5 0.499952 0.5"/>
+                        <!-- Head camera: the Olive stereo camera in its housing on a
+                             provisional stand, its pose a best guess from photos (see
+                             the URDF). One MuJoCo camera per lens, at the URDF's optical
+                             frames; their field of view is MuJoCo's default, not the
+                             fisheye lenses'. -->
+                        <body name="head_camera_mount" pos="0.0614 0.034 0.09">
+                          <geom class="garmi_vis" type="cylinder" size="0.011 0.011" pos="0 0 0.011" material="olive_camera_dark"/>
+                          <geom class="garmi_vis" type="cylinder" size="0.004 0.004" pos="0 0 0.026" material="olive_camera_dark"/>
+                          <geom class="selfcol" type="cylinder" size="0.011 0.015" pos="0 0 0.015"/>
+                          <body name="olive_camera_link" pos="0.005 0 0.051" quat="0.9961947 0 0.0871558 0">
+                            <geom class="garmi_vis" mesh="olive_camera" material="olive_camera_dark"/>
+                            <geom class="garmi_vis" mesh="olive_camera_housing" material="olive_camera_white"/>
+                            <geom class="selfcol" mesh="olive_camera_collision"/>
+                            <camera name="olive_camera_left" pos="0 0.0315 0" xyaxes="0 -1 0 0 0 1"/>
+                            <camera name="olive_camera_right" pos="0 -0.0315 0" xyaxes="0 -1 0 0 0 1"/>
+                          </body>
+                        </body>
                       </body>
                     </body>
 

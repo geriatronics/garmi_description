@@ -81,6 +81,11 @@ bodies), and a site `<side>_fr3_hand_tcp` marks the tool centre between them,
 129.5 mm out from the hand, as in the URDF. Sites are in group 4, hidden in the
 viewer until that group is switched on.
 
+The Olive stereo camera rides on top of the head on its stand, with one MuJoCo
+camera per lens (`olive_camera_left`, `olive_camera_right`) at the URDF's
+optical frames, so you can render what the head sees. Their field of view is
+MuJoCo's default, not the fisheye lenses'.
+
 **Collisions & limits.** The arm links and grippers have collision geometry and
 also collide with the torso, neck, head and mobile base, so the arms cannot pass
 through the body. Those collide as the URDF's own collision geometry: true-size
