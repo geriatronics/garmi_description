@@ -6,6 +6,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-20
+
+Garmi's wrist and head cameras, its long fingertips, and light collision geometry, in the URDF
+and the MuJoCo model alike.
+
+### Changed (breaking)
+- **The tool centre `<side>_fr3_hand_tcp` moves 26.1 mm out, from 0.1034 to 0.1295 m** — it now
+  sits between Garmi's long fingertips, half-way along their pads, rather than between Franka's
+  stock tips; anything that commands or reads poses of this frame must follow it.
+
 ### Added
 - **The wrist cameras** — each hand's RealSense D435i on its 3D-printed bracket
   (`<side>_fr3_wrist_camera_mount`, 71.7 g), with every frame the camera driver publishes
@@ -17,10 +27,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   head (`head_camera_mount`, `olive_camera_link`, one `olive_camera_<lens>_optical_frame` per
   lens, 63.0 mm apart), its pose on the adjustable stand a best guess from photos; the MuJoCo
   model renders through one camera per lens.
-- **Garmi's long fingertips** — each finger now carries the robot's 70 mm tip (`<side>_fr3_<finger>_tip`,
-  a box for collision, drawn as a wedge), and the tool centre `<side>_fr3_hand_tcp` moves between
-  their pads, 129.5 mm out from the hand instead of 103.4 mm; the MuJoCo model gains the same tips
-  and a `<side>_fr3_hand_tcp` site.
+- **Garmi's long fingertips** — each finger now carries the robot's 70 mm tip
+  (`<side>_fr3_<finger>_tip`, a box for collision, drawn as a wedge); the MuJoCo model gains the
+  same tips and a `<side>_fr3_hand_tcp` site.
 - **Code quality gate matching garmi-core's** — `ruff.toml` carries garmi-core's ruff rules
   verbatim, a `.pre-commit-config.yaml` runs them (autofixing staged files on commit, judging
   the whole tree on push), and CI reaches the same verdict on every pull request with the same
@@ -109,7 +118,8 @@ First public release of the portable Garmi robot description.
 - Continuous integration validating the MuJoCo model, building the container
   images, and `colcon`-building the ROS 2 package.
 
-[Unreleased]: https://github.com/geriatronics/garmi_description/compare/v0.1.3...HEAD
+[Unreleased]: https://github.com/geriatronics/garmi_description/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/geriatronics/garmi_description/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/geriatronics/garmi_description/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/geriatronics/garmi_description/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/geriatronics/garmi_description/compare/v0.1.0...v0.1.1
