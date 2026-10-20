@@ -29,6 +29,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   side; now it is caught where it can be fixed.
 
 ### Changed
+- **The README image** shows the robot as it is now, cameras and fingertips included.
 - **The torso, base cover, mounting plate, neck and head collide as convex proxies** — instead of
   their visual meshes of up to 100k triangles, which made every collision check slow; each proxy
   (`meshes/collision/`, ~1200 triangles) encloses its part and reaches at most 4.4 mm beyond it.
