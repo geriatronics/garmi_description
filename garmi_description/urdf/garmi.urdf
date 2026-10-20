@@ -12,6 +12,7 @@
     - Franka arm/gripper meshes: Apache-2.0, (C) 2024 Franka Robotics GmbH
     - Mobile base meshes (derived from Clearpath Ridgeback): BSD-3-Clause,
       (C) 2021 Clearpath Robotics Inc.
+    - Intel RealSense D435 mesh: Apache-2.0, (C) 2023 RealSense, Inc.
   See the NOTICE and THIRD_PARTY_LICENSES files for details.
 -->
 <robot name="r100-0603" xmlns:gz="http://gazebosim.org/schema">
@@ -41,6 +42,18 @@
   </material>
   <material name="clearpath_plastic">
     <color rgba="0.1 0.1 0.1   1"/>
+  </material>
+  <material name="fingertip_black">
+    <color rgba="0.1 0.1 0.1 1"/>
+  </material>
+  <material name="wrist_camera_mount_white">
+    <color rgba="0.92 0.92 0.88 1"/>
+  </material>
+  <material name="olive_camera_white">
+    <color rgba="0.92 0.92 0.9 1"/>
+  </material>
+  <material name="olive_camera_dark">
+    <color rgba="0.12 0.12 0.12 1"/>
   </material>
   <!-- Chassis -->
   <link name="base_link"/>
@@ -1484,10 +1497,12 @@
       <inertia ixx="0.00186" ixy="0.0" ixz="0.0" iyy="0.0003" iyz="-2e-05" izz="0.00174"/>
     </inertial>
   </link>
-  <!-- Define the hand_tcp frame -->
+  <!-- Define the hand_tcp frame: between Garmi's long fingertips (below), half-way along their
+       pads, 58.4 + 36.1 + 70 / 2 = 129.5 mm out along the hand's axis. Franka's stock tips put
+       it at 103.4 mm. -->
   <link name="left_fr3_hand_tcp"/>
   <joint name="left_fr3_hand_tcp_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 0.1034"/>
+    <origin rpy="0 0 0" xyz="0 0 0.1295"/>
     <parent link="left_fr3_hand"/>
     <child link="left_fr3_hand_tcp"/>
   </joint>
@@ -1589,6 +1604,213 @@
     <mimic joint="left_fr3_finger_joint1"/>
     <dynamics damping="0.3"/>
   </joint>
+  <!-- Garmi's long fingertips. 70 mm long where Franka's stock tips are 17.8 mm, mounted where
+       the stock tips sit: z 36.1 to 106.1 mm in the finger's frame, 17.8 mm wide, 10.9 mm thick,
+       the grip surface on the finger's y = 0 plane. Each tip collides as that box; it is drawn
+       with its outer side sloped (meshes/fingertip.stl): from where the stock tip ends (53.9 mm)
+       the thickness falls evenly to half at the far end. The tip's frame is the pad's centre on
+       the grip surface. Its mass is only what the tip adds beyond the stock one the finger's own
+       inertial holds: the 52.2 mm from z 53.9 mm on, printed PLA at an effective fill of 0.5,
+       6.3 g. An estimate. -->
+  <joint name="left_fr3_leftfinger_tip_joint" type="fixed">
+    <parent link="left_fr3_leftfinger"/>
+    <child link="left_fr3_leftfinger_tip"/>
+    <origin rpy="0 0 0" xyz="0 0 0.0711"/>
+  </joint>
+  <link name="left_fr3_leftfinger_tip">
+    <visual>
+      <geometry>
+        <mesh filename="package://garmi_description/meshes/fingertip.stl"/>
+      </geometry>
+      <material name="fingertip_black"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0.00545 0"/>
+      <geometry>
+        <box size="0.0178 0.0109 0.07"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0.00545 0.0089"/>
+      <mass value="0.00628"/>
+      <inertia ixx="1.488e-06" ixy="0" ixz="0" iyy="1.592e-06" iyz="0" izz="2.280e-07"/>
+    </inertial>
+  </link>
+  <joint name="left_fr3_rightfinger_tip_joint" type="fixed">
+    <parent link="left_fr3_rightfinger"/>
+    <child link="left_fr3_rightfinger_tip"/>
+    <origin rpy="0 0 0" xyz="0 0 0.0711"/>
+  </joint>
+  <link name="left_fr3_rightfinger_tip">
+    <visual>
+      <geometry>
+        <mesh filename="package://garmi_description/meshes/fingertip.stl"/>
+      </geometry>
+      <material name="fingertip_black"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0.00545 0"/>
+      <geometry>
+        <box size="0.0178 0.0109 0.07"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0.00545 0.0089"/>
+      <mass value="0.00628"/>
+      <inertia ixx="1.488e-06" ixy="0" ixz="0" iyy="1.592e-06" iyz="0" izz="2.280e-07"/>
+    </inertial>
+  </link>
+  <!-- Wrist camera: an Intel RealSense D435i on a 3D-printed bracket on the left hand's flange.
+       The bracket hooks over the Franka Hand's round 63 mm flange plate on the hand frame's +x
+       broad side and is clamped by one of the hand's own flange screws; the camera sits at its
+       far end, about 12 cm out from the flange axis, tilted 45 degrees to look at the fingers.
+       The bracket's frame: origin on the flange axis in the flange face, z along the axis toward
+       the fingers, x out through the clamping screw; its pose on the flange is confirmed on the
+       robot. Bracket and camera collide as one convex proxy of both
+       (meshes/collision/wrist_camera_mount_centered.stl: the camera on the bracket's centred
+       pair of holes); the camera's own box lies inside it.
+
+       Camera: the realsense2_description model's frames and mass (Apache-2.0, see NOTICE), drawn
+       with a recoloured copy of its mesh (meshes/d435_garmi.dae: aluminium housing, black glass
+       front, charcoal lenses and projector), named `camera_d435i_left` like the driver's
+       camera_name, so every frame the driver stamps its images and IMU data with exists here,
+       optical frames included, at nominal extrinsics. Run the driver with publish_tf:=false: this
+       description owns the camera's transforms. -->
+  <joint name="left_fr3_wrist_camera_mount_joint" type="fixed">
+    <parent link="left_fr3_link8"/>
+    <child link="left_fr3_wrist_camera_mount"/>
+    <origin rpy="0 0 -0.7853981633974483" xyz="0 0 0"/>
+  </joint>
+  <link name="left_fr3_wrist_camera_mount">
+    <visual>
+      <geometry>
+        <mesh filename="package://garmi_description/meshes/wrist_camera_mount.stl"/>
+      </geometry>
+      <material name="wrist_camera_mount_white"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://garmi_description/meshes/collision/wrist_camera_mount_centered.stl"/>
+      </geometry>
+    </collision>
+    <!-- PLA at an effective fill of 0.5, from the mesh's enclosed volume (115.6 cm3). An
+         estimate until the part is weighed. -->
+    <inertial>
+      <origin rpy="0 0 0" xyz="0.08402 0.00536 0.01243"/>
+      <mass value="0.0717"/>
+      <inertia ixx="4.113e-05" ixy="-1.418e-05" ixz="-1.345e-05" iyy="8.628e-05" iyz="-3.749e-06" izz="1.161e-04"/>
+    </inertial>
+  </link>
+  <!-- camera body, with origin at bottom screw mount -->
+  <joint name="camera_d435i_left_joint" type="fixed">
+    <origin rpy="0 -0.7853981633974483 3.141592653589793" xyz="0.11001 0.0 0.02231"/>
+    <parent link="left_fr3_wrist_camera_mount"/>
+    <child link="camera_d435i_left_bottom_screw_frame"/>
+  </joint>
+  <link name="camera_d435i_left_bottom_screw_frame"/>
+  <joint name="camera_d435i_left_link_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0.010600000000000002 0.0175 0.0125"/>
+    <parent link="camera_d435i_left_bottom_screw_frame"/>
+    <child link="camera_d435i_left_link"/>
+  </joint>
+  <link name="camera_d435i_left_link">
+    <visual>
+      <!-- the mesh origin is at front plate in between the two infrared camera axes -->
+      <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0.0043 -0.0175 0"/>
+      <geometry>
+        <mesh filename="package://garmi_description/meshes/d435_garmi.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 -0.0175 0"/>
+      <geometry>
+        <box size="0.02505 0.09 0.025"/>
+      </geometry>
+    </collision>
+    <!-- The vendor's mass; the inertia is that of the collision box. The vendor model's own
+         inertia figures are placeholders about 70 times too large, which would dwarf the hand's. -->
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 -0.0175 0"/>
+      <mass value="0.072"/>
+      <inertia ixx="5.235e-05" ixy="0" ixz="0" iyy="7.515e-06" iyz="0" izz="5.237e-05"/>
+    </inertial>
+  </link>
+  <!-- camera depth joints and links -->
+  <joint name="camera_d435i_left_depth_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="camera_d435i_left_link"/>
+    <child link="camera_d435i_left_depth_frame"/>
+  </joint>
+  <link name="camera_d435i_left_depth_frame"/>
+  <joint name="camera_d435i_left_depth_optical_joint" type="fixed">
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0"/>
+    <parent link="camera_d435i_left_depth_frame"/>
+    <child link="camera_d435i_left_depth_optical_frame"/>
+  </joint>
+  <link name="camera_d435i_left_depth_optical_frame"/>
+  <!-- camera left IR joints and links -->
+  <joint name="camera_d435i_left_infra1_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0.0 0"/>
+    <parent link="camera_d435i_left_link"/>
+    <child link="camera_d435i_left_infra1_frame"/>
+  </joint>
+  <link name="camera_d435i_left_infra1_frame"/>
+  <joint name="camera_d435i_left_infra1_optical_joint" type="fixed">
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0"/>
+    <parent link="camera_d435i_left_infra1_frame"/>
+    <child link="camera_d435i_left_infra1_optical_frame"/>
+  </joint>
+  <link name="camera_d435i_left_infra1_optical_frame"/>
+  <!-- camera right IR joints and links -->
+  <joint name="camera_d435i_left_infra2_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 -0.05 0"/>
+    <parent link="camera_d435i_left_link"/>
+    <child link="camera_d435i_left_infra2_frame"/>
+  </joint>
+  <link name="camera_d435i_left_infra2_frame"/>
+  <joint name="camera_d435i_left_infra2_optical_joint" type="fixed">
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0"/>
+    <parent link="camera_d435i_left_infra2_frame"/>
+    <child link="camera_d435i_left_infra2_optical_frame"/>
+  </joint>
+  <link name="camera_d435i_left_infra2_optical_frame"/>
+  <!-- camera color joints and links -->
+  <joint name="camera_d435i_left_color_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0.015 0"/>
+    <parent link="camera_d435i_left_link"/>
+    <child link="camera_d435i_left_color_frame"/>
+  </joint>
+  <link name="camera_d435i_left_color_frame"/>
+  <joint name="camera_d435i_left_color_optical_joint" type="fixed">
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0"/>
+    <parent link="camera_d435i_left_color_frame"/>
+    <child link="camera_d435i_left_color_optical_frame"/>
+  </joint>
+  <link name="camera_d435i_left_color_optical_frame"/>
+  <link name="camera_d435i_left_accel_frame"/>
+  <link name="camera_d435i_left_accel_optical_frame"/>
+  <link name="camera_d435i_left_gyro_frame"/>
+  <link name="camera_d435i_left_gyro_optical_frame"/>
+  <joint name="camera_d435i_left_accel_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="-0.01174 -0.00552 0.0051"/>
+    <parent link="camera_d435i_left_link"/>
+    <child link="camera_d435i_left_accel_frame"/>
+  </joint>
+  <joint name="camera_d435i_left_accel_optical_joint" type="fixed">
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0"/>
+    <parent link="camera_d435i_left_accel_frame"/>
+    <child link="camera_d435i_left_accel_optical_frame"/>
+  </joint>
+  <joint name="camera_d435i_left_gyro_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="-0.01174 -0.00552 0.0051"/>
+    <parent link="camera_d435i_left_link"/>
+    <child link="camera_d435i_left_gyro_frame"/>
+  </joint>
+  <joint name="camera_d435i_left_gyro_optical_joint" type="fixed">
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0"/>
+    <parent link="camera_d435i_left_gyro_frame"/>
+    <child link="camera_d435i_left_gyro_optical_frame"/>
+  </joint>
   <joint name="right_fr3_hand_joint" type="fixed">
     <parent link="right_fr3_link8"/>
     <child link="right_fr3_hand"/>
@@ -1612,10 +1834,12 @@
       <inertia ixx="0.00186" ixy="0.0" ixz="0.0" iyy="0.0003" iyz="-2e-05" izz="0.00174"/>
     </inertial>
   </link>
-  <!-- Define the hand_tcp frame -->
+  <!-- Define the hand_tcp frame: between Garmi's long fingertips (below), half-way along their
+       pads, 58.4 + 36.1 + 70 / 2 = 129.5 mm out along the hand's axis. Franka's stock tips put
+       it at 103.4 mm. -->
   <link name="right_fr3_hand_tcp"/>
   <joint name="right_fr3_hand_tcp_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 0.1034"/>
+    <origin rpy="0 0 0" xyz="0 0 0.1295"/>
     <parent link="right_fr3_hand"/>
     <child link="right_fr3_hand_tcp"/>
   </joint>
@@ -1717,6 +1941,217 @@
     <mimic joint="right_fr3_finger_joint1"/>
     <dynamics damping="0.3"/>
   </joint>
+  <!-- Garmi's long fingertips. 70 mm long where Franka's stock tips are 17.8 mm, mounted where
+       the stock tips sit: z 36.1 to 106.1 mm in the finger's frame, 17.8 mm wide, 10.9 mm thick,
+       the grip surface on the finger's y = 0 plane. Each tip collides as that box; it is drawn
+       with its outer side sloped (meshes/fingertip.stl): from where the stock tip ends (53.9 mm)
+       the thickness falls evenly to half at the far end. The tip's frame is the pad's centre on
+       the grip surface. Its mass is only what the tip adds beyond the stock one the finger's own
+       inertial holds: the 52.2 mm from z 53.9 mm on, printed PLA at an effective fill of 0.5,
+       6.3 g. An estimate. -->
+  <joint name="right_fr3_leftfinger_tip_joint" type="fixed">
+    <parent link="right_fr3_leftfinger"/>
+    <child link="right_fr3_leftfinger_tip"/>
+    <origin rpy="0 0 0" xyz="0 0 0.0711"/>
+  </joint>
+  <link name="right_fr3_leftfinger_tip">
+    <visual>
+      <geometry>
+        <mesh filename="package://garmi_description/meshes/fingertip.stl"/>
+      </geometry>
+      <material name="fingertip_black"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0.00545 0"/>
+      <geometry>
+        <box size="0.0178 0.0109 0.07"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0.00545 0.0089"/>
+      <mass value="0.00628"/>
+      <inertia ixx="1.488e-06" ixy="0" ixz="0" iyy="1.592e-06" iyz="0" izz="2.280e-07"/>
+    </inertial>
+  </link>
+  <joint name="right_fr3_rightfinger_tip_joint" type="fixed">
+    <parent link="right_fr3_rightfinger"/>
+    <child link="right_fr3_rightfinger_tip"/>
+    <origin rpy="0 0 0" xyz="0 0 0.0711"/>
+  </joint>
+  <link name="right_fr3_rightfinger_tip">
+    <visual>
+      <geometry>
+        <mesh filename="package://garmi_description/meshes/fingertip.stl"/>
+      </geometry>
+      <material name="fingertip_black"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0.00545 0"/>
+      <geometry>
+        <box size="0.0178 0.0109 0.07"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0.00545 0.0089"/>
+      <mass value="0.00628"/>
+      <inertia ixx="1.488e-06" ixy="0" ixz="0" iyy="1.592e-06" iyz="0" izz="2.280e-07"/>
+    </inertial>
+  </link>
+  <!-- Wrist camera: an Intel RealSense D435i on a 3D-printed bracket on the right hand's flange.
+       The bracket hooks over the Franka Hand's round 63 mm flange plate on the hand frame's +x
+       broad side and is clamped by one of the hand's own flange screws; the camera sits at its
+       far end, about 12 cm out from the flange axis, tilted 45 degrees to look at the fingers.
+       The bracket's frame: origin on the flange axis in the flange face, z along the axis toward
+       the fingers, x out through the clamping screw; its pose on the flange is confirmed on the
+       robot. Bracket and camera collide as one convex proxy of both
+       (meshes/collision/wrist_camera_mount_centered.stl: the camera on the bracket's centred
+       pair of holes); the camera's own box lies inside it.
+
+       Camera: the realsense2_description model's frames and mass (Apache-2.0, see NOTICE), drawn
+       with a recoloured copy of its mesh (meshes/d435_garmi.dae: aluminium housing, black glass
+       front, charcoal lenses and projector), named `camera_d435i_right` like the driver's
+       camera_name, so every frame the driver stamps its images and IMU data with exists here,
+       optical frames included, at nominal extrinsics. Run the driver with publish_tf:=false: this
+       description owns the camera's transforms. -->
+  <joint name="right_fr3_wrist_camera_mount_joint" type="fixed">
+    <parent link="right_fr3_link8"/>
+    <child link="right_fr3_wrist_camera_mount"/>
+    <origin rpy="0 0 -0.7853981633974483" xyz="0 0 0"/>
+  </joint>
+  <link name="right_fr3_wrist_camera_mount">
+    <visual>
+      <geometry>
+        <mesh filename="package://garmi_description/meshes/wrist_camera_mount.stl"/>
+      </geometry>
+      <material name="wrist_camera_mount_white"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://garmi_description/meshes/collision/wrist_camera_mount_centered.stl"/>
+      </geometry>
+    </collision>
+    <!-- PLA at an effective fill of 0.5, from the mesh's enclosed volume (115.6 cm3). An
+         estimate until the part is weighed. -->
+    <inertial>
+      <origin rpy="0 0 0" xyz="0.08402 0.00536 0.01243"/>
+      <mass value="0.0717"/>
+      <inertia ixx="4.113e-05" ixy="-1.418e-05" ixz="-1.345e-05" iyy="8.628e-05" iyz="-3.749e-06" izz="1.161e-04"/>
+    </inertial>
+  </link>
+  <!-- camera body, with origin at bottom screw mount -->
+  <joint name="camera_d435i_right_joint" type="fixed">
+    <origin rpy="0 -0.7853981633974483 3.141592653589793" xyz="0.11001 0.0 0.02231"/>
+    <parent link="right_fr3_wrist_camera_mount"/>
+    <child link="camera_d435i_right_bottom_screw_frame"/>
+  </joint>
+  <link name="camera_d435i_right_bottom_screw_frame"/>
+  <joint name="camera_d435i_right_link_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0.010600000000000002 0.0175 0.0125"/>
+    <parent link="camera_d435i_right_bottom_screw_frame"/>
+    <child link="camera_d435i_right_link"/>
+  </joint>
+  <link name="camera_d435i_right_link">
+    <visual>
+      <!-- the mesh origin is at front plate in between the two infrared camera axes -->
+      <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0.0043 -0.0175 0"/>
+      <geometry>
+        <mesh filename="package://garmi_description/meshes/d435_garmi.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 -0.0175 0"/>
+      <geometry>
+        <box size="0.02505 0.09 0.025"/>
+      </geometry>
+    </collision>
+    <!-- The vendor's mass; the inertia is that of the collision box. The vendor model's own
+         inertia figures are placeholders about 70 times too large, which would dwarf the hand's. -->
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 -0.0175 0"/>
+      <mass value="0.072"/>
+      <inertia ixx="5.235e-05" ixy="0" ixz="0" iyy="7.515e-06" iyz="0" izz="5.237e-05"/>
+    </inertial>
+  </link>
+  <!-- camera depth joints and links -->
+  <joint name="camera_d435i_right_depth_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <parent link="camera_d435i_right_link"/>
+    <child link="camera_d435i_right_depth_frame"/>
+  </joint>
+  <link name="camera_d435i_right_depth_frame"/>
+  <joint name="camera_d435i_right_depth_optical_joint" type="fixed">
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0"/>
+    <parent link="camera_d435i_right_depth_frame"/>
+    <child link="camera_d435i_right_depth_optical_frame"/>
+  </joint>
+  <link name="camera_d435i_right_depth_optical_frame"/>
+  <!-- camera left IR joints and links -->
+  <joint name="camera_d435i_right_infra1_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0.0 0"/>
+    <parent link="camera_d435i_right_link"/>
+    <child link="camera_d435i_right_infra1_frame"/>
+  </joint>
+  <link name="camera_d435i_right_infra1_frame"/>
+  <joint name="camera_d435i_right_infra1_optical_joint" type="fixed">
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0"/>
+    <parent link="camera_d435i_right_infra1_frame"/>
+    <child link="camera_d435i_right_infra1_optical_frame"/>
+  </joint>
+  <link name="camera_d435i_right_infra1_optical_frame"/>
+  <!-- camera right IR joints and links -->
+  <joint name="camera_d435i_right_infra2_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 -0.05 0"/>
+    <parent link="camera_d435i_right_link"/>
+    <child link="camera_d435i_right_infra2_frame"/>
+  </joint>
+  <link name="camera_d435i_right_infra2_frame"/>
+  <joint name="camera_d435i_right_infra2_optical_joint" type="fixed">
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0"/>
+    <parent link="camera_d435i_right_infra2_frame"/>
+    <child link="camera_d435i_right_infra2_optical_frame"/>
+  </joint>
+  <link name="camera_d435i_right_infra2_optical_frame"/>
+  <!-- camera color joints and links -->
+  <joint name="camera_d435i_right_color_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0.015 0"/>
+    <parent link="camera_d435i_right_link"/>
+    <child link="camera_d435i_right_color_frame"/>
+  </joint>
+  <link name="camera_d435i_right_color_frame"/>
+  <joint name="camera_d435i_right_color_optical_joint" type="fixed">
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0"/>
+    <parent link="camera_d435i_right_color_frame"/>
+    <child link="camera_d435i_right_color_optical_frame"/>
+  </joint>
+  <link name="camera_d435i_right_color_optical_frame"/>
+  <link name="camera_d435i_right_accel_frame"/>
+  <link name="camera_d435i_right_accel_optical_frame"/>
+  <link name="camera_d435i_right_gyro_frame"/>
+  <link name="camera_d435i_right_gyro_optical_frame"/>
+  <joint name="camera_d435i_right_accel_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="-0.01174 -0.00552 0.0051"/>
+    <parent link="camera_d435i_right_link"/>
+    <child link="camera_d435i_right_accel_frame"/>
+  </joint>
+  <joint name="camera_d435i_right_accel_optical_joint" type="fixed">
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0"/>
+    <parent link="camera_d435i_right_accel_frame"/>
+    <child link="camera_d435i_right_accel_optical_frame"/>
+  </joint>
+  <joint name="camera_d435i_right_gyro_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="-0.01174 -0.00552 0.0051"/>
+    <parent link="camera_d435i_right_link"/>
+    <child link="camera_d435i_right_gyro_frame"/>
+  </joint>
+  <joint name="camera_d435i_right_gyro_optical_joint" type="fixed">
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0"/>
+    <parent link="camera_d435i_right_gyro_frame"/>
+    <child link="camera_d435i_right_gyro_optical_frame"/>
+  </joint>
+  <!-- Collision proxies. The torso, base cover, mounting plate, neck and head collide as convex
+       proxies of their visual meshes (meshes/collision/), not as those meshes of up to 100k
+       triangles: about 1200 triangles each, enclosing the visual mesh and reaching at most
+       4.4 mm beyond its convex hull. Their visuals are unchanged. -->
   <link name="body_link">
     <visual>
       <geometry>
@@ -1725,7 +2160,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://garmi_description/meshes/body.obj"/>
+        <mesh filename="package://garmi_description/meshes/collision/body.stl"/>
       </geometry>
     </collision>
   </link>
@@ -1742,7 +2177,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://garmi_description/meshes/cover.obj"/>
+        <mesh filename="package://garmi_description/meshes/collision/cover.stl"/>
       </geometry>
     </collision>
   </link>
@@ -1759,7 +2194,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://garmi_description/meshes/mounting_plate.obj"/>
+        <mesh filename="package://garmi_description/meshes/collision/mounting_plate.stl"/>
       </geometry>
     </collision>
   </link>
@@ -1778,7 +2213,7 @@
     <collision>
       <origin rpy="1.5707 0.0 1.5707" xyz="-0.1109 0 -1.1663"/>
       <geometry>
-        <mesh filename="package://garmi_description/meshes/neck_1.obj"/>
+        <mesh filename="package://garmi_description/meshes/collision/neck_1.stl"/>
       </geometry>
     </collision>
     <inertial>
@@ -1796,7 +2231,7 @@
     <collision>
       <origin rpy="1.5707 0.0 1.5707" xyz="-0.1388 0.0 -1.1782"/>
       <geometry>
-        <mesh filename="package://garmi_description/meshes/neck_2.obj"/>
+        <mesh filename="package://garmi_description/meshes/collision/neck_2.stl"/>
       </geometry>
     </collision>
     <inertial>
@@ -1814,7 +2249,7 @@
     <collision>
       <origin rpy="1.5707 0.0 1.5707" xyz="-0.1388 0.034 -1.3303"/>
       <geometry>
-        <mesh filename="package://garmi_description/meshes/head.obj"/>
+        <mesh filename="package://garmi_description/meshes/collision/head.stl"/>
       </geometry>
     </collision>
     <inertial>
@@ -1841,6 +2276,93 @@
     <axis xyz="0 -1 0"/>
     <limit effort="30" lower="-0.7853" upper="0.7853" velocity="1.5707"/>
   </joint>
+  <!-- Head camera: the Olive stereo fisheye camera in its white housing, on a provisional stand
+       on top of the head, riding the head's pan and tilt.
+
+       Mount. `head_camera_mount` sits on the head's top surface over the round recess at the
+       front of its camera slot, with the head's axes. The stand on it (a black ball-head base and
+       a short post, provisional until a printed mount replaces it) is drawn and collides as plain
+       cylinders sized from photos.
+
+       Camera. The stand is adjustable, so the camera's pose on it is a best guess from photos:
+       housing underside about 3 cm above the head, lenses forward, pitched down 10 degrees,
+       centred on the head. Its meshes are derived from Olive's CAD, in the camera's own frame
+       `olive_camera_link`: origin on the board's front face midway between the lenses, x forward
+       along the optical axes, y left, z up. The board and lenses are drawn dark on that link, the
+       housing white on `olive_camera_housing`. Camera and housing collide as one convex proxy.
+
+       Optical frames, one per lens (z forward, x right, y down), on the lens axes in the board's
+       front face, 63.0 mm apart. No calibration places the projection centres yet. -->
+  <joint name="head_camera_mount_joint" type="fixed">
+    <parent link="head"/>
+    <child link="head_camera_mount"/>
+    <origin rpy="0 0 0" xyz="0.0614 0.034 0.09"/>
+  </joint>
+  <link name="head_camera_mount">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0.011"/>
+      <geometry>
+        <cylinder length="0.022" radius="0.011"/>
+      </geometry>
+      <material name="olive_camera_dark"/>
+    </visual>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0.026"/>
+      <geometry>
+        <cylinder length="0.008" radius="0.004"/>
+      </geometry>
+      <material name="olive_camera_dark"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0.015"/>
+      <geometry>
+        <cylinder length="0.03" radius="0.011"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="olive_camera_joint" type="fixed">
+    <parent link="head_camera_mount"/>
+    <child link="olive_camera_link"/>
+    <origin rpy="0 0.174533 0" xyz="0.005 0 0.051"/>
+  </joint>
+  <link name="olive_camera_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://garmi_description/meshes/olive_camera.stl"/>
+      </geometry>
+      <material name="olive_camera_dark"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://garmi_description/meshes/collision/olive_camera.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="olive_camera_housing_joint" type="fixed">
+    <parent link="olive_camera_link"/>
+    <child link="olive_camera_housing"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+  </joint>
+  <link name="olive_camera_housing">
+    <visual>
+      <geometry>
+        <mesh filename="package://garmi_description/meshes/olive_camera_housing.stl"/>
+      </geometry>
+      <material name="olive_camera_white"/>
+    </visual>
+  </link>
+  <joint name="olive_camera_left_optical_joint" type="fixed">
+    <parent link="olive_camera_link"/>
+    <child link="olive_camera_left_optical_frame"/>
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0.0315 0"/>
+  </joint>
+  <link name="olive_camera_left_optical_frame"/>
+  <joint name="olive_camera_right_optical_joint" type="fixed">
+    <parent link="olive_camera_link"/>
+    <child link="olive_camera_right_optical_frame"/>
+    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 -0.0315 0"/>
+  </joint>
+  <link name="olive_camera_right_optical_frame"/>
   <ros2_control name="GarmiHeadSimSystem" type="system">
     <hardware>
       <plugin>gz_ros2_control/GazeboSimSystem</plugin>

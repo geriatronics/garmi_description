@@ -43,22 +43,15 @@
       </default>
       <default class="hand_col">
         <geom type="mesh" group="3" contype="3" conaffinity="3"/>
-        <default class="fingertip_pad_collision_1">
-          <geom type="box" size="0.0085 0.004 0.0085" pos="0 0.0055 0.0445"/>
-        </default>
-        <default class="fingertip_pad_collision_2">
-          <geom type="box" size="0.003 0.002 0.003" pos="0.0055 0.002 0.05"/>
-        </default>
-        <default class="fingertip_pad_collision_3">
-          <geom type="box" size="0.003 0.002 0.003" pos="-0.0055 0.002 0.05"/>
-        </default>
-        <default class="fingertip_pad_collision_4">
-          <geom type="box" size="0.003 0.002 0.0035" pos="0.0055 0.002 0.0395"/>
-        </default>
-        <default class="fingertip_pad_collision_5">
-          <geom type="box" size="0.003 0.002 0.0035" pos="-0.0055 0.002 0.0395"/>
+        <!-- Garmi's long fingertip (see the URDF): a 17.8 x 10.9 x 70 mm box in
+             the tip's frame, the grip surface on its y = 0 plane. It replaces
+             menagerie's stock rubber pads, which lie inside it. -->
+        <default class="fingertip_collision">
+          <geom type="box" size="0.0089 0.00545 0.035" pos="0 0.00545 0"/>
         </default>
       </default>
+      <!-- Frames such as the tool centre; hidden unless group 4 is shown. -->
+      <site size="0.005" group="4" rgba="1 0.2 0.2 1"/>
     </default>
 
     <!-- Garmi-specific parts (base, lift, torso, head). -->
@@ -82,11 +75,13 @@
       <geom type="capsule" group="3" contype="4" conaffinity="1" condim="3"
             friction="1.2 0.005 0.0001" priority="1" solref="0.01 1" solimp="0.9 0.95 0.002"/>
     </default>
-    <!-- Coarse self-collision volumes for the torso, head and base so the arms
-         cannot pass through the body. contype/conaffinity 2 (bit2) makes them
+    <!-- Self-collision volumes for the torso, neck, head and base so the arms
+         cannot pass through the body: the URDF's collision geometry, i.e. the
+         true-size convex proxies of the TUM parts (assets/collision/) and the
+         chassis's own collision mesh. contype/conaffinity 2 (bit2) makes them
          collide with the arms/hands only, not the floor or wheels. -->
     <default class="selfcol">
-      <geom type="box" group="3" contype="2" conaffinity="2" mass="0" rgba="1 0.5 0 0.15"/>
+      <geom type="mesh" group="3" contype="2" conaffinity="2" mass="0" density="0" rgba="1 0.5 0 0.15"/>
     </default>
   </default>
 
@@ -168,6 +163,23 @@
     <mesh file="finger_1.obj"/>
     <mesh name="hand_c" file="hand.stl"/>
 
+    <!-- Garmi's long fingertips. -->
+    <material name="fingertip_black" rgba="0.1 0.1 0.1 1"/>
+    <mesh name="fingertip" file="fingertip.stl"/>
+
+    <!-- Wrist cameras: the 3D-printed bracket and its bracket-and-camera proxy. -->
+    <material name="wrist_camera_mount_white" rgba="0.92 0.92 0.88 1"/>
+    <!-- The RealSense D435i in the three colours of the URDF's mesh: aluminium housing, black
+         glass front, and the lenses and projector behind it in a lighter charcoal. -->
+    <material name="d435_aluminium" rgba="0.749 0.749 0.761 1" specular="0.35" shininess="0.25"/>
+    <material name="d435_glass" rgba="0.012 0.012 0.016 1" specular="0.65" shininess="0.8"/>
+    <material name="d435_opening" rgba="0.18 0.2 0.24 1" specular="0.45" shininess="0.4"/>
+    <mesh name="d435_body" file="d435_body.stl"/>
+    <mesh name="d435_front" file="d435_front.stl"/>
+    <mesh name="d435_openings" file="d435_openings.stl"/>
+    <mesh name="wrist_camera_mount" file="wrist_camera_mount.stl"/>
+    <mesh name="wrist_camera_mount_collision" file="collision/wrist_camera_mount_centered.stl"/>
+
     <!-- Garmi base / lift / wheel meshes. -->
     <mesh name="chassis" file="body.stl"/>
     <mesh name="side_cover" file="side-cover.stl"/>
@@ -190,6 +202,22 @@
     <mesh file="mounting_plate/mounting_plate.obj"/>
     <mesh file="neck_1/neck_1.obj"/>
     <mesh file="neck_2/neck_2.obj"/>
+
+    <!-- Collision proxies (the URDF's collision meshes), ~1200 triangles each. -->
+    <mesh name="chassis_collision" file="body-collision.stl"/>
+    <mesh name="cover_collision" file="collision/cover.stl"/>
+    <mesh name="mounting_plate_collision" file="collision/mounting_plate.stl"/>
+    <mesh name="body_collision" file="collision/body.stl"/>
+    <mesh name="neck_1_collision" file="collision/neck_1.stl"/>
+    <mesh name="neck_2_collision" file="collision/neck_2.stl"/>
+    <mesh name="head_collision" file="collision/head.stl"/>
+
+    <!-- Olive stereo camera on top of the head (see the URDF). -->
+    <material name="olive_camera_white" rgba="0.92 0.92 0.9 1"/>
+    <material name="olive_camera_dark" rgba="0.12 0.12 0.12 1"/>
+    <mesh name="olive_camera" file="olive_camera.stl"/>
+    <mesh name="olive_camera_housing" file="olive_camera_housing.stl"/>
+    <mesh name="olive_camera_collision" file="collision/olive_camera.stl"/>
   </asset>
 
   <worldbody>
@@ -210,9 +238,11 @@
       <geom mesh="lights" material="red" quat="0 0 0 1"/>
       <geom mesh="cover" material="White_Plastic" quat="0.500048 0.5 0.499952 0.5"/>
       <geom mesh="mounting_plate" material="Grey_Plastic" quat="0.500048 0.5 0.499952 0.5"/>
-      <!-- Coarse self-collision volume for the mobile base, including the TUM
-           cover on top (spans the chassis + cover, ~0.03..0.50 m). -->
-      <geom class="selfcol" pos="0 0 0.2414" size="0.4790 0.3950 0.2378"/>
+      <!-- Self-collision volumes of the mobile base: the chassis, and the TUM
+           cover and mounting plate on top of it (~0.004..0.48 m). -->
+      <geom class="selfcol" mesh="chassis_collision"/>
+      <geom class="selfcol" mesh="cover_collision" quat="0.500048 0.5 0.499952 0.5"/>
+      <geom class="selfcol" mesh="mounting_plate_collision" quat="0.500048 0.5 0.499952 0.5"/>
 
       <!-- Mecanum wheels: driven hub + free-spinning 45-deg rollers
            (true mecanum; produces holonomic motion via physics). -->
@@ -491,13 +521,15 @@
                     <!-- Static neck stub + torso shell ride on the lift mount. -->
                     <geom class="garmi_vis" mesh="neck_1" material="Grey_Plastic"
                       pos="-0.1109 0 -1.1513" quat="0.500048 0.5 0.499952 0.5"/>
+                    <geom class="selfcol" mesh="neck_1_collision"
+                      pos="-0.1109 0 -1.1513" quat="0.500048 0.5 0.499952 0.5"/>
 
                     <body name="body_link" pos="-0.1109 0 -1.1663" quat="0.500048 0.5 0.499952 0.5">
                       <geom class="garmi_vis" mesh="body_0" material="White_Plastic"/>
                       <geom class="garmi_vis" mesh="body_1" material="Grey_Plastic"/>
                       <geom class="garmi_vis" mesh="body_2" material="Fabric"/>
                       <geom class="garmi_vis" mesh="body_3" material="Screen"/>
-                      <geom class="selfcol" pos="0.0013 0.9196 0.2028" quat="0.500049 -0.500001 -0.499951 -0.499999" size="0.2636 0.2221 0.4056"/>
+                      <geom class="selfcol" mesh="body_collision"/>
                     </body>
 
                     <!-- Head: pan then tilt. -->
@@ -506,6 +538,8 @@
                       <inertial pos="0 0 0" mass="0.5" diaginertia="0.001 0.001 0.001"/>
                       <geom class="garmi_vis" mesh="neck_2" material="Grey_Plastic"
                         pos="-0.1388 0 -1.1782" quat="0.500048 0.5 0.499952 0.5"/>
+                      <geom class="selfcol" mesh="neck_2_collision"
+                        pos="-0.1388 0 -1.1782" quat="0.500048 0.5 0.499952 0.5"/>
                       <body name="head" pos="0 -0.034 0.1521">
                         <joint name="o1_motor_2" axis="0 -1 0" range="-0.7853 0.7853"/>
                         <inertial pos="0 0 0" mass="2.5" diaginertia="0.01 0.01 0.01"/>
@@ -513,7 +547,25 @@
                           pos="-0.1388 0.034 -1.3303" quat="0.500048 0.5 0.499952 0.5"/>
                         <geom class="garmi_vis" mesh="head_1" material="White_Plastic"
                           pos="-0.1388 0.034 -1.3303" quat="0.500048 0.5 0.499952 0.5"/>
-                        <geom class="selfcol" pos="0.0412 0.0340 -0.0142" size="0.1605 0.1352 0.1601"/>
+                        <geom class="selfcol" mesh="head_collision"
+                          pos="-0.1388 0.034 -1.3303" quat="0.500048 0.5 0.499952 0.5"/>
+                        <!-- Head camera: the Olive stereo camera in its housing on a
+                             provisional stand, its pose a best guess from photos (see
+                             the URDF). One MuJoCo camera per lens, at the URDF's optical
+                             frames; their field of view is MuJoCo's default, not the
+                             fisheye lenses'. -->
+                        <body name="head_camera_mount" pos="0.0614 0.034 0.09">
+                          <geom class="garmi_vis" type="cylinder" size="0.011 0.011" pos="0 0 0.011" material="olive_camera_dark"/>
+                          <geom class="garmi_vis" type="cylinder" size="0.004 0.004" pos="0 0 0.026" material="olive_camera_dark"/>
+                          <geom class="selfcol" type="cylinder" size="0.011 0.015" pos="0 0 0.015"/>
+                          <body name="olive_camera_link" pos="0.005 0 0.051" quat="0.9961947 0 0.0871558 0">
+                            <geom class="garmi_vis" mesh="olive_camera" material="olive_camera_dark"/>
+                            <geom class="garmi_vis" mesh="olive_camera_housing" material="olive_camera_white"/>
+                            <geom class="selfcol" mesh="olive_camera_collision"/>
+                            <camera name="olive_camera_left" pos="0 0.0315 0" xyaxes="0 -1 0 0 0 1"/>
+                            <camera name="olive_camera_right" pos="0 -0.0315 0" xyaxes="0 -1 0 0 0 1"/>
+                          </body>
+                        </body>
                       </body>
                     </body>
 
@@ -582,6 +634,27 @@
                                       <geom mesh="link7_2" material="white" class="fr3_vis"/>
                                       <geom mesh="link7_3" material="black" class="fr3_vis"/>
                                       <geom name="left_fr3_link7_col" class="fr3_col" mesh="link7_coll"/>
+                                      <!-- Wrist camera (see the URDF): a RealSense D435i on its bracket
+                                           on the flange, in the hand's frame. The bracket and camera
+                                           collide as one convex proxy. The MuJoCo camera sits on the
+                                           colour sensor's optical frame, with its 42 degree vertical
+                                           field of view. -->
+                                      <body name="left_fr3_wrist_camera_mount" pos="0 0 0.107" quat="0.9238795 0 0 -0.3826834">
+                                        <inertial pos="0.08402 0.00536 0.01243" mass="0.0717"
+                                          fullinertia="4.113e-05 8.628e-05 1.161e-04 -1.418e-05 -1.345e-05 -3.749e-06"/>
+                                        <geom class="garmi_vis" mesh="wrist_camera_mount" material="wrist_camera_mount_white"/>
+                                        <geom class="hand_col" mesh="wrist_camera_mount_collision"/>
+                                        <body name="camera_d435i_left_bottom_screw_frame" pos="0.11001 0 0.02231" quat="0 0.3826834 0 0.9238795">
+                                          <body name="camera_d435i_left_link" pos="0.0106 0.0175 0.0125">
+                                            <inertial pos="0 -0.0175 0" mass="0.072" diaginertia="5.235e-05 7.515e-06 5.237e-05"/>
+                                            <!-- The URDF's visual pose: the mesh frame at the front plate, between the infrared imagers. -->
+                                            <geom class="garmi_vis" mesh="d435_body" material="d435_aluminium" pos="0.0043 -0.0175 0" quat="0.5 0.5 0.5 0.5"/>
+                                            <geom class="garmi_vis" mesh="d435_front" material="d435_glass" pos="0.0043 -0.0175 0" quat="0.5 0.5 0.5 0.5"/>
+                                            <geom class="garmi_vis" mesh="d435_openings" material="d435_opening" pos="0.0043 -0.0175 0" quat="0.5 0.5 0.5 0.5"/>
+                                            <camera name="camera_d435i_left_color" pos="0 0.015 0" xyaxes="0 -1 0 0 0 1" fovy="42"/>
+                                          </body>
+                                        </body>
+                                      </body>
                                       <body name="left_fr3_hand" pos="0 0 0.107" quat="0.9238795 0 0 -0.3826834" childclass="hand">
                                         <inertial mass="0.73" pos="-0.01 0 0.03" diaginertia="0.001 0.0025 0.0017"/>
                                         <geom mesh="hand_0" material="off_white" class="hand_vis"/>
@@ -590,17 +663,19 @@
                                         <geom mesh="hand_3" material="white" class="hand_vis"/>
                                         <geom mesh="hand_4" material="off_white" class="hand_vis"/>
                                         <geom mesh="hand_c" class="hand_col"/>
+                                        <!-- Tool centre between the long fingertips' pads. -->
+                                        <site name="left_fr3_hand_tcp" pos="0 0 0.1295"/>
                                         <body name="left_fr3_leftfinger" pos="0 0 0.0584">
                                           <inertial mass="0.015" pos="0 0 0" diaginertia="2.375e-6 2.375e-6 7.5e-7"/>
                                           <joint name="left_fr3_finger_joint1" class="finger"/>
                                           <geom mesh="finger_0" material="off_white" class="hand_vis"/>
                                           <geom mesh="finger_1" material="black" class="hand_vis"/>
                                           <geom mesh="finger_0" class="hand_col"/>
-                                          <geom class="fingertip_pad_collision_1"/>
-                                          <geom class="fingertip_pad_collision_2"/>
-                                          <geom class="fingertip_pad_collision_3"/>
-                                          <geom class="fingertip_pad_collision_4"/>
-                                          <geom class="fingertip_pad_collision_5"/>
+                                          <body name="left_fr3_leftfinger_tip" pos="0 0 0.0711">
+                                            <inertial mass="0.00628" pos="0 0.00545 0.0089" diaginertia="1.488e-06 1.592e-06 2.28e-07"/>
+                                            <geom mesh="fingertip" material="fingertip_black" class="hand_vis"/>
+                                            <geom class="fingertip_collision"/>
+                                          </body>
                                         </body>
                                         <body name="left_fr3_rightfinger" pos="0 0 0.0584" quat="0 0 0 1">
                                           <inertial mass="0.015" pos="0 0 0" diaginertia="2.375e-6 2.375e-6 7.5e-7"/>
@@ -608,11 +683,11 @@
                                           <geom mesh="finger_0" material="off_white" class="hand_vis"/>
                                           <geom mesh="finger_1" material="black" class="hand_vis"/>
                                           <geom mesh="finger_0" class="hand_col"/>
-                                          <geom class="fingertip_pad_collision_1"/>
-                                          <geom class="fingertip_pad_collision_2"/>
-                                          <geom class="fingertip_pad_collision_3"/>
-                                          <geom class="fingertip_pad_collision_4"/>
-                                          <geom class="fingertip_pad_collision_5"/>
+                                          <body name="left_fr3_rightfinger_tip" pos="0 0 0.0711">
+                                            <inertial mass="0.00628" pos="0 0.00545 0.0089" diaginertia="1.488e-06 1.592e-06 2.28e-07"/>
+                                            <geom mesh="fingertip" material="fingertip_black" class="hand_vis"/>
+                                            <geom class="fingertip_collision"/>
+                                          </body>
                                         </body>
                                       </body>
                                     </body>
@@ -690,6 +765,27 @@
                                       <geom mesh="link7_2" material="white" class="fr3_vis"/>
                                       <geom mesh="link7_3" material="black" class="fr3_vis"/>
                                       <geom name="right_fr3_link7_col" class="fr3_col" mesh="link7_coll"/>
+                                      <!-- Wrist camera (see the URDF): a RealSense D435i on its bracket
+                                           on the flange, in the hand's frame. The bracket and camera
+                                           collide as one convex proxy. The MuJoCo camera sits on the
+                                           colour sensor's optical frame, with its 42 degree vertical
+                                           field of view. -->
+                                      <body name="right_fr3_wrist_camera_mount" pos="0 0 0.107" quat="0.9238795 0 0 -0.3826834">
+                                        <inertial pos="0.08402 0.00536 0.01243" mass="0.0717"
+                                          fullinertia="4.113e-05 8.628e-05 1.161e-04 -1.418e-05 -1.345e-05 -3.749e-06"/>
+                                        <geom class="garmi_vis" mesh="wrist_camera_mount" material="wrist_camera_mount_white"/>
+                                        <geom class="hand_col" mesh="wrist_camera_mount_collision"/>
+                                        <body name="camera_d435i_right_bottom_screw_frame" pos="0.11001 0 0.02231" quat="0 0.3826834 0 0.9238795">
+                                          <body name="camera_d435i_right_link" pos="0.0106 0.0175 0.0125">
+                                            <inertial pos="0 -0.0175 0" mass="0.072" diaginertia="5.235e-05 7.515e-06 5.237e-05"/>
+                                            <!-- The URDF's visual pose: the mesh frame at the front plate, between the infrared imagers. -->
+                                            <geom class="garmi_vis" mesh="d435_body" material="d435_aluminium" pos="0.0043 -0.0175 0" quat="0.5 0.5 0.5 0.5"/>
+                                            <geom class="garmi_vis" mesh="d435_front" material="d435_glass" pos="0.0043 -0.0175 0" quat="0.5 0.5 0.5 0.5"/>
+                                            <geom class="garmi_vis" mesh="d435_openings" material="d435_opening" pos="0.0043 -0.0175 0" quat="0.5 0.5 0.5 0.5"/>
+                                            <camera name="camera_d435i_right_color" pos="0 0.015 0" xyaxes="0 -1 0 0 0 1" fovy="42"/>
+                                          </body>
+                                        </body>
+                                      </body>
                                       <body name="right_fr3_hand" pos="0 0 0.107" quat="0.9238795 0 0 -0.3826834" childclass="hand">
                                         <inertial mass="0.73" pos="-0.01 0 0.03" diaginertia="0.001 0.0025 0.0017"/>
                                         <geom mesh="hand_0" material="off_white" class="hand_vis"/>
@@ -698,17 +794,19 @@
                                         <geom mesh="hand_3" material="white" class="hand_vis"/>
                                         <geom mesh="hand_4" material="off_white" class="hand_vis"/>
                                         <geom mesh="hand_c" class="hand_col"/>
+                                        <!-- Tool centre between the long fingertips' pads. -->
+                                        <site name="right_fr3_hand_tcp" pos="0 0 0.1295"/>
                                         <body name="right_fr3_leftfinger" pos="0 0 0.0584">
                                           <inertial mass="0.015" pos="0 0 0" diaginertia="2.375e-6 2.375e-6 7.5e-7"/>
                                           <joint name="right_fr3_finger_joint1" class="finger"/>
                                           <geom mesh="finger_0" material="off_white" class="hand_vis"/>
                                           <geom mesh="finger_1" material="black" class="hand_vis"/>
                                           <geom mesh="finger_0" class="hand_col"/>
-                                          <geom class="fingertip_pad_collision_1"/>
-                                          <geom class="fingertip_pad_collision_2"/>
-                                          <geom class="fingertip_pad_collision_3"/>
-                                          <geom class="fingertip_pad_collision_4"/>
-                                          <geom class="fingertip_pad_collision_5"/>
+                                          <body name="right_fr3_leftfinger_tip" pos="0 0 0.0711">
+                                            <inertial mass="0.00628" pos="0 0.00545 0.0089" diaginertia="1.488e-06 1.592e-06 2.28e-07"/>
+                                            <geom mesh="fingertip" material="fingertip_black" class="hand_vis"/>
+                                            <geom class="fingertip_collision"/>
+                                          </body>
                                         </body>
                                         <body name="right_fr3_rightfinger" pos="0 0 0.0584" quat="0 0 0 1">
                                           <inertial mass="0.015" pos="0 0 0" diaginertia="2.375e-6 2.375e-6 7.5e-7"/>
@@ -716,11 +814,11 @@
                                           <geom mesh="finger_0" material="off_white" class="hand_vis"/>
                                           <geom mesh="finger_1" material="black" class="hand_vis"/>
                                           <geom mesh="finger_0" class="hand_col"/>
-                                          <geom class="fingertip_pad_collision_1"/>
-                                          <geom class="fingertip_pad_collision_2"/>
-                                          <geom class="fingertip_pad_collision_3"/>
-                                          <geom class="fingertip_pad_collision_4"/>
-                                          <geom class="fingertip_pad_collision_5"/>
+                                          <body name="right_fr3_rightfinger_tip" pos="0 0 0.0711">
+                                            <inertial mass="0.00628" pos="0 0.00545 0.0089" diaginertia="1.488e-06 1.592e-06 2.28e-07"/>
+                                            <geom mesh="fingertip" material="fingertip_black" class="hand_vis"/>
+                                            <geom class="fingertip_collision"/>
+                                          </body>
                                         </body>
                                       </body>
                                     </body>
@@ -754,6 +852,8 @@
     <exclude body1="body_link" body2="head"/>
     <exclude body1="body_link" body2="base_link"/>
     <exclude body1="head" body2="base_link"/>
+    <!-- The head sits on the neck stub, whose proxy rides the lift mount. -->
+    <exclude body1="head" body2="lift_0_mount_rotated"/>
     <!-- The shoulder / upper-arm links rest against the torso in the ready
          pose; exclude them from the torso box so there is no start-up
          penetration. The forearm, wrist and hand still collide with it. -->

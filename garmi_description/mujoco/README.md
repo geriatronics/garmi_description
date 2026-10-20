@@ -76,9 +76,30 @@ own scene or attach it to other models.
 A `home` keyframe places the arms in the same ready pose the Gazebo model
 starts in.
 
+Each Franka Hand carries Garmi's long 70 mm fingertips (`<side>_fr3_<finger>_tip`
+bodies), and a site `<side>_fr3_hand_tcp` marks the tool centre between them,
+129.5 mm out from the hand, as in the URDF. Sites are in group 4, hidden in the
+viewer until that group is switched on.
+
+The Olive stereo camera rides on top of the head on its stand, with one MuJoCo
+camera per lens (`olive_camera_left`, `olive_camera_right`) at the URDF's
+optical frames, so you can render what the head sees. Their field of view is
+MuJoCo's default, not the fisheye lenses'.
+
+Each hand carries its wrist camera, a RealSense D435i on a 3D-printed bracket
+on the flange (`<side>_fr3_wrist_camera_mount`, `camera_d435i_<side>_link`),
+with a MuJoCo camera `camera_d435i_<side>_color` on the colour sensor's
+optical frame looking at the fingers. Bracket and camera collide as one convex
+proxy. The camera is drawn as three meshes in the URDF's colours (`d435_body`
+in aluminium, `d435_front` in black glass, `d435_openings` for the lenses and
+projector).
+
 **Collisions & limits.** The arm links and grippers have collision geometry and
-also collide with coarse self-collision volumes around the torso, head and
-mobile base, so the arms cannot pass through the body. Joint position limits and
+also collide with the torso, neck, head and mobile base, so the arms cannot pass
+through the body. Those collide as the URDF's own collision geometry: true-size
+convex proxies of the TUM parts (`assets/collision/`, ~1200 triangles each,
+reaching at most 4.4 mm beyond the visual mesh's hull) and the chassis's
+collision mesh. Joint position limits and
 the wheel speed limit mirror the URDF; the lift is heavily damped to reproduce
 the slow, stiff, non-backdrivable lead-screw of the real robot (~0.088 m/s per
 stage). Both telescoping stages move together via a stiff equality constraint

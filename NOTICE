@@ -7,6 +7,11 @@ Technical University of Munich (TUM).
 The Garmi robot design (head, neck, torso, covers and overall integration)
 was created in collaboration with Leap Leap (https://leap-leap.com/).
 
+The head camera meshes (meshes/olive_camera.stl,
+meshes/olive_camera_housing.stl, meshes/collision/olive_camera.stl and their
+copies under mujoco/assets/) are simplified from Olive Robotics' CAD model
+of the camera and its housing.
+
 ------------------------------------------------------------------------
 Third-party components
 ------------------------------------------------------------------------
@@ -40,3 +45,18 @@ in the THIRD_PARTY_LICENSES file.
    franka_description, Copyright Franka Robotics GmbH.
    Licensed under the Apache License, Version 2.0.
    Source: https://github.com/google-deepmind/mujoco_menagerie
+
+4. Intel RealSense D435 camera mesh
+   Files: meshes/d435_garmi.dae, meshes/d435_{body,front,openings}.stl and
+          their copies under mujoco/assets/
+   Modified from meshes/d435.dae of the realsense2_description package of the
+   RealSense ROS wrapper (realsense-ros, release 4.58.4): its triangles are
+   sorted into three materials (aluminium housing, black glass front, charcoal
+   lenses and projector) and thinned out, from 231,000 to about 14,000, and the
+   three parts are also written as STL files for MuJoCo. The mesh frame is
+   unchanged.
+   Copyright 2023 RealSense, Inc. (originally published by Intel
+   Corporation; Intel RealSense products are sold by RealSense, Inc.
+   under license from Intel Corporation).
+   Licensed under the Apache License, Version 2.0.
+   Source: https://github.com/realsenseai/realsense-ros
