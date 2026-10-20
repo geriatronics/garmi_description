@@ -15,6 +15,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   side; now it is caught where it can be fixed.
 
 ### Changed
+- **The torso, base cover, mounting plate, neck and head collide as convex proxies** — instead of
+  their visual meshes of up to 100k triangles, which made every collision check slow; each proxy
+  (`meshes/collision/`, ~1200 triangles) encloses its part and reaches at most 4.4 mm beyond it.
+  The MuJoCo model collides the arms against the same proxies instead of three coarse boxes.
 - **Python sources brought up to that gate** — quotes, import order and formatting normalised,
   docstrings added, and a handful of real cleanups: an unused `numpy` import dropped, an unused
   model argument removed from `measure_twist`, the wheel clamp turned from an assigned lambda

@@ -1717,6 +1717,10 @@
     <mimic joint="right_fr3_finger_joint1"/>
     <dynamics damping="0.3"/>
   </joint>
+  <!-- Collision proxies. The torso, base cover, mounting plate, neck and head collide as convex
+       proxies of their visual meshes (meshes/collision/), not as those meshes of up to 100k
+       triangles: about 1200 triangles each, enclosing the visual mesh and reaching at most
+       4.4 mm beyond its convex hull. Their visuals are unchanged. -->
   <link name="body_link">
     <visual>
       <geometry>
@@ -1725,7 +1729,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://garmi_description/meshes/body.obj"/>
+        <mesh filename="package://garmi_description/meshes/collision/body.stl"/>
       </geometry>
     </collision>
   </link>
@@ -1742,7 +1746,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://garmi_description/meshes/cover.obj"/>
+        <mesh filename="package://garmi_description/meshes/collision/cover.stl"/>
       </geometry>
     </collision>
   </link>
@@ -1759,7 +1763,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://garmi_description/meshes/mounting_plate.obj"/>
+        <mesh filename="package://garmi_description/meshes/collision/mounting_plate.stl"/>
       </geometry>
     </collision>
   </link>
@@ -1778,7 +1782,7 @@
     <collision>
       <origin rpy="1.5707 0.0 1.5707" xyz="-0.1109 0 -1.1663"/>
       <geometry>
-        <mesh filename="package://garmi_description/meshes/neck_1.obj"/>
+        <mesh filename="package://garmi_description/meshes/collision/neck_1.stl"/>
       </geometry>
     </collision>
     <inertial>
@@ -1796,7 +1800,7 @@
     <collision>
       <origin rpy="1.5707 0.0 1.5707" xyz="-0.1388 0.0 -1.1782"/>
       <geometry>
-        <mesh filename="package://garmi_description/meshes/neck_2.obj"/>
+        <mesh filename="package://garmi_description/meshes/collision/neck_2.stl"/>
       </geometry>
     </collision>
     <inertial>
@@ -1814,7 +1818,7 @@
     <collision>
       <origin rpy="1.5707 0.0 1.5707" xyz="-0.1388 0.034 -1.3303"/>
       <geometry>
-        <mesh filename="package://garmi_description/meshes/head.obj"/>
+        <mesh filename="package://garmi_description/meshes/collision/head.stl"/>
       </geometry>
     </collision>
     <inertial>

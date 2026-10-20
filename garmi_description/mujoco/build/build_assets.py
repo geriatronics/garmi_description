@@ -9,8 +9,9 @@ are committed to the repository, so end users only need the committed files.
 It does three things:
   1. Downloads the Franka FR3 arm and Franka Hand meshes from mujoco_menagerie
      (pinned revision), which are reused verbatim for Garmi's two arms.
-  2. Copies Garmi's own mobile-base / lift / wheel meshes (STL) from the URDF
-     package's meshes/ directory.
+  2. Copies Garmi's own mobile-base / lift / wheel meshes (STL) and the
+     collision proxies (meshes/collision/) from the URDF package's meshes/
+     directory.
   3. Runs obj2mjcf on the TUM-designed multi-material parts (torso, head, neck,
      covers) to split them by material and convert textures to PNG, which is
      what MuJoCo needs (one material per mesh, PNG textures only).
@@ -72,6 +73,15 @@ BASE_STL = [
     "lower.stl",
     "upper.stl",
 ]
+# The URDF's collision proxies (meshes/collision/), copied to assets/collision/.
+COLLISION_STL = [
+    "body.stl",
+    "cover.stl",
+    "mounting_plate.stl",
+    "neck_1.stl",
+    "neck_2.stl",
+    "head.stl",
+]
 # TUM multi-material parts -> split by material with obj2mjcf.
 TUM_OBJ = ["body.obj", "head.obj", "cover.obj", "mounting_plate.obj", "neck_1.obj", "neck_2.obj"]
 
@@ -110,9 +120,14 @@ def main():
     for f in PANDA_FILES:
         fetch(f"franka_emika_panda/assets/{f}", os.path.join(ASSETS, f))
 
-    print("[2/3] Copying Garmi base/lift/wheel STL meshes ...")
+    print("[2/3] Copying Garmi base/lift/wheel STL meshes and collision proxies ...")
     for f in BASE_STL:
         shutil.copy2(os.path.join(URDF_MESHES, f), os.path.join(ASSETS, f))
+    os.makedirs(os.path.join(ASSETS, "collision"), exist_ok=True)
+    for f in COLLISION_STL:
+        shutil.copy2(
+            os.path.join(URDF_MESHES, "collision", f), os.path.join(ASSETS, "collision", f)
+        )
 
     print("[3/3] Splitting TUM multi-material parts with obj2mjcf ...")
     with tempfile.TemporaryDirectory() as tmp:

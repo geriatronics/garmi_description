@@ -82,11 +82,13 @@
       <geom type="capsule" group="3" contype="4" conaffinity="1" condim="3"
             friction="1.2 0.005 0.0001" priority="1" solref="0.01 1" solimp="0.9 0.95 0.002"/>
     </default>
-    <!-- Coarse self-collision volumes for the torso, head and base so the arms
-         cannot pass through the body. contype/conaffinity 2 (bit2) makes them
+    <!-- Self-collision volumes for the torso, neck, head and base so the arms
+         cannot pass through the body: the URDF's collision geometry, i.e. the
+         true-size convex proxies of the TUM parts (assets/collision/) and the
+         chassis's own collision mesh. contype/conaffinity 2 (bit2) makes them
          collide with the arms/hands only, not the floor or wheels. -->
     <default class="selfcol">
-      <geom type="box" group="3" contype="2" conaffinity="2" mass="0" rgba="1 0.5 0 0.15"/>
+      <geom type="mesh" group="3" contype="2" conaffinity="2" mass="0" density="0" rgba="1 0.5 0 0.15"/>
     </default>
   </default>
 
@@ -190,6 +192,15 @@
     <mesh file="mounting_plate/mounting_plate.obj"/>
     <mesh file="neck_1/neck_1.obj"/>
     <mesh file="neck_2/neck_2.obj"/>
+
+    <!-- Collision proxies (the URDF's collision meshes), ~1200 triangles each. -->
+    <mesh name="chassis_collision" file="body-collision.stl"/>
+    <mesh name="cover_collision" file="collision/cover.stl"/>
+    <mesh name="mounting_plate_collision" file="collision/mounting_plate.stl"/>
+    <mesh name="body_collision" file="collision/body.stl"/>
+    <mesh name="neck_1_collision" file="collision/neck_1.stl"/>
+    <mesh name="neck_2_collision" file="collision/neck_2.stl"/>
+    <mesh name="head_collision" file="collision/head.stl"/>
   </asset>
 
   <worldbody>
@@ -210,9 +221,11 @@
       <geom mesh="lights" material="red" quat="0 0 0 1"/>
       <geom mesh="cover" material="White_Plastic" quat="0.500048 0.5 0.499952 0.5"/>
       <geom mesh="mounting_plate" material="Grey_Plastic" quat="0.500048 0.5 0.499952 0.5"/>
-      <!-- Coarse self-collision volume for the mobile base, including the TUM
-           cover on top (spans the chassis + cover, ~0.03..0.50 m). -->
-      <geom class="selfcol" pos="0 0 0.2414" size="0.4790 0.3950 0.2378"/>
+      <!-- Self-collision volumes of the mobile base: the chassis, and the TUM
+           cover and mounting plate on top of it (~0.004..0.48 m). -->
+      <geom class="selfcol" mesh="chassis_collision"/>
+      <geom class="selfcol" mesh="cover_collision" quat="0.500048 0.5 0.499952 0.5"/>
+      <geom class="selfcol" mesh="mounting_plate_collision" quat="0.500048 0.5 0.499952 0.5"/>
 
       <!-- Mecanum wheels: driven hub + free-spinning 45-deg rollers
            (true mecanum; produces holonomic motion via physics). -->
@@ -491,13 +504,15 @@
                     <!-- Static neck stub + torso shell ride on the lift mount. -->
                     <geom class="garmi_vis" mesh="neck_1" material="Grey_Plastic"
                       pos="-0.1109 0 -1.1513" quat="0.500048 0.5 0.499952 0.5"/>
+                    <geom class="selfcol" mesh="neck_1_collision"
+                      pos="-0.1109 0 -1.1513" quat="0.500048 0.5 0.499952 0.5"/>
 
                     <body name="body_link" pos="-0.1109 0 -1.1663" quat="0.500048 0.5 0.499952 0.5">
                       <geom class="garmi_vis" mesh="body_0" material="White_Plastic"/>
                       <geom class="garmi_vis" mesh="body_1" material="Grey_Plastic"/>
                       <geom class="garmi_vis" mesh="body_2" material="Fabric"/>
                       <geom class="garmi_vis" mesh="body_3" material="Screen"/>
-                      <geom class="selfcol" pos="0.0013 0.9196 0.2028" quat="0.500049 -0.500001 -0.499951 -0.499999" size="0.2636 0.2221 0.4056"/>
+                      <geom class="selfcol" mesh="body_collision"/>
                     </body>
 
                     <!-- Head: pan then tilt. -->
@@ -506,6 +521,8 @@
                       <inertial pos="0 0 0" mass="0.5" diaginertia="0.001 0.001 0.001"/>
                       <geom class="garmi_vis" mesh="neck_2" material="Grey_Plastic"
                         pos="-0.1388 0 -1.1782" quat="0.500048 0.5 0.499952 0.5"/>
+                      <geom class="selfcol" mesh="neck_2_collision"
+                        pos="-0.1388 0 -1.1782" quat="0.500048 0.5 0.499952 0.5"/>
                       <body name="head" pos="0 -0.034 0.1521">
                         <joint name="o1_motor_2" axis="0 -1 0" range="-0.7853 0.7853"/>
                         <inertial pos="0 0 0" mass="2.5" diaginertia="0.01 0.01 0.01"/>
@@ -513,7 +530,8 @@
                           pos="-0.1388 0.034 -1.3303" quat="0.500048 0.5 0.499952 0.5"/>
                         <geom class="garmi_vis" mesh="head_1" material="White_Plastic"
                           pos="-0.1388 0.034 -1.3303" quat="0.500048 0.5 0.499952 0.5"/>
-                        <geom class="selfcol" pos="0.0412 0.0340 -0.0142" size="0.1605 0.1352 0.1601"/>
+                        <geom class="selfcol" mesh="head_collision"
+                          pos="-0.1388 0.034 -1.3303" quat="0.500048 0.5 0.499952 0.5"/>
                       </body>
                     </body>
 
@@ -754,6 +772,8 @@
     <exclude body1="body_link" body2="head"/>
     <exclude body1="body_link" body2="base_link"/>
     <exclude body1="head" body2="base_link"/>
+    <!-- The head sits on the neck stub, whose proxy rides the lift mount. -->
+    <exclude body1="head" body2="lift_0_mount_rotated"/>
     <!-- The shoulder / upper-arm links rest against the torso in the ready
          pose; exclude them from the torso box so there is no start-up
          penetration. The forearm, wrist and hand still collide with it. -->

@@ -77,8 +77,11 @@ A `home` keyframe places the arms in the same ready pose the Gazebo model
 starts in.
 
 **Collisions & limits.** The arm links and grippers have collision geometry and
-also collide with coarse self-collision volumes around the torso, head and
-mobile base, so the arms cannot pass through the body. Joint position limits and
+also collide with the torso, neck, head and mobile base, so the arms cannot pass
+through the body. Those collide as the URDF's own collision geometry: true-size
+convex proxies of the TUM parts (`assets/collision/`, ~1200 triangles each,
+reaching at most 4.4 mm beyond the visual mesh's hull) and the chassis's
+collision mesh. Joint position limits and
 the wheel speed limit mirror the URDF; the lift is heavily damped to reproduce
 the slow, stiff, non-backdrivable lead-screw of the real robot (~0.088 m/s per
 stage). Both telescoping stages move together via a stiff equality constraint
