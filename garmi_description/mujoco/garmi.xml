@@ -167,6 +167,19 @@
     <material name="fingertip_black" rgba="0.1 0.1 0.1 1"/>
     <mesh name="fingertip" file="fingertip.stl"/>
 
+    <!-- Wrist cameras: the 3D-printed bracket and its bracket-and-camera proxy. -->
+    <material name="wrist_camera_mount_white" rgba="0.92 0.92 0.88 1"/>
+    <!-- The RealSense D435i in the three colours of the URDF's mesh: aluminium housing, black
+         glass front, and the lenses and projector behind it in a lighter charcoal. -->
+    <material name="d435_aluminium" rgba="0.749 0.749 0.761 1" specular="0.35" shininess="0.25"/>
+    <material name="d435_glass" rgba="0.012 0.012 0.016 1" specular="0.65" shininess="0.8"/>
+    <material name="d435_opening" rgba="0.18 0.2 0.24 1" specular="0.45" shininess="0.4"/>
+    <mesh name="d435_body" file="d435_body.stl"/>
+    <mesh name="d435_front" file="d435_front.stl"/>
+    <mesh name="d435_openings" file="d435_openings.stl"/>
+    <mesh name="wrist_camera_mount" file="wrist_camera_mount.stl"/>
+    <mesh name="wrist_camera_mount_collision" file="collision/wrist_camera_mount_centered.stl"/>
+
     <!-- Garmi base / lift / wheel meshes. -->
     <mesh name="chassis" file="body.stl"/>
     <mesh name="side_cover" file="side-cover.stl"/>
@@ -621,6 +634,27 @@
                                       <geom mesh="link7_2" material="white" class="fr3_vis"/>
                                       <geom mesh="link7_3" material="black" class="fr3_vis"/>
                                       <geom name="left_fr3_link7_col" class="fr3_col" mesh="link7_coll"/>
+                                      <!-- Wrist camera (see the URDF): a RealSense D435i on its bracket
+                                           on the flange, in the hand's frame. The bracket and camera
+                                           collide as one convex proxy. The MuJoCo camera sits on the
+                                           colour sensor's optical frame, with its 42 degree vertical
+                                           field of view. -->
+                                      <body name="left_fr3_wrist_camera_mount" pos="0 0 0.107" quat="0.9238795 0 0 -0.3826834">
+                                        <inertial pos="0.08402 0.00536 0.01243" mass="0.0717"
+                                          fullinertia="4.113e-05 8.628e-05 1.161e-04 -1.418e-05 -1.345e-05 -3.749e-06"/>
+                                        <geom class="garmi_vis" mesh="wrist_camera_mount" material="wrist_camera_mount_white"/>
+                                        <geom class="hand_col" mesh="wrist_camera_mount_collision"/>
+                                        <body name="camera_d435i_left_bottom_screw_frame" pos="0.11001 0 0.02231" quat="0 0.3826834 0 0.9238795">
+                                          <body name="camera_d435i_left_link" pos="0.0106 0.0175 0.0125">
+                                            <inertial pos="0 -0.0175 0" mass="0.072" diaginertia="5.235e-05 7.515e-06 5.237e-05"/>
+                                            <!-- The URDF's visual pose: the mesh frame at the front plate, between the infrared imagers. -->
+                                            <geom class="garmi_vis" mesh="d435_body" material="d435_aluminium" pos="0.0043 -0.0175 0" quat="0.5 0.5 0.5 0.5"/>
+                                            <geom class="garmi_vis" mesh="d435_front" material="d435_glass" pos="0.0043 -0.0175 0" quat="0.5 0.5 0.5 0.5"/>
+                                            <geom class="garmi_vis" mesh="d435_openings" material="d435_opening" pos="0.0043 -0.0175 0" quat="0.5 0.5 0.5 0.5"/>
+                                            <camera name="camera_d435i_left_color" pos="0 0.015 0" xyaxes="0 -1 0 0 0 1" fovy="42"/>
+                                          </body>
+                                        </body>
+                                      </body>
                                       <body name="left_fr3_hand" pos="0 0 0.107" quat="0.9238795 0 0 -0.3826834" childclass="hand">
                                         <inertial mass="0.73" pos="-0.01 0 0.03" diaginertia="0.001 0.0025 0.0017"/>
                                         <geom mesh="hand_0" material="off_white" class="hand_vis"/>
@@ -731,6 +765,27 @@
                                       <geom mesh="link7_2" material="white" class="fr3_vis"/>
                                       <geom mesh="link7_3" material="black" class="fr3_vis"/>
                                       <geom name="right_fr3_link7_col" class="fr3_col" mesh="link7_coll"/>
+                                      <!-- Wrist camera (see the URDF): a RealSense D435i on its bracket
+                                           on the flange, in the hand's frame. The bracket and camera
+                                           collide as one convex proxy. The MuJoCo camera sits on the
+                                           colour sensor's optical frame, with its 42 degree vertical
+                                           field of view. -->
+                                      <body name="right_fr3_wrist_camera_mount" pos="0 0 0.107" quat="0.9238795 0 0 -0.3826834">
+                                        <inertial pos="0.08402 0.00536 0.01243" mass="0.0717"
+                                          fullinertia="4.113e-05 8.628e-05 1.161e-04 -1.418e-05 -1.345e-05 -3.749e-06"/>
+                                        <geom class="garmi_vis" mesh="wrist_camera_mount" material="wrist_camera_mount_white"/>
+                                        <geom class="hand_col" mesh="wrist_camera_mount_collision"/>
+                                        <body name="camera_d435i_right_bottom_screw_frame" pos="0.11001 0 0.02231" quat="0 0.3826834 0 0.9238795">
+                                          <body name="camera_d435i_right_link" pos="0.0106 0.0175 0.0125">
+                                            <inertial pos="0 -0.0175 0" mass="0.072" diaginertia="5.235e-05 7.515e-06 5.237e-05"/>
+                                            <!-- The URDF's visual pose: the mesh frame at the front plate, between the infrared imagers. -->
+                                            <geom class="garmi_vis" mesh="d435_body" material="d435_aluminium" pos="0.0043 -0.0175 0" quat="0.5 0.5 0.5 0.5"/>
+                                            <geom class="garmi_vis" mesh="d435_front" material="d435_glass" pos="0.0043 -0.0175 0" quat="0.5 0.5 0.5 0.5"/>
+                                            <geom class="garmi_vis" mesh="d435_openings" material="d435_opening" pos="0.0043 -0.0175 0" quat="0.5 0.5 0.5 0.5"/>
+                                            <camera name="camera_d435i_right_color" pos="0 0.015 0" xyaxes="0 -1 0 0 0 1" fovy="42"/>
+                                          </body>
+                                        </body>
+                                      </body>
                                       <body name="right_fr3_hand" pos="0 0 0.107" quat="0.9238795 0 0 -0.3826834" childclass="hand">
                                         <inertial mass="0.73" pos="-0.01 0 0.03" diaginertia="0.001 0.0025 0.0017"/>
                                         <geom mesh="hand_0" material="off_white" class="hand_vis"/>

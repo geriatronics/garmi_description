@@ -79,3 +79,34 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
+
+
+========================================================================
+4. Intel RealSense D435 camera mesh
+========================================================================
+
+Applies to: meshes/d435_garmi.dae, meshes/d435_{body,front,openings}.stl and
+            their copies under mujoco/assets/
+
+Copyright 2023 RealSense, Inc. (originally published by Intel Corporation)
+Source:    https://github.com/realsenseai/realsense-ros
+           (realsense2_description/meshes/d435.dae, release 4.58.4; the
+           files here are modified from it: its triangles are sorted into three
+           materials -- aluminium housing, black glass front, charcoal lenses
+           and projector --, thinned out from 231,000 to about 14,000, and the
+           three parts also written as STL files; the mesh frame is unchanged)
+
+Licensed under the Apache License, Version 2.0. The complete license text
+is identical to the one distributed with this package in the LICENSE file.
+
+The upstream repository carries the following copyright notice
+("RealSense Copyright"), reproduced as found:
+
+  Copyright (2025), RealSense, Inc.
+  Certain Intel® RealSense™ products are sold by RealSense, Inc. under license from Intel Corporation),
+  This "Software" is furnished under license and may only be used or copied in accordance with the terms of that license.
+  No license, express or implied, by estoppel or otherwise, to any intellectual property rights is granted by this document.
+  The Software is subject to change without notice and should not be construed as a commitment by RealSense, Inc. or Intel Corporation to market, license, sell or support any product or technology.
+  Unless otherwise provided for in the license under which this Software is provided, the Software is provided AS IS, with no warranties of any kind, express or implied.
+  Except as expressly permitted by the Software license, neither RealSense, Inc. nor Intel Corporation, or any of their suppliers, assumes any responsibility or liability for any errors or inaccuracies that may appear herein.
+  Except as expressly permitted by the Software license, no part of the Software may be reproduced, stored in a retrieval system, transmitted in any form, or distributed by any means without the express written consent of RealSense, Inc.

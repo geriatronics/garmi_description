@@ -113,7 +113,8 @@ chosen specifically so that you can freely use, adapt, and build on Garmi in you
 own research, experiments, and benchmarks. We'd love to see what you create! 🧪
 
 A few of the bundled meshes come from third parties and keep their original
-licenses (Apache-2.0 for Franka, BSD-3-Clause for the Clearpath-derived base).
+licenses (Apache-2.0 for Franka and for the Intel RealSense camera, BSD-3-Clause
+for the Clearpath-derived base).
 Their notices are reproduced in the [`NOTICE`](NOTICE) and
 [`THIRD_PARTY_LICENSES`](THIRD_PARTY_LICENSES) files — please keep them when you
 redistribute. Everything else is © Technical University of Munich.

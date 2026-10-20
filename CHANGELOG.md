@@ -7,6 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
+- **The wrist cameras** — each hand's RealSense D435i on its 3D-printed bracket
+  (`<side>_fr3_wrist_camera_mount`, 71.7 g), with every frame the camera driver publishes
+  (`camera_d435i_<side>_*`, optical frames included), so the driver can run with
+  `publish_tf:=false`; the MuJoCo model renders through each colour sensor. The camera is drawn
+  with its black glass front on the aluminium housing, from a recoloured, much lighter copy of
+  Intel's mesh (`meshes/d435_garmi.dae`, 466 KB instead of 15.8 MB; see `NOTICE`).
 - **The head camera** — the Olive stereo camera in its white housing on its stand on top of the
   head (`head_camera_mount`, `olive_camera_link`, one `olive_camera_<lens>_optical_frame` per
   lens, 63.0 mm apart), its pose on the adjustable stand a best guess from photos; the MuJoCo
