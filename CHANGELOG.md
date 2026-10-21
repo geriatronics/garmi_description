@@ -13,6 +13,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   optical frames moves onto the cover's two lens openings (63.0 mm apart, looking 11.66 degrees
   down, not 10). Mount and camera collide as convex proxies; mount and housing weigh their
   print. Link and joint names are unchanged.
+- **The README image** shows the head camera on its new mount.
 
 ## [0.2.0] - 2026-10-20
 
