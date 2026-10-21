@@ -212,11 +212,14 @@
     <mesh name="neck_2_collision" file="collision/neck_2.stl"/>
     <mesh name="head_collision" file="collision/head.stl"/>
 
-    <!-- Olive stereo camera on top of the head (see the URDF). -->
+    <!-- Olive stereo camera on top of the head, on its printed mount (see the URDF). -->
     <material name="olive_camera_white" rgba="0.92 0.92 0.9 1"/>
     <material name="olive_camera_dark" rgba="0.12 0.12 0.12 1"/>
+    <mesh name="head_camera_mount" file="head_camera_mount.stl"/>
+    <mesh name="head_camera_mount_collision" file="collision/head_camera_mount.stl"/>
     <mesh name="olive_camera" file="olive_camera.stl"/>
     <mesh name="olive_camera_housing" file="olive_camera_housing.stl"/>
+    <mesh name="olive_camera_cover" file="olive_camera_cover.stl"/>
     <mesh name="olive_camera_collision" file="collision/olive_camera.stl"/>
   </asset>
 
@@ -549,18 +552,23 @@
                           pos="-0.1388 0.034 -1.3303" quat="0.500048 0.5 0.499952 0.5"/>
                         <geom class="selfcol" mesh="head_collision"
                           pos="-0.1388 0.034 -1.3303" quat="0.500048 0.5 0.499952 0.5"/>
-                        <!-- Head camera: the Olive stereo camera in its housing on a
-                             provisional stand, its pose a best guess from photos (see
-                             the URDF). One MuJoCo camera per lens, at the URDF's optical
-                             frames; their field of view is MuJoCo's default, not the
-                             fisheye lenses'. -->
-                        <body name="head_camera_mount" pos="0.0614 0.034 0.09">
-                          <geom class="garmi_vis" type="cylinder" size="0.011 0.011" pos="0 0 0.011" material="olive_camera_dark"/>
-                          <geom class="garmi_vis" type="cylinder" size="0.004 0.004" pos="0 0 0.026" material="olive_camera_dark"/>
-                          <geom class="selfcol" type="cylinder" size="0.011 0.015" pos="0 0 0.015"/>
-                          <body name="olive_camera_link" pos="0.005 0 0.051" quat="0.9961947 0 0.0871558 0">
+                        <!-- Head camera: the Olive stereo camera in its printed housing and
+                             lens cover, on the printed mount whose foot fills the slot on top
+                             of the head (see the URDF). The housing and cover ride the camera's
+                             body, which carries their mass; the camera itself has none yet.
+                             One MuJoCo camera per lens, at the URDF's optical frames; their
+                             field of view is MuJoCo's default, not the fisheye lenses'. -->
+                        <body name="head_camera_mount" pos="0.0459 0.034 0.09">
+                          <inertial pos="-0.00135 -0.00002 -0.00888" mass="0.01525"
+                            fullinertia="1.832e-06 5.087e-06 6.224e-06 1.581e-09 -1.274e-07 1.173e-10"/>
+                          <geom class="garmi_vis" mesh="head_camera_mount" material="olive_camera_white"/>
+                          <geom class="selfcol" mesh="head_camera_mount_collision"/>
+                          <body name="olive_camera_link" pos="0.020651 -0.00002 0.027986" quat="0.9948274 0.0000049 0.1015800 -0.0000478">
+                            <inertial pos="0.00078 -0.00001 -0.00393" mass="0.02245"
+                              fullinertia="2.798e-05 4.611e-06 2.625e-05 -2.249e-09 9.730e-08 1.979e-10"/>
                             <geom class="garmi_vis" mesh="olive_camera" material="olive_camera_dark"/>
                             <geom class="garmi_vis" mesh="olive_camera_housing" material="olive_camera_white"/>
+                            <geom class="garmi_vis" mesh="olive_camera_cover" material="olive_camera_white"/>
                             <geom class="selfcol" mesh="olive_camera_collision"/>
                             <camera name="olive_camera_left" pos="0 0.0315 0" xyaxes="0 -1 0 0 0 1"/>
                             <camera name="olive_camera_right" pos="0 -0.0315 0" xyaxes="0 -1 0 0 0 1"/>

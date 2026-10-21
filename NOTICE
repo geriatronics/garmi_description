@@ -7,10 +7,10 @@ Technical University of Munich (TUM).
 The Garmi robot design (head, neck, torso, covers and overall integration)
 was created in collaboration with Leap Leap (https://leap-leap.com/).
 
-The head camera meshes (meshes/olive_camera.stl,
-meshes/olive_camera_housing.stl, meshes/collision/olive_camera.stl and their
-copies under mujoco/assets/) are simplified from Olive Robotics' CAD model
-of the camera and its housing.
+The head camera's mesh (meshes/olive_camera.stl and its copy under
+mujoco/assets/) is simplified from Olive Robotics' CAD model of the camera;
+its collision proxy (meshes/collision/olive_camera.stl and its copy) encloses
+that camera together with its TUM-designed housing and lens cover.
 
 ------------------------------------------------------------------------
 Third-party components
