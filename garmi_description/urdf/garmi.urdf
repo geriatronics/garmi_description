@@ -2282,14 +2282,14 @@
     <origin rpy="0.0 0.0 0.0" xyz="0.0279 0.0 0.0269"/>
     <parent link="neck_1"/>
     <child link="neck_2"/>
-    <axis xyz="0 0 1"/>
+    <axis xyz="0 0 -1"/>
     <limit effort="30" lower="-1.5707" upper="1.5707" velocity="1.5707"/>
   </joint>
   <joint name="o1_motor_2" type="revolute">
     <origin rpy="0.0 0.0 0.0" xyz="0.0 -0.034 0.1521"/>
     <parent link="neck_2"/>
     <child link="head"/>
-    <axis xyz="0 -1 0"/>
+    <axis xyz="0 1 0"/>
     <limit effort="30" lower="-0.7853" upper="0.7853" velocity="1.5707"/>
   </joint>
   <!-- Head camera: the Olive stereo fisheye camera in a 3D-printed housing closed by a lens cover,
