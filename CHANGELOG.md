@@ -6,6 +6,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-10-21
+
+The neck's pan-tilt unit as built, from the technician's CAD.
+
+### Fixed
+- **The neck is the technician's pan-tilt unit** — `neck_1` draws its base with the pan motor,
+  `neck_2` its joint part with the tilt motor, and the head gains the plate it is screwed to (TUM's
+  CAD; the motors are plain cylinders there too). The 15 mm raise moves from `head_fixed_joint` to
+  the pan joint `o1_motor_1`, so the base no longer cuts into the torso's collar while `neck_2`, the head
+  and its camera keep their poses; limits are unchanged. Only the `neck_1` frame moves, 15 mm
+  down onto the torso where the base sits.
+
 ## [0.3.0] - 2026-10-21
 
 The head camera on its printed mount, from the technician's CAD.
@@ -131,7 +143,8 @@ First public release of the portable Garmi robot description.
 - Continuous integration validating the MuJoCo model, building the container
   images, and `colcon`-building the ROS 2 package.
 
-[Unreleased]: https://github.com/geriatronics/garmi_description/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/geriatronics/garmi_description/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/geriatronics/garmi_description/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/geriatronics/garmi_description/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/geriatronics/garmi_description/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/geriatronics/garmi_description/compare/v0.1.2...v0.1.3

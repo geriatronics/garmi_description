@@ -96,7 +96,15 @@ COLLISION_STL = [
     "wrist_camera_mount_centered.stl",
 ]
 # TUM multi-material parts -> split by material with obj2mjcf.
-TUM_OBJ = ["body.obj", "head.obj", "cover.obj", "mounting_plate.obj", "neck_1.obj", "neck_2.obj"]
+TUM_OBJ = [
+    "body.obj",
+    "head.obj",
+    "cover.obj",
+    "mounting_plate.obj",
+    "neck_1.obj",
+    "neck_2.obj",
+    "head_mounting_plate.obj",
+]
 
 
 def fetch(rel_url, dest):

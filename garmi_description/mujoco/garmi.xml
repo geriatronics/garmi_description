@@ -202,6 +202,7 @@
     <mesh file="mounting_plate/mounting_plate.obj"/>
     <mesh file="neck_1/neck_1.obj"/>
     <mesh file="neck_2/neck_2.obj"/>
+    <mesh file="head_mounting_plate/head_mounting_plate.obj"/>
 
     <!-- Collision proxies (the URDF's collision meshes), ~1200 triangles each. -->
     <mesh name="chassis_collision" file="body-collision.stl"/>
@@ -521,11 +522,12 @@
                 <body name="lift_0_mount" pos="0 0 0.838">
                   <body name="lift_0_mount_rotated" quat="0.923879 0 0 -0.382684">
 
-                    <!-- Static neck stub + torso shell ride on the lift mount. -->
+                    <!-- The neck's base with the pan motor (the URDF's neck_1) and the torso
+                         shell ride on the lift mount. -->
                     <geom class="garmi_vis" mesh="neck_1" material="Grey_Plastic"
-                      pos="-0.1109 0 -1.1513" quat="0.500048 0.5 0.499952 0.5"/>
+                      pos="-0.1109 0 -1.1663" quat="0.500048 0.5 0.499952 0.5"/>
                     <geom class="selfcol" mesh="neck_1_collision"
-                      pos="-0.1109 0 -1.1513" quat="0.500048 0.5 0.499952 0.5"/>
+                      pos="-0.1109 0 -1.1663" quat="0.500048 0.5 0.499952 0.5"/>
 
                     <body name="body_link" pos="-0.1109 0 -1.1663" quat="0.500048 0.5 0.499952 0.5">
                       <geom class="garmi_vis" mesh="body_0" material="White_Plastic"/>
@@ -535,14 +537,15 @@
                       <geom class="selfcol" mesh="body_collision"/>
                     </body>
 
-                    <!-- Head: pan then tilt. -->
+                    <!-- Head: pan then tilt. The pan turns the neck's joint part with the tilt
+                         motor; the tilt turns the plate and the head screwed to it. -->
                     <body name="neck_2" pos="0.0279 0 0.0269">
                       <joint name="o1_motor_1" axis="0 0 1" range="-1.5707 1.5707"/>
                       <inertial pos="0 0 0" mass="0.5" diaginertia="0.001 0.001 0.001"/>
                       <geom class="garmi_vis" mesh="neck_2" material="Grey_Plastic"
-                        pos="-0.1388 0 -1.1782" quat="0.500048 0.5 0.499952 0.5"/>
+                        pos="-0.1388 0 -1.1932" quat="0.500048 0.5 0.499952 0.5"/>
                       <geom class="selfcol" mesh="neck_2_collision"
-                        pos="-0.1388 0 -1.1782" quat="0.500048 0.5 0.499952 0.5"/>
+                        pos="-0.1388 0 -1.1932" quat="0.500048 0.5 0.499952 0.5"/>
                       <body name="head" pos="0 -0.034 0.1521">
                         <joint name="o1_motor_2" axis="0 -1 0" range="-0.7853 0.7853"/>
                         <inertial pos="0 0 0" mass="2.5" diaginertia="0.01 0.01 0.01"/>
@@ -550,6 +553,8 @@
                           pos="-0.1388 0.034 -1.3303" quat="0.500048 0.5 0.499952 0.5"/>
                         <geom class="garmi_vis" mesh="head_1" material="White_Plastic"
                           pos="-0.1388 0.034 -1.3303" quat="0.500048 0.5 0.499952 0.5"/>
+                        <geom class="garmi_vis" mesh="head_mounting_plate" material="Grey_Plastic"
+                          pos="-0.1388 0.034 -1.3453" quat="0.500048 0.5 0.499952 0.5"/>
                         <geom class="selfcol" mesh="head_collision"
                           pos="-0.1388 0.034 -1.3303" quat="0.500048 0.5 0.499952 0.5"/>
                         <!-- Head camera: the Olive stereo camera in its printed housing and

@@ -12,6 +12,10 @@ mujoco/assets/) is simplified from Olive Robotics' CAD model of the camera;
 its collision proxy (meshes/collision/olive_camera.stl and its copy) encloses
 that camera together with its TUM-designed housing and lens cover.
 
+The neck's pan-tilt unit (meshes/neck_1.obj, meshes/neck_2.obj,
+meshes/head_mounting_plate.obj, their proxies under meshes/collision/ and
+their copies under mujoco/assets/) is drawn from TUM's own CAD of it.
+
 ------------------------------------------------------------------------
 Third-party components
 ------------------------------------------------------------------------
