@@ -57,8 +57,8 @@ PANDA_FILES = (
     + ["link0.stl"]
 )
 
-# Garmi's own meshes (mobile base, wheels, lift, fingertips, head camera, wrist camera
-# bracket). STL loads into MuJoCo as-is.
+# Garmi's own meshes (mobile base, wheels, lift, fingertips, head camera and its mount, wrist
+# camera bracket). STL loads into MuJoCo as-is.
 BASE_STL = [
     "body.stl",
     "body-collision.stl",
@@ -74,8 +74,10 @@ BASE_STL = [
     "lower.stl",
     "upper.stl",
     "fingertip.stl",
+    "head_camera_mount.stl",
     "olive_camera.stl",
     "olive_camera_housing.stl",
+    "olive_camera_cover.stl",
     "wrist_camera_mount.stl",
     "d435_body.stl",
     "d435_front.stl",
@@ -89,6 +91,7 @@ COLLISION_STL = [
     "neck_1.stl",
     "neck_2.stl",
     "head.stl",
+    "head_camera_mount.stl",
     "olive_camera.stl",
     "wrist_camera_mount_centered.stl",
 ]

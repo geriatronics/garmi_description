@@ -81,10 +81,10 @@ bodies), and a site `<side>_fr3_hand_tcp` marks the tool centre between them,
 129.5 mm out from the hand, as in the URDF. Sites are in group 4, hidden in the
 viewer until that group is switched on.
 
-The Olive stereo camera rides on top of the head on its stand, with one MuJoCo
-camera per lens (`olive_camera_left`, `olive_camera_right`) at the URDF's
-optical frames, so you can render what the head sees. Their field of view is
-MuJoCo's default, not the fisheye lenses'.
+The Olive stereo camera rides on top of the head in its printed housing on the
+printed mount, with one MuJoCo camera per lens (`olive_camera_left`,
+`olive_camera_right`) at the URDF's optical frames, so you can render what the
+head sees. Their field of view is MuJoCo's default, not the fisheye lenses'.
 
 Each hand carries its wrist camera, a RealSense D435i on a 3D-printed bracket
 on the flange (`<side>_fr3_wrist_camera_mount`, `camera_d435i_<side>_link`),

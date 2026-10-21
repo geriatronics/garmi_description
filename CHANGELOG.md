@@ -6,6 +6,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+- **The head camera sits on its printed mount** — the technician's mount, housing and lens cover
+  replace the provisional stand and Olive's housing: the mount's foot fills the slot on top of
+  the head, whose inlay the head's mesh no longer carries, and `olive_camera_link` with both
+  optical frames moves onto the cover's two lens openings (63.0 mm apart, looking 11.66 degrees
+  down, not 10). Mount and camera collide as convex proxies; mount and housing weigh their
+  print. Link and joint names are unchanged.
+
 ## [0.2.0] - 2026-10-20
 
 Garmi's wrist and head cameras, its long fingertips, and light collision geometry, in the URDF

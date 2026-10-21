@@ -2276,54 +2276,55 @@
     <axis xyz="0 -1 0"/>
     <limit effort="30" lower="-0.7853" upper="0.7853" velocity="1.5707"/>
   </joint>
-  <!-- Head camera: the Olive stereo fisheye camera in its white housing, on a provisional stand
-       on top of the head, riding the head's pan and tilt.
+  <!-- Head camera: the Olive stereo fisheye camera in a 3D-printed housing closed by a lens cover,
+       on a printed mount on top of the head, riding the head's pan and tilt.
 
-       Mount. `head_camera_mount` sits on the head's top surface over the round recess at the
-       front of its camera slot, with the head's axes. The stand on it (a black ball-head base and
-       a short post, provisional until a printed mount replaces it) is drawn and collides as plain
-       cylinders sized from photos.
+       The mount, housing and cover are the technician's CAD (assembly `cam_mount_25_5mm`), drawn
+       in the head mesh's own frame, so they sit where the head's mesh puts them: the mount's foot
+       fills the slot on top of the head, in place of the inlay the head's mesh no longer carries.
+       Mount, housing and cover are printed and drawn white.
 
-       Camera. The stand is adjustable, so the camera's pose on it is a best guess from photos:
-       housing underside about 3 cm above the head, lenses forward, pitched down 10 degrees,
-       centred on the head. Its meshes are derived from Olive's CAD, in the camera's own frame
-       `olive_camera_link`: origin on the board's front face midway between the lenses, x forward
-       along the optical axes, y left, z up. The board and lenses are drawn dark on that link, the
-       housing white on `olive_camera_housing`. Camera and housing collide as one convex proxy.
+       Mount. `head_camera_mount` has the head's axes, its origin centred on the top of the foot.
+
+       Camera. Its meshes are in the camera's own frame `olive_camera_link`: origin on the board's
+       front face midway between the lenses, x forward along the optical axes, y left, z up. The
+       optical axes are the axes of the cover's two 17 mm openings, 63.0 mm apart, along the cover's
+       normal, which looks 11.66 degrees down; the board's back face rests on the housing's four
+       standoffs. (The head's mesh is drawn turned by 1.5707 rather than pi/2, which the camera,
+       placed through it, follows: hence its yaw of -0.000096.) The board and lenses are drawn on
+       that link, the housing and cover on `olive_camera_housing`. Camera, housing and cover
+       collide as one convex proxy, the mount as its own. Mount and housing weigh their printed
+       volume (PLA at an effective fill of 0.5); the camera itself carries no mass yet.
 
        Optical frames, one per lens (z forward, x right, y down), on the lens axes in the board's
        front face, 63.0 mm apart. No calibration places the projection centres yet. -->
   <joint name="head_camera_mount_joint" type="fixed">
     <parent link="head"/>
     <child link="head_camera_mount"/>
-    <origin rpy="0 0 0" xyz="0.0614 0.034 0.09"/>
+    <origin rpy="0 0 0" xyz="0.0459 0.034 0.09"/>
   </joint>
   <link name="head_camera_mount">
     <visual>
-      <origin rpy="0 0 0" xyz="0 0 0.011"/>
       <geometry>
-        <cylinder length="0.022" radius="0.011"/>
+        <mesh filename="package://garmi_description/meshes/head_camera_mount.stl"/>
       </geometry>
-      <material name="olive_camera_dark"/>
-    </visual>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0.026"/>
-      <geometry>
-        <cylinder length="0.008" radius="0.004"/>
-      </geometry>
-      <material name="olive_camera_dark"/>
+      <material name="olive_camera_white"/>
     </visual>
     <collision>
-      <origin rpy="0 0 0" xyz="0 0 0.015"/>
       <geometry>
-        <cylinder length="0.03" radius="0.011"/>
+        <mesh filename="package://garmi_description/meshes/collision/head_camera_mount.stl"/>
       </geometry>
     </collision>
+    <inertial>
+      <origin rpy="0 0 0" xyz="-0.00135 -0.00002 -0.00888"/>
+      <mass value="0.01525"/>
+      <inertia ixx="1.832e-06" ixy="1.581e-09" ixz="-1.274e-07" iyy="5.087e-06" iyz="1.173e-10" izz="6.224e-06"/>
+    </inertial>
   </link>
   <joint name="olive_camera_joint" type="fixed">
     <parent link="head_camera_mount"/>
     <child link="olive_camera_link"/>
-    <origin rpy="0 0.174533 0" xyz="0.005 0 0.051"/>
+    <origin rpy="0 0.203511 -0.000096" xyz="0.020651 -0.00002 0.027986"/>
   </joint>
   <link name="olive_camera_link">
     <visual>
@@ -2350,6 +2351,17 @@
       </geometry>
       <material name="olive_camera_white"/>
     </visual>
+    <visual>
+      <geometry>
+        <mesh filename="package://garmi_description/meshes/olive_camera_cover.stl"/>
+      </geometry>
+      <material name="olive_camera_white"/>
+    </visual>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0.00078 -0.00001 -0.00393"/>
+      <mass value="0.02245"/>
+      <inertia ixx="2.798e-05" ixy="-2.249e-09" ixz="9.730e-08" iyy="4.611e-06" iyz="1.979e-10" izz="2.625e-05"/>
+    </inertial>
   </link>
   <joint name="olive_camera_left_optical_joint" type="fixed">
     <parent link="olive_camera_link"/>
