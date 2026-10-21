@@ -540,14 +540,14 @@
                     <!-- Head: pan then tilt. The pan turns the neck's joint part with the tilt
                          motor; the tilt turns the plate and the head screwed to it. -->
                     <body name="neck_2" pos="0.0279 0 0.0269">
-                      <joint name="o1_motor_1" axis="0 0 1" range="-1.5707 1.5707"/>
+                      <joint name="o1_motor_1" axis="0 0 -1" range="-1.5707 1.5707"/>
                       <inertial pos="0 0 0" mass="0.5" diaginertia="0.001 0.001 0.001"/>
                       <geom class="garmi_vis" mesh="neck_2" material="Grey_Plastic"
                         pos="-0.1388 0 -1.1932" quat="0.500048 0.5 0.499952 0.5"/>
                       <geom class="selfcol" mesh="neck_2_collision"
                         pos="-0.1388 0 -1.1932" quat="0.500048 0.5 0.499952 0.5"/>
                       <body name="head" pos="0 -0.034 0.1521">
-                        <joint name="o1_motor_2" axis="0 -1 0" range="-0.7853 0.7853"/>
+                        <joint name="o1_motor_2" axis="0 1 0" range="-0.7853 0.7853"/>
                         <inertial pos="0 0 0" mass="2.5" diaginertia="0.01 0.01 0.01"/>
                         <geom class="garmi_vis" mesh="head_0" material="Face"
                           pos="-0.1388 0.034 -1.3303" quat="0.500048 0.5 0.499952 0.5"/>

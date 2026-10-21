@@ -6,6 +6,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+- **The head's pan and tilt turn the way the real head does** — both Olive servo joints had the
+  wrong sign: `o1_motor_1` (pan) now turns about `0 0 -1` and `o1_motor_2` (tilt) about `0 1 0`,
+  so a joint state from the robot's `head_state` poses the model's head like the real one. Joint
+  names, limits and every frame at zero pan and tilt are unchanged.
+
 ## [0.3.1] - 2026-10-21
 
 The neck's pan-tilt unit as built, from the technician's CAD.
