@@ -6,6 +6,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-21
+
+The head camera on its printed mount, from the technician's CAD.
+
 ### Changed
 - **The head camera sits on its printed mount** — the technician's mount, housing and lens cover
   replace the provisional stand and Olive's housing: the mount's foot fills the slot on top of
@@ -127,7 +131,8 @@ First public release of the portable Garmi robot description.
 - Continuous integration validating the MuJoCo model, building the container
   images, and `colcon`-building the ROS 2 package.
 
-[Unreleased]: https://github.com/geriatronics/garmi_description/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/geriatronics/garmi_description/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/geriatronics/garmi_description/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/geriatronics/garmi_description/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/geriatronics/garmi_description/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/geriatronics/garmi_description/compare/v0.1.1...v0.1.2
