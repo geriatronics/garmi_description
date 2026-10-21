@@ -2150,8 +2150,8 @@
   </joint>
   <!-- Collision proxies. The torso, base cover, mounting plate, neck and head collide as convex
        proxies of their visual meshes (meshes/collision/), not as those meshes of up to 100k
-       triangles: about 1200 triangles each, enclosing the visual mesh and reaching at most
-       4.4 mm beyond its convex hull. Their visuals are unchanged. -->
+       triangles: about 1200 triangles each, enclosing the link's visual meshes and reaching at
+       most 4.4 mm beyond their convex hull. Their visuals are unchanged. -->
   <link name="body_link">
     <visual>
       <geometry>
@@ -2203,6 +2203,16 @@
     <child link="mounting_plate_link"/>
     <origin rpy="1.5708 0.0 1.5708" xyz="0.0 0.0 0.0"/>
   </joint>
+  <!-- Neck: the pan-tilt unit, the technician's CAD (assembly `head_gimbal_assembly`), drawn in
+       the torso mesh's frame. The base (`Gimbel_Base_2Plus15mmV3`) sits on the torso's seat and
+       carries the pan motor: `neck_1`. The joint part (`Gimbel_Gelenk_2_V3`), which the pan motor
+       turns, carries the tilt motor: `neck_2`. The plate (`Gimbal_Head_Mouning_Plate`), which
+       the tilt motor turns and the head is screwed to, is the head's second visual. Both motors
+       are drawn as the plain cylinders the CAD has them as (60 mm across, 58 mm long). The base
+       stands 15 mm taller than its predecessor, which raised the pan joint, and with it the head,
+       by 15 mm: `neck_1` stays on the seat, the pan joint `o1_motor_1` carries the raise. The
+       head's mesh is drawn where the head sat before that raise, hence its visual origin 15 mm
+       above the plate's. -->
   <link name="neck_1">
     <visual>
       <origin rpy="1.5707 0.0 1.5707" xyz="-0.1109 0 -1.1663"/>
@@ -2223,13 +2233,13 @@
   </link>
   <link name="neck_2">
     <visual>
-      <origin rpy="1.5707 0.0 1.5707" xyz="-0.1388 0.0 -1.1782"/>
+      <origin rpy="1.5707 0.0 1.5707" xyz="-0.1388 0.0 -1.1932"/>
       <geometry>
         <mesh filename="package://garmi_description/meshes/neck_2.obj"/>
       </geometry>
     </visual>
     <collision>
-      <origin rpy="1.5707 0.0 1.5707" xyz="-0.1388 0.0 -1.1782"/>
+      <origin rpy="1.5707 0.0 1.5707" xyz="-0.1388 0.0 -1.1932"/>
       <geometry>
         <mesh filename="package://garmi_description/meshes/collision/neck_2.stl"/>
       </geometry>
@@ -2246,6 +2256,12 @@
         <mesh filename="package://garmi_description/meshes/head.obj"/>
       </geometry>
     </visual>
+    <visual>
+      <origin rpy="1.5707 0.0 1.5707" xyz="-0.1388 0.034 -1.3453"/>
+      <geometry>
+        <mesh filename="package://garmi_description/meshes/head_mounting_plate.obj"/>
+      </geometry>
+    </visual>
     <collision>
       <origin rpy="1.5707 0.0 1.5707" xyz="-0.1388 0.034 -1.3303"/>
       <geometry>
@@ -2260,10 +2276,10 @@
   <joint name="head_fixed_joint" type="fixed">
     <parent link="lift_0_mount_rotated_link"/>
     <child link="neck_1"/>
-    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.015"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
   </joint>
   <joint name="o1_motor_1" type="revolute">
-    <origin rpy="0.0 0.0 0.0" xyz="0.0279 0.0 0.0119"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0279 0.0 0.0269"/>
     <parent link="neck_1"/>
     <child link="neck_2"/>
     <axis xyz="0 0 1"/>

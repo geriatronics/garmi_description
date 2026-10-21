@@ -6,6 +6,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+- **The neck is the technician's pan-tilt unit** — `neck_1` draws its base with the pan motor,
+  `neck_2` its joint part with the tilt motor, and the head gains the plate it is screwed to (TUM's
+  CAD; the motors are plain cylinders there too). The 15 mm raise moves from `head_fixed_joint` to
+  the pan joint `o1_motor_1`, so the base no longer cuts into the torso's collar while `neck_2`, the head
+  and its camera keep their poses; limits are unchanged.
+
 ## [0.3.0] - 2026-10-21
 
 The head camera on its printed mount, from the technician's CAD.
