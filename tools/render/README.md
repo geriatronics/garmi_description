@@ -41,6 +41,9 @@ times slower; lower `--samples` or `--resolution` for drafts. `--help` lists eve
 | `--resolution WxH` | per view | Image size in pixels. |
 | `--samples` | 256 | Path-tracing samples per pixel; OpenImageDenoise cleans up the rest. |
 | `--exposure` | -0.4 | Exposure in stops; lower keeps more shape in the white surfaces, higher brightens. |
+| `--fade-shadow` | off | With `--transparent`: fades the floor shadow out around the base, so it ends inside the image instead of at its border. |
+| `--crop` | off | Crops the image to the robot and its shadow, with a small margin. |
+| `--width` | | Scales the finished image down to this width (area averaging). |
 | `--transparent` | off | Transparent background: an RGBA PNG whose floor keeps only the robot's shadow. |
 | `--no-ground` | | Drops the shadow-catching floor. |
 | `--background` | `#f2f3f5` | Backdrop colour when not transparent. |
@@ -57,12 +60,14 @@ times slower; lower `--samples` or `--resolution` for drafts. `--help` lists eve
   keyframe.
 - `travel`: both arms folded back over the shoulders, above the base, Garmi's driving posture
   (the right arm mirrors the left).
-- `readme`: the left hand raised, its wrist camera looking at the viewer, the right gripper held
-  out sideways; seen from the front, it makes the repository's README image:
+- `readme`: the left hand raised and tilted 20 degrees down, its wrist camera looking at the
+  viewer above the fingertips; the right gripper held out sideways, its length in view. Seen from
+  the front, it makes the repository's README image:
 
   ```bash
-  uv run tools/render/render.py --pose readme --camera azimuth=0 --transparent \
-      --resolution 1200x1200 -o model.png   # then cropped and scaled to 600 px wide
+  uv run tools/render/render.py --pose readme --camera azimuth=0 --camera margin=1.6 \
+      --resolution 1600x1600 --transparent --fade-shadow --crop --width 600 \
+      -o garmi_description/model.png
   ```
 
 ## Views

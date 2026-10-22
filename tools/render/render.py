@@ -239,9 +239,10 @@ def parse_visual(element: ET.Element, colours: dict, urdf: Path) -> Visual:
 ARM_READY = (0.0, -math.pi / 4, 0.0, -3 * math.pi / 4, 0.0, math.pi / 2, math.pi / 4)
 # Garmi's driving posture, left arm: folded back over the shoulder, above the base.
 ARM_TRAVEL = (-2.32, 1.17, 0.33, -0.68, 2.63, 3.49, -1.5)
-# The README image's pose, seen from the front (--camera azimuth=0): the left hand raised, its
-# wrist camera looking at the viewer; the right gripper held out sideways, its length in view.
-README_LEFT = (0.068, -1.756, 0.298, -2.559, 1.362, 3.911, 0.681)
+# The README image's pose, seen from the front (--camera azimuth=0): the left hand raised and
+# tilted 20 degrees down, its wrist camera looking at the viewer above the fingertips; the right
+# gripper held out sideways, its length in view.
+README_LEFT = (-1.229, -1.74, -0.699, -2.605, 1.461, 2.105, 0.727)
 README_RIGHT = (-0.765, -1.401, -1.03, -2.55, -0.106, 4.348, -1.361)
 
 
@@ -897,8 +898,22 @@ def arguments(argv: list[str]) -> argparse.Namespace:
         metavar="FRAMES",
         help="render FRAMES PNGs of one robot turn (output_0000.png, ...) instead of one image",
     )
+    parser.add_argument(
+        "--fade-shadow",
+        action="store_true",
+        help="with --transparent: fade the floor shadow out around the base, inside the image",
+    )
+    parser.add_argument(
+        "--crop", action="store_true", help="crop the image to the robot and its shadow"
+    )
+    parser.add_argument(
+        "--width", type=int, help="scale the finished image to this width in pixels"
+    )
     parser.add_argument("--cpu", action="store_true", help="render on the CPU even if a GPU exists")
-    return parser.parse_args(argv)
+    args = parser.parse_args(argv)
+    if args.fade_shadow and not (args.transparent and args.ground):
+        parser.error("--fade-shadow needs --transparent and the floor")
+    return args
 
 
 def render(args: argparse.Namespace) -> None:
@@ -943,8 +958,84 @@ def render(args: argparse.Namespace) -> None:
         studio.scene.render.filepath = str(target.resolve())
         frame_started = time.monotonic()
         bpy.ops.render.render(write_still=True)
+        if args.fade_shadow or args.crop or args.width:
+            finish_image(target, fade=args.fade_shadow, crop=args.crop, width=args.width)
         print(f"wrote {target} in {time.monotonic() - frame_started:.1f} s")
     print(f"total {time.monotonic() - started:.1f} s")
+
+
+def area_weights(old: int, new: int) -> np.ndarray:
+    """Return the (new, old) matrix averaging each new pixel over the old pixels it covers."""
+    edges = np.linspace(0.0, old, new + 1)
+    weights = np.zeros((new, old), dtype=np.float32)
+    for i in range(new):
+        start, end = edges[i], edges[i + 1]
+        for j in range(int(start), min(int(np.ceil(end)), old)):
+            weights[i, j] = min(end, j + 1) - max(start, j)
+    return weights / weights.sum(axis=1, keepdims=True)
+
+
+def area_resize(rgba: np.ndarray, width: int, height: int) -> np.ndarray:
+    """Downscale an RGBA array by area averaging, in premultiplied alpha (clean cut-out edges)."""
+    rows, columns = area_weights(rgba.shape[0], height), area_weights(rgba.shape[1], width)
+    premultiplied = rgba.copy()
+    premultiplied[..., :3] *= rgba[..., 3:4]
+    # Rows, then columns: two matrix products instead of one four-index sum.
+    scaled = np.tensordot(rows, premultiplied, axes=(1, 0))  # (height, old width, 4)
+    scaled = np.tensordot(scaled, columns, axes=(1, 1)).transpose(0, 2, 1)  # (height, width, 4)
+    alpha = scaled[..., 3:4]
+    scaled[..., :3] = np.divide(
+        scaled[..., :3], alpha, out=np.zeros_like(scaled[..., :3]), where=alpha > 0
+    )
+    return scaled
+
+
+def finish_image(path: Path, fade: bool, crop: bool, width: int | None) -> None:
+    """Post-process a rendered PNG in place: fade the floor shadow, crop, scale.
+
+    The floor shadow of the large softboxes reaches far beyond the robot, and a transparent
+    image would cut it off at its border. With `fade`, the shadow (every pixel not fully opaque)
+    fades out smoothly in an ellipse around the bottom of the base, inside the image; the robot
+    itself is never touched. `crop` keeps the robot and what is left of its shadow, with a small
+    margin, and `width` scales the result down by area averaging.
+    """
+    image = bpy.data.images.load(str(path), check_existing=False)
+    height, full_width = image.size[1], image.size[0]
+    pixels = np.empty(full_width * height * 4, dtype=np.float32)
+    image.pixels.foreach_get(pixels)
+    rgba = np.flipud(pixels.reshape(height, full_width, 4)).copy()  # rows top to bottom
+    alpha = rgba[..., 3]
+    robot = alpha > 0.98
+    if fade and robot.any():
+        rows, columns = np.nonzero(robot)
+        centre, bottom = (columns.min() + columns.max()) / 2.0, float(rows.max())
+        half = max((columns.max() - columns.min()) / 2.0, 1.0)
+        y, x = np.mgrid[0:height, 0:full_width].astype(np.float32)
+        reach = np.sqrt(((x - centre) / (1.05 * half)) ** 2 + ((y - bottom) / (0.33 * half)) ** 2)
+        weight = np.clip((1.45 - reach) / 0.7, 0.0, 1.0)
+        weight = weight * weight * (3.0 - 2.0 * weight)
+        alpha[~robot] *= weight[~robot]
+    if crop:
+        rows, columns = np.nonzero(alpha > 2.0 / 255.0)
+        if rows.size:
+            pad = int(0.02 * full_width)
+            top, low = max(rows.min() - pad, 0), min(rows.max() + pad + 1, height)
+            left, right = max(columns.min() - pad, 0), min(columns.max() + pad + 1, full_width)
+            rgba = rgba[top:low, left:right]
+    if width:
+        rgba = area_resize(rgba, width, max(round(rgba.shape[0] * width / rgba.shape[1]), 1))
+    finished = bpy.data.images.new(
+        path.stem, width=rgba.shape[1], height=rgba.shape[0], alpha=True, float_buffer=True
+    )
+    # The values are the PNG's own (display-encoded); set the colour space before the pixels, as
+    # setting it later regenerates the buffer and drops the pixels.
+    finished.colorspace_settings.name = image.colorspace_settings.name
+    finished.pixels.foreach_set(np.ascontiguousarray(np.flipud(rgba)).ravel())
+    finished.filepath_raw = str(path)
+    finished.file_format = "PNG"
+    finished.save()
+    bpy.data.images.remove(image)
+    bpy.data.images.remove(finished)
 
 
 def main() -> None:
