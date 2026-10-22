@@ -6,6 +6,20 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-22
+
+The wrist cameras on the hole pair the robot uses, and photorealistic renders of the model.
+
+### Added
+- **Photorealistic renders of the model** — `tools/render/render.py` path-traces Garmi from its
+  URDF with Blender's Cycles in a named pose and view (whole robot, head, wrist camera), with
+  physically based materials from the model's own colours and a transparent background on request;
+  `uv run` is the only thing to install.
+
+### Changed
+- **The README image is a render** — `garmi_description/model.png` is now path-traced by the render
+  tool in its `readme` pose instead of an RViz screenshot.
+
 ### Fixed
 - **The wrist cameras sit on the bracket's offset hole pair, as on the robot** — each D435i moved
   32.5 mm along its long axis, so its colour optical frame lies in the gripper's plane of symmetry
@@ -160,7 +174,8 @@ First public release of the portable Garmi robot description.
 - Continuous integration validating the MuJoCo model, building the container
   images, and `colcon`-building the ROS 2 package.
 
-[Unreleased]: https://github.com/geriatronics/garmi_description/compare/v0.3.2...HEAD
+[Unreleased]: https://github.com/geriatronics/garmi_description/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/geriatronics/garmi_description/compare/v0.3.2...v0.4.0
 [0.3.2]: https://github.com/geriatronics/garmi_description/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/geriatronics/garmi_description/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/geriatronics/garmi_description/compare/v0.2.0...v0.3.0
