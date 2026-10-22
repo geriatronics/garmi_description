@@ -12,6 +12,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   physically based materials from the model's own colours and a transparent background on request;
   `uv run` is the only thing to install.
 
+### Changed
+- **The README image is a render** — `garmi_description/model.png` is now path-traced by the render
+  tool in its `readme` pose instead of an RViz screenshot.
+
 ## [0.3.2] - 2026-10-21
 
 The head turns and nods the way the real one does.

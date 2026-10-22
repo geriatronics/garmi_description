@@ -239,6 +239,10 @@ def parse_visual(element: ET.Element, colours: dict, urdf: Path) -> Visual:
 ARM_READY = (0.0, -math.pi / 4, 0.0, -3 * math.pi / 4, 0.0, math.pi / 2, math.pi / 4)
 # Garmi's driving posture, left arm: folded back over the shoulder, above the base.
 ARM_TRAVEL = (-2.32, 1.17, 0.33, -0.68, 2.63, 3.49, -1.5)
+# The README image's pose, seen from the front (--camera azimuth=0): the left hand raised, its
+# wrist camera looking at the viewer; the right gripper held out sideways, its length in view.
+README_LEFT = (0.068, -1.756, 0.298, -2.559, 1.362, 3.911, 0.681)
+README_RIGHT = (-0.765, -1.401, -1.03, -2.55, -0.106, 4.348, -1.361)
 
 
 def arm(side: str, values: tuple[float, ...]) -> dict[str, float]:
@@ -260,6 +264,12 @@ POSES = {
         "right_fr3_finger_joint1": 0.04,
     },
     "travel": {**arm("left", ARM_TRAVEL), **arm("right", mirrored(ARM_TRAVEL))},
+    "readme": {
+        **arm("left", README_LEFT),
+        **arm("right", README_RIGHT),
+        "left_fr3_finger_joint1": 0.04,
+        "right_fr3_finger_joint1": 0.04,
+    },
 }
 
 

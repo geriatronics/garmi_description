@@ -57,6 +57,13 @@ times slower; lower `--samples` or `--resolution` for drafts. `--help` lists eve
   keyframe.
 - `travel`: both arms folded back over the shoulders, above the base, Garmi's driving posture
   (the right arm mirrors the left).
+- `readme`: the left hand raised, its wrist camera looking at the viewer, the right gripper held
+  out sideways; seen from the front, it makes the repository's README image:
+
+  ```bash
+  uv run tools/render/render.py --pose readme --camera azimuth=0 --transparent \
+      --resolution 1200x1200 -o model.png   # then cropped and scaled to 600 px wide
+  ```
 
 ## Views
 
