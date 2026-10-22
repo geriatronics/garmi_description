@@ -43,7 +43,7 @@ times slower; lower `--samples` or `--resolution` for drafts. `--help` lists eve
 | `--exposure` | -0.4 | Exposure in stops; lower keeps more shape in the white surfaces, higher brightens. |
 | `--fade-shadow` | off | With `--transparent`: fades the floor shadow out around the base, so it ends inside the image instead of at its border. |
 | `--crop` | off | Crops the image to the robot and its shadow, with a small margin. |
-| `--width` | | Scales the finished image down to this width (area averaging). |
+| `--width` | | Scales the finished image down to this width (Lanczos, so thin lines stay smooth). |
 | `--transparent` | off | Transparent background: an RGBA PNG whose floor keeps only the robot's shadow. |
 | `--no-ground` | | Drops the shadow-catching floor. |
 | `--background` | `#f2f3f5` | Backdrop colour when not transparent. |
@@ -66,7 +66,7 @@ times slower; lower `--samples` or `--resolution` for drafts. `--help` lists eve
 
   ```bash
   uv run tools/render/render.py --pose readme --camera azimuth=0 --camera margin=1.6 \
-      --resolution 1600x1600 --transparent --fade-shadow --crop --width 600 \
+      --resolution 3200x3200 --transparent --fade-shadow --crop --width 600 \
       -o garmi_description/model.png
   ```
 

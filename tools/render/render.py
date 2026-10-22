@@ -964,25 +964,31 @@ def render(args: argparse.Namespace) -> None:
     print(f"total {time.monotonic() - started:.1f} s")
 
 
-def area_weights(old: int, new: int) -> np.ndarray:
-    """Return the (new, old) matrix averaging each new pixel over the old pixels it covers."""
-    edges = np.linspace(0.0, old, new + 1)
-    weights = np.zeros((new, old), dtype=np.float32)
-    for i in range(new):
-        start, end = edges[i], edges[i + 1]
-        for j in range(int(start), min(int(np.ceil(end)), old)):
-            weights[i, j] = min(end, j + 1) - max(start, j)
-    return weights / weights.sum(axis=1, keepdims=True)
+def lanczos_weights(old: int, new: int, lobes: int = 3) -> np.ndarray:
+    """Return the (new, old) Lanczos resampling matrix for shrinking `old` pixels to `new`.
+
+    The kernel is stretched by the scale factor, so it filters before it samples: thin lines (a
+    shell's rim around the dark face) come out continuous instead of stepped, as a box average
+    leaves them.
+    """
+    scale = max(old / new, 1.0)
+    centres = (np.arange(new) + 0.5) * (old / new) - 0.5
+    offsets = (np.arange(old)[None, :] - centres[:, None]) / scale
+    weights = np.sinc(offsets) * np.sinc(offsets / lobes)
+    weights[np.abs(offsets) >= lobes] = 0.0
+    return (weights / weights.sum(axis=1, keepdims=True)).astype(np.float32)
 
 
-def area_resize(rgba: np.ndarray, width: int, height: int) -> np.ndarray:
-    """Downscale an RGBA array by area averaging, in premultiplied alpha (clean cut-out edges)."""
-    rows, columns = area_weights(rgba.shape[0], height), area_weights(rgba.shape[1], width)
+def downscale(rgba: np.ndarray, width: int, height: int) -> np.ndarray:
+    """Downscale an RGBA array with Lanczos, in premultiplied alpha (clean cut-out edges)."""
+    rows, columns = lanczos_weights(rgba.shape[0], height), lanczos_weights(rgba.shape[1], width)
     premultiplied = rgba.copy()
     premultiplied[..., :3] *= rgba[..., 3:4]
     # Rows, then columns: two matrix products instead of one four-index sum.
     scaled = np.tensordot(rows, premultiplied, axes=(1, 0))  # (height, old width, 4)
     scaled = np.tensordot(scaled, columns, axes=(1, 1)).transpose(0, 2, 1)  # (height, width, 4)
+    scaled = np.clip(scaled, 0.0, 1.0)  # Lanczos overshoots slightly at hard edges
+    scaled[..., :3] = np.minimum(scaled[..., :3], scaled[..., 3:4])
     alpha = scaled[..., 3:4]
     scaled[..., :3] = np.divide(
         scaled[..., :3], alpha, out=np.zeros_like(scaled[..., :3]), where=alpha > 0
@@ -997,7 +1003,7 @@ def finish_image(path: Path, fade: bool, crop: bool, width: int | None) -> None:
     image would cut it off at its border. With `fade`, the shadow (every pixel not fully opaque)
     fades out smoothly in an ellipse around the bottom of the base, inside the image; the robot
     itself is never touched. `crop` keeps the robot and what is left of its shadow, with a small
-    margin, and `width` scales the result down by area averaging.
+    margin, and `width` scales the result down with a Lanczos filter.
     """
     image = bpy.data.images.load(str(path), check_existing=False)
     height, full_width = image.size[1], image.size[0]
@@ -1023,7 +1029,7 @@ def finish_image(path: Path, fade: bool, crop: bool, width: int | None) -> None:
             left, right = max(columns.min() - pad, 0), min(columns.max() + pad + 1, full_width)
             rgba = rgba[top:low, left:right]
     if width:
-        rgba = area_resize(rgba, width, max(round(rgba.shape[0] * width / rgba.shape[1]), 1))
+        rgba = downscale(rgba, width, max(round(rgba.shape[0] * width / rgba.shape[1]), 1))
     finished = bpy.data.images.new(
         path.stem, width=rgba.shape[1], height=rgba.shape[0], alpha=True, float_buffer=False
     )  # an 8-bit buffer saves an 8-bit PNG, like the render itself
