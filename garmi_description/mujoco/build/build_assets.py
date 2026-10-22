@@ -93,7 +93,7 @@ COLLISION_STL = [
     "head.stl",
     "head_camera_mount.stl",
     "olive_camera.stl",
-    "wrist_camera_mount_centered.stl",
+    "wrist_camera_mount_offset.stl",
 ]
 # TUM multi-material parts -> split by material with obj2mjcf.
 TUM_OBJ = [

@@ -1663,12 +1663,13 @@
   <!-- Wrist camera: an Intel RealSense D435i on a 3D-printed bracket on the left hand's flange.
        The bracket hooks over the Franka Hand's round 63 mm flange plate on the hand frame's +x
        broad side and is clamped by one of the hand's own flange screws; the camera sits at its
-       far end, about 12 cm out from the flange axis, tilted 45 degrees to look at the fingers.
+       far end, about 12 cm out from the flange axis, tilted 45 degrees to look at the fingers,
+       screwed to the bracket's offset pair of holes, 32.5 mm along its long axis from the
+       centred pair, which puts its colour lens in the gripper's plane of symmetry.
        The bracket's frame: origin on the flange axis in the flange face, z along the axis toward
        the fingers, x out through the clamping screw; its pose on the flange is confirmed on the
        robot. Bracket and camera collide as one convex proxy of both
-       (meshes/collision/wrist_camera_mount_centered.stl: the camera on the bracket's centred
-       pair of holes); the camera's own box lies inside it.
+       (meshes/collision/wrist_camera_mount_offset.stl); the camera's own box lies inside it.
 
        Camera: the realsense2_description model's frames and mass (Apache-2.0, see NOTICE), drawn
        with a recoloured copy of its mesh (meshes/d435_garmi.dae: aluminium housing, black glass
@@ -1690,7 +1691,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://garmi_description/meshes/collision/wrist_camera_mount_centered.stl"/>
+        <mesh filename="package://garmi_description/meshes/collision/wrist_camera_mount_offset.stl"/>
       </geometry>
     </collision>
     <!-- PLA at an effective fill of 0.5, from the mesh's enclosed volume (115.6 cm3). An
@@ -1703,7 +1704,7 @@
   </link>
   <!-- camera body, with origin at bottom screw mount -->
   <joint name="camera_d435i_left_joint" type="fixed">
-    <origin rpy="0 -0.7853981633974483 3.141592653589793" xyz="0.11001 0.0 0.02231"/>
+    <origin rpy="0 -0.7853981633974483 3.141592653589793" xyz="0.11001 0.0325 0.02231"/>
     <parent link="left_fr3_wrist_camera_mount"/>
     <child link="camera_d435i_left_bottom_screw_frame"/>
   </joint>
@@ -2000,12 +2001,13 @@
   <!-- Wrist camera: an Intel RealSense D435i on a 3D-printed bracket on the right hand's flange.
        The bracket hooks over the Franka Hand's round 63 mm flange plate on the hand frame's +x
        broad side and is clamped by one of the hand's own flange screws; the camera sits at its
-       far end, about 12 cm out from the flange axis, tilted 45 degrees to look at the fingers.
+       far end, about 12 cm out from the flange axis, tilted 45 degrees to look at the fingers,
+       screwed to the bracket's offset pair of holes, 32.5 mm along its long axis from the
+       centred pair, which puts its colour lens in the gripper's plane of symmetry.
        The bracket's frame: origin on the flange axis in the flange face, z along the axis toward
        the fingers, x out through the clamping screw; its pose on the flange is confirmed on the
        robot. Bracket and camera collide as one convex proxy of both
-       (meshes/collision/wrist_camera_mount_centered.stl: the camera on the bracket's centred
-       pair of holes); the camera's own box lies inside it.
+       (meshes/collision/wrist_camera_mount_offset.stl); the camera's own box lies inside it.
 
        Camera: the realsense2_description model's frames and mass (Apache-2.0, see NOTICE), drawn
        with a recoloured copy of its mesh (meshes/d435_garmi.dae: aluminium housing, black glass
@@ -2027,7 +2029,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://garmi_description/meshes/collision/wrist_camera_mount_centered.stl"/>
+        <mesh filename="package://garmi_description/meshes/collision/wrist_camera_mount_offset.stl"/>
       </geometry>
     </collision>
     <!-- PLA at an effective fill of 0.5, from the mesh's enclosed volume (115.6 cm3). An
@@ -2040,7 +2042,7 @@
   </link>
   <!-- camera body, with origin at bottom screw mount -->
   <joint name="camera_d435i_right_joint" type="fixed">
-    <origin rpy="0 -0.7853981633974483 3.141592653589793" xyz="0.11001 0.0 0.02231"/>
+    <origin rpy="0 -0.7853981633974483 3.141592653589793" xyz="0.11001 0.0325 0.02231"/>
     <parent link="right_fr3_wrist_camera_mount"/>
     <child link="camera_d435i_right_bottom_screw_frame"/>
   </joint>
