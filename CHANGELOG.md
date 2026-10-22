@@ -6,6 +6,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+- **Photorealistic renders of the model** — `tools/render/render.py` path-traces Garmi from its
+  URDF with Blender's Cycles in a named pose and view (whole robot, head, wrist camera), with
+  physically based materials from the model's own colours and a transparent background on request;
+  `uv run` is the only thing to install.
+
 ## [0.3.2] - 2026-10-21
 
 The head turns and nods the way the real one does.
