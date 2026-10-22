@@ -89,7 +89,8 @@ head sees. Their field of view is MuJoCo's default, not the fisheye lenses'.
 Each hand carries its wrist camera, a RealSense D435i on a 3D-printed bracket
 on the flange (`<side>_fr3_wrist_camera_mount`, `camera_d435i_<side>_link`),
 with a MuJoCo camera `camera_d435i_<side>_color` on the colour sensor's
-optical frame looking at the fingers. Bracket and camera collide as one convex
+optical frame looking at the fingers from the gripper's plane of symmetry, where
+the bracket's offset hole pair puts it. Bracket and camera collide as one convex
 proxy. The camera is drawn as three meshes in the URDF's colours (`d435_body`
 in aluminium, `d435_front` in black glass, `d435_openings` for the lenses and
 projector).
