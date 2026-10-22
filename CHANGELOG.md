@@ -16,6 +16,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **The README image is a render** — `garmi_description/model.png` is now path-traced by the render
   tool in its `readme` pose instead of an RViz screenshot.
 
+### Fixed
+- **The wrist cameras sit on the bracket's offset hole pair, as on the robot** — each D435i moved
+  32.5 mm along its long axis, so its colour optical frame lies in the gripper's plane of symmetry
+  (y = 0 in `<side>_fr3_hand`) and every `camera_d435i_<side>_*` frame follows; the bracket's
+  collision proxy is `collision/wrist_camera_mount_offset.stl`, replacing `_centered`. Link and
+  joint names are unchanged.
+
 ## [0.3.2] - 2026-10-21
 
 The head turns and nods the way the real one does.

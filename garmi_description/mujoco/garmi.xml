@@ -178,7 +178,7 @@
     <mesh name="d435_front" file="d435_front.stl"/>
     <mesh name="d435_openings" file="d435_openings.stl"/>
     <mesh name="wrist_camera_mount" file="wrist_camera_mount.stl"/>
-    <mesh name="wrist_camera_mount_collision" file="collision/wrist_camera_mount_centered.stl"/>
+    <mesh name="wrist_camera_mount_collision" file="collision/wrist_camera_mount_offset.stl"/>
 
     <!-- Garmi base / lift / wheel meshes. -->
     <mesh name="chassis" file="body.stl"/>
@@ -648,7 +648,9 @@
                                       <geom mesh="link7_3" material="black" class="fr3_vis"/>
                                       <geom name="left_fr3_link7_col" class="fr3_col" mesh="link7_coll"/>
                                       <!-- Wrist camera (see the URDF): a RealSense D435i on its bracket
-                                           on the flange, in the hand's frame. The bracket and camera
+                                           on the flange, in the hand's frame, on the bracket's offset
+                                           hole pair: its colour lens lies in the gripper's plane of
+                                           symmetry. The bracket and camera
                                            collide as one convex proxy. The MuJoCo camera sits on the
                                            colour sensor's optical frame, with its 42 degree vertical
                                            field of view. -->
@@ -657,7 +659,7 @@
                                           fullinertia="4.113e-05 8.628e-05 1.161e-04 -1.418e-05 -1.345e-05 -3.749e-06"/>
                                         <geom class="garmi_vis" mesh="wrist_camera_mount" material="wrist_camera_mount_white"/>
                                         <geom class="hand_col" mesh="wrist_camera_mount_collision"/>
-                                        <body name="camera_d435i_left_bottom_screw_frame" pos="0.11001 0 0.02231" quat="0 0.3826834 0 0.9238795">
+                                        <body name="camera_d435i_left_bottom_screw_frame" pos="0.11001 0.0325 0.02231" quat="0 0.3826834 0 0.9238795">
                                           <body name="camera_d435i_left_link" pos="0.0106 0.0175 0.0125">
                                             <inertial pos="0 -0.0175 0" mass="0.072" diaginertia="5.235e-05 7.515e-06 5.237e-05"/>
                                             <!-- The URDF's visual pose: the mesh frame at the front plate, between the infrared imagers. -->
@@ -779,7 +781,9 @@
                                       <geom mesh="link7_3" material="black" class="fr3_vis"/>
                                       <geom name="right_fr3_link7_col" class="fr3_col" mesh="link7_coll"/>
                                       <!-- Wrist camera (see the URDF): a RealSense D435i on its bracket
-                                           on the flange, in the hand's frame. The bracket and camera
+                                           on the flange, in the hand's frame, on the bracket's offset
+                                           hole pair: its colour lens lies in the gripper's plane of
+                                           symmetry. The bracket and camera
                                            collide as one convex proxy. The MuJoCo camera sits on the
                                            colour sensor's optical frame, with its 42 degree vertical
                                            field of view. -->
@@ -788,7 +792,7 @@
                                           fullinertia="4.113e-05 8.628e-05 1.161e-04 -1.418e-05 -1.345e-05 -3.749e-06"/>
                                         <geom class="garmi_vis" mesh="wrist_camera_mount" material="wrist_camera_mount_white"/>
                                         <geom class="hand_col" mesh="wrist_camera_mount_collision"/>
-                                        <body name="camera_d435i_right_bottom_screw_frame" pos="0.11001 0 0.02231" quat="0 0.3826834 0 0.9238795">
+                                        <body name="camera_d435i_right_bottom_screw_frame" pos="0.11001 0.0325 0.02231" quat="0 0.3826834 0 0.9238795">
                                           <body name="camera_d435i_right_link" pos="0.0106 0.0175 0.0125">
                                             <inertial pos="0 -0.0175 0" mass="0.072" diaginertia="5.235e-05 7.515e-06 5.237e-05"/>
                                             <!-- The URDF's visual pose: the mesh frame at the front plate, between the infrared imagers. -->
