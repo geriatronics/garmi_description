@@ -82,6 +82,20 @@ The model file [`mujoco/garmi.xml`](garmi_description/mujoco/garmi.xml) is
 self-contained, so you can drop it straight into your own MuJoCo project. See
 the [MuJoCo README](garmi_description/mujoco/README.md) for details.
 
+### 📸 Photorealistic renders
+
+Need a picture of Garmi for a paper, a slide or a website? [`tools/render/render.py`](tools/render/render.py)
+path-traces the URDF with Blender's Cycles: physically based materials from the model's own
+colours, studio lighting, a pose and a camera preset of your choice. All it needs is
+[uv](https://docs.astral.sh/uv/), which fetches Blender as a Python module on the first run:
+
+```bash
+uv run tools/render/render.py --transparent -o garmi.png        # the whole robot
+uv run tools/render/render.py --view head -o garmi_head.png     # or: --view wrist, --pose travel
+```
+
+See the [render README](tools/render/README.md) for the poses, views and options.
+
 ## 📂 Structure Breakdown
 
 - `Dockerfile` & `docker-compose.yml`: Quick-start containerized environment.
@@ -91,6 +105,7 @@ the [MuJoCo README](garmi_description/mujoco/README.md) for details.
   - `launch/` & `config/`: Setup for the illustrative RViz and Gazebo tests.
   - `scripts/`: The `demo_motion.py` example controller node.
   - `mujoco/`: Standalone MuJoCo (MJCF) model, scene and assets.
+- `tools/render/`: The photorealistic render script.
 - `docs/`: Reference notes, including the [real robot's ROS 2 interface](docs/real_robot.md) (namespaces, controllers, topics) for hardware integrators.
 
 ## ⚠️ Caveats & Known Issues
