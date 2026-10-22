@@ -1025,8 +1025,8 @@ def finish_image(path: Path, fade: bool, crop: bool, width: int | None) -> None:
     if width:
         rgba = area_resize(rgba, width, max(round(rgba.shape[0] * width / rgba.shape[1]), 1))
     finished = bpy.data.images.new(
-        path.stem, width=rgba.shape[1], height=rgba.shape[0], alpha=True, float_buffer=True
-    )
+        path.stem, width=rgba.shape[1], height=rgba.shape[0], alpha=True, float_buffer=False
+    )  # an 8-bit buffer saves an 8-bit PNG, like the render itself
     # The values are the PNG's own (display-encoded); set the colour space before the pixels, as
     # setting it later regenerates the buffer and drops the pixels.
     finished.colorspace_settings.name = image.colorspace_settings.name
