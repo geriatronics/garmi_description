@@ -166,14 +166,15 @@ def resolve_uri(uri: str, urdf: Path) -> Path:
     package, _, rest = uri.removeprefix("package://").partition("/")
     for directory in urdf.resolve().parents:
         manifest = directory / "package.xml"
-        if manifest.is_file() and ET.parse(manifest).findtext("name") == package:
+        # The package.xml files around the URDF this tool is asked to render, read locally.
+        if manifest.is_file() and ET.parse(manifest).findtext("name") == package:  # noqa: S314
             return directory / rest
     raise UsageError(f"{uri}: no package.xml naming '{package}' above {urdf}")
 
 
 def load_urdf(path: Path) -> Robot:
     """Read a plain (xacro-expanded) URDF into its visuals and joint tree."""
-    root = ET.parse(path).getroot()
+    root = ET.parse(path).getroot()  # noqa: S314 — the caller's own URDF, read locally
     colours = {
         m.get("name"): floats(m.find("color").get("rgba"))
         for m in root.findall("material")
@@ -775,8 +776,10 @@ def use_gpu(allow: bool) -> str:
 
 def download(url: str) -> bytes:
     """Fetch a URL; Poly Haven refuses Python's default user agent."""
-    request = urllib.request.Request(url, headers={"User-Agent": "garmi_description-render"})
-    with urllib.request.urlopen(request, timeout=60) as response:
+    # Only the fixed https URLs of fetch_hdri reach here, never a file: or custom scheme.
+    agent = {"User-Agent": "garmi_description-render"}
+    request = urllib.request.Request(url, headers=agent)  # noqa: S310
+    with urllib.request.urlopen(request, timeout=60) as response:  # noqa: S310
         return response.read()
 
 
