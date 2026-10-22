@@ -415,7 +415,7 @@ class Finish:
     emission: float = 0.0  # a display: its texture glows at this strength
 
 
-WHITEST = 0.85  # linear albedo of bright white paint; a model's 1.0 renders as this
+WHITEST = 0.80  # linear albedo of bright white paint; a model's 1.0 renders as this
 
 # The first pattern matching the whole lower-cased material name wins; colours stay the model's.
 FINISHES = (
@@ -619,6 +619,9 @@ class Studio:
     def add_lights(self, azimuth: float, center: np.ndarray, radius: float) -> None:
         """Light the robot like a product shot: key, fill, rim and top softboxes.
 
+        The fill and top lights stay well below the key, so white surfaces keep a visible
+        gradient and their shape reads against a light background.
+
         The rig turns with the camera's azimuth, so every view gets the same light from the
         viewer's standpoint. Powers scale with the square of the distance to keep exposure.
         """
@@ -626,9 +629,9 @@ class Studio:
         softboxes = (
             # name, azimuth offset, elevation, size (fraction of distance), watts at 1 m
             ("key", 50.0, 35.0, 0.55, 14.0),
-            ("fill", -65.0, 15.0, 0.8, 3.5),
+            ("fill", -65.0, 15.0, 0.8, 1.5),
             ("rim", 165.0, 40.0, 0.4, 20.0),
-            ("top", 0.0, 85.0, 0.6, 4.0),
+            ("top", 0.0, 85.0, 0.6, 2.0),
         )
         for name, offset, elevation, size, watts in softboxes:
             light = bpy.data.lights.new(name, type="AREA")
@@ -656,7 +659,7 @@ class Studio:
             texture = nodes.new("ShaderNodeTexEnvironment")
             texture.image = bpy.data.images.load(str(hdri), check_existing=True)
             links.new(texture.outputs["Color"], environment.inputs["Color"])
-            environment.inputs["Strength"].default_value = 0.4
+            environment.inputs["Strength"].default_value = 0.25
         path = nodes.new("ShaderNodeLightPath")
         mix = nodes.new("ShaderNodeMixShader")
         links.new(path.outputs["Is Camera Ray"], mix.inputs["Fac"])
@@ -807,6 +810,7 @@ def configure_render(args: argparse.Namespace, resolution: tuple[int, int]) -> s
     # A neutral tone map keeps the model's colours where they are, unlike AgX's desaturation.
     scene.view_settings.view_transform = "Khronos PBR Neutral"
     scene.view_settings.look = "None"
+    scene.view_settings.exposure = args.exposure
     return device
 
 
@@ -853,6 +857,12 @@ def arguments(argv: list[str]) -> argparse.Namespace:
     )
     parser.add_argument("--resolution", type=parse_resolution, help="WIDTHxHEIGHT [per view]")
     parser.add_argument("--samples", type=int, default=256, help="path-tracing samples per pixel")
+    parser.add_argument(
+        "--exposure",
+        type=float,
+        default=-0.4,
+        help="exposure in stops (default: %(default)s; lower keeps more shape in the whites)",
+    )
     parser.add_argument(
         "--transparent", action="store_true", help="transparent background (RGBA PNG)"
     )

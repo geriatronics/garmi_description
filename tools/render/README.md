@@ -40,6 +40,7 @@ times slower; lower `--samples` or `--resolution` for drafts. `--help` lists eve
 | `--camera KEY=VALUE` | | Overrides the preset: `azimuth`, `elevation` (degrees), `lens` (mm), `margin` (1 frames the targets edge to edge), `target` (comma-separated link names); repeatable. |
 | `--resolution WxH` | per view | Image size in pixels. |
 | `--samples` | 256 | Path-tracing samples per pixel; OpenImageDenoise cleans up the rest. |
+| `--exposure` | -0.4 | Exposure in stops; lower keeps more shape in the white surfaces, higher brightens. |
 | `--transparent` | off | Transparent background: an RGBA PNG whose floor keeps only the robot's shadow. |
 | `--no-ground` | | Drops the shadow-catching floor. |
 | `--background` | `#f2f3f5` | Backdrop colour when not transparent. |
@@ -79,7 +80,7 @@ Colours are the model's own; the script only decides how each kind of surface re
 - **Colour sources**: URDF `rgba` values are sRGB, as RViz shows them, and are converted to linear
   light. The Collada effect colours and the OBJ meshes' MTL `Kd` values are linear already, the
   way Blender writes them; textures (`fabric.jpg`, `face.jpg`) are sRGB images. A white of 1.0 is
-  capped at an albedo of 0.85, as bright as real white paint gets.
+  capped at an albedo of 0.80, as bright as real white paint gets.
 - **Roughness**: where a file states it, it is used: the MTL's `Ns` (Blender writes
   `Ns = 1000 (1 - roughness)^2`) and a Collada Phong exponent `n` (as `sqrt(2 / (n + 2))`).
 - **Finish by material name** ([`FINISHES`](render.py)): the RealSense's black glass front and
@@ -90,7 +91,8 @@ Colours are the model's own; the script only decides how each kind of surface re
 
 ## Light and output
 
-Four disc softboxes (key, fill, rim, top) turn with the camera, so every view is lit alike, and an
+Four disc softboxes (key, fill, rim, top) turn with the camera, so every view is lit alike; fill
+and top stay well below the key, so white surfaces keep a gradient that shows their shape. An
 HDRI from [Poly Haven](https://polyhaven.com/hdris) (CC0) adds soft light and reflections. The HDRI
 downloads once into `~/.cache/garmi_description/render/hdri/`, and each run prints its credit;
 without a connection the script warns and renders with the softboxes alone. The camera always sees
