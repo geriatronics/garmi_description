@@ -712,7 +712,10 @@ def spherical(azimuth: float, elevation: float) -> np.ndarray:
 
 
 def half_angle_tangents(lens: float, sensor: float, resolution: tuple[int, int]) -> np.ndarray:
-    """Return tan of the horizontal and vertical half view angles; the sensor spans the long side."""
+    """Return tan of the horizontal and vertical half view angles.
+
+    The sensor spans the image's long side.
+    """
     width, height = resolution
     long_side = sensor / 2.0 / lens
     if width >= height:
