@@ -6,6 +6,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-10-27
+
+The head camera's front panel in black, as printed.
+
 ### Fixed
 - **The head camera's front panel is black, as printed** — the lens cover (`olive_camera_cover`)
   is drawn in a new `olive_camera_black` instead of the housing's white, in the URDF and in MuJoCo,
@@ -190,7 +194,8 @@ First public release of the portable Garmi robot description.
 - Continuous integration validating the MuJoCo model, building the container
   images, and `colcon`-building the ROS 2 package.
 
-[Unreleased]: https://github.com/geriatronics/garmi_description/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/geriatronics/garmi_description/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/geriatronics/garmi_description/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/geriatronics/garmi_description/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/geriatronics/garmi_description/compare/v0.3.2...v0.4.0
 [0.3.2]: https://github.com/geriatronics/garmi_description/compare/v0.3.1...v0.3.2
