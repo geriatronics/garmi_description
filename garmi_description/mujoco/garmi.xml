@@ -215,6 +215,7 @@
 
     <!-- Olive stereo camera on top of the head, on its printed mount (see the URDF). -->
     <material name="olive_camera_white" rgba="0.92 0.92 0.9 1"/>
+    <material name="olive_camera_black" rgba="0.06 0.06 0.06 1"/>
     <material name="olive_camera_dark" rgba="0.12 0.12 0.12 1"/>
     <mesh name="head_camera_mount" file="head_camera_mount.stl"/>
     <mesh name="head_camera_mount_collision" file="collision/head_camera_mount.stl"/>
@@ -573,7 +574,7 @@
                               fullinertia="2.798e-05 4.611e-06 2.625e-05 -2.249e-09 9.730e-08 1.979e-10"/>
                             <geom class="garmi_vis" mesh="olive_camera" material="olive_camera_dark"/>
                             <geom class="garmi_vis" mesh="olive_camera_housing" material="olive_camera_white"/>
-                            <geom class="garmi_vis" mesh="olive_camera_cover" material="olive_camera_white"/>
+                            <geom class="garmi_vis" mesh="olive_camera_cover" material="olive_camera_black"/>
                             <geom class="selfcol" mesh="olive_camera_collision"/>
                             <camera name="olive_camera_left" pos="0 0.0315 0" xyaxes="0 -1 0 0 0 1"/>
                             <camera name="olive_camera_right" pos="0 -0.0315 0" xyaxes="0 -1 0 0 0 1"/>
