@@ -109,7 +109,7 @@ TUM_OBJ = [
 
 def fetch(rel_url, dest):
     """Download ``rel_url`` from the menagerie raw endpoint into ``dest``."""
-    urllib.request.urlretrieve(f"{RAW}/{rel_url}", dest)
+    urllib.request.urlretrieve(f"{RAW}/{rel_url}", dest)  # noqa: S310 — RAW is a fixed https URL
 
 
 def _tidy_obj2mjcf_output():
@@ -165,7 +165,8 @@ def main():
         obj2mjcf = shutil.which("obj2mjcf") or os.path.join(
             os.path.dirname(sys.executable), "obj2mjcf"
         )
-        subprocess.run(
+        # An argument list without a shell, naming obj2mjcf on PATH or in this interpreter's venv.
+        subprocess.run(  # noqa: S603
             [obj2mjcf, "--obj-dir", tmp, "--save-mjcf", "--overwrite"],
             check=True,
         )

@@ -37,12 +37,15 @@ select = [
     "T10",  # flake8-debugger
     "ISC",  # flake8-implicit-str-concat
     "ICN",  # flake8-import-conventions
+    "S",    # flake8-bandit — security; each waiver is a `# noqa: S…` at its line, beside its reason
     "RUF",  # Ruff-specific rules
     "Q",    # flake8-quotes
     "SIM",  # flake8-simplify
     "TID",  # flake8-tidy-imports
     "ARG",  # flake8-unused-arguments
     "PL",   # pylint
+    "FIX",  # flake8-fixme — a TODO/FIXME/XXX/HACK comment fails: an open issue belongs in the
+            # issue tracker, where someone is assigned to it, not in a comment that ages in place
 ]
 
 # Ignore specific rules
