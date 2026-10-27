@@ -6,6 +6,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-10-27
+
+The lint rules garmi-core judges this tree by, selected here too.
+
+### Changed
+- **`ruff.toml` selects the security (`S`) and fixme (`FIX`) rules** — the same rule set as
+  garmi-core's gate, so a tree that passes here passes there. The six security findings, all safe
+  shapes (fixed https URLs, the repository's own XML, a subprocess without a shell), carry a
+  `# noqa` beside the reason in `tools/render/render.py` and
+  `garmi_description/mujoco/build/build_assets.py`. No behaviour changes.
+
 ## [0.4.0] - 2026-10-22
 
 The wrist cameras on the hole pair the robot uses, and photorealistic renders of the model.
@@ -174,7 +185,8 @@ First public release of the portable Garmi robot description.
 - Continuous integration validating the MuJoCo model, building the container
   images, and `colcon`-building the ROS 2 package.
 
-[Unreleased]: https://github.com/geriatronics/garmi_description/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/geriatronics/garmi_description/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/geriatronics/garmi_description/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/geriatronics/garmi_description/compare/v0.3.2...v0.4.0
 [0.3.2]: https://github.com/geriatronics/garmi_description/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/geriatronics/garmi_description/compare/v0.3.0...v0.3.1
