@@ -52,6 +52,9 @@
   <material name="olive_camera_white">
     <color rgba="0.92 0.92 0.9 1"/>
   </material>
+  <material name="olive_camera_black">
+    <color rgba="0.06 0.06 0.06 1"/>
+  </material>
   <material name="olive_camera_dark">
     <color rgba="0.12 0.12 0.12 1"/>
   </material>
@@ -2373,7 +2376,7 @@
       <geometry>
         <mesh filename="package://garmi_description/meshes/olive_camera_cover.stl"/>
       </geometry>
-      <material name="olive_camera_white"/>
+      <material name="olive_camera_black"/>
     </visual>
     <inertial>
       <origin rpy="0 0 0" xyz="0.00078 -0.00001 -0.00393"/>

@@ -6,6 +6,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+- **The head camera's front panel is black, as printed** — the lens cover (`olive_camera_cover`)
+  is drawn in a new `olive_camera_black` instead of the housing's white, in the URDF and in MuJoCo,
+  and the README image is rendered again. Only the colour changes.
+
 ## [0.4.1] - 2026-10-27
 
 The lint rules garmi-core judges this tree by, selected here too.
