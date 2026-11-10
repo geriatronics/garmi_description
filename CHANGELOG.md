@@ -6,6 +6,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+- **Triangle-shaped stripes on the head's face plate** — Blender exported the plate's flat front
+  and back as ~165 sliver triangles each, fanned from the rim and up to 20 cm long. Renderers that
+  light per vertex (RViz's fixed-function path, MuJoCo's classic renderer) evaluate the specular
+  highlight only at the rim and interpolate it across those slivers, which showed as stripes
+  whenever a light reflected off the plate. Both faces are now a regular ~6 mm triangulation with
+  the same outline, rim, normals and texture mapping, produced by the new
+  `tools/remesh_face_plate.py` (re-run it after re-exporting `head.obj`); the MuJoCo `head_0.obj`
+  asset is regenerated from it. Only the plate's triangulation changes.
+
 ## [0.4.2] - 2026-10-27
 
 The head camera's front panel in black, as printed.
